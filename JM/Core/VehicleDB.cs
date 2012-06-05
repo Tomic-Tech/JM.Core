@@ -96,7 +96,7 @@ namespace JM.Core
             }
         }
 
-        public string Text(string name)
+        public string GetText(string name)
         {
             StringBuilder builder = new StringBuilder(1024);
             if (GetText(p, name, builder))
@@ -107,7 +107,7 @@ namespace JM.Core
             return null;
         }
 
-        public string TroubleCode(string code)
+        public string GetTroubleCode(string code)
         {
             StringBuilder builder = new StringBuilder(100);
             if (GetTroubleCode(p, code, builder))
@@ -118,7 +118,7 @@ namespace JM.Core
             return null;
         }
 
-        public LiveDataVector LiveData()
+        public LiveDataVector GetLiveData()
         {
             LiveDataVector vec = new LiveDataVector();
             if (!GetLiveData(p, vec.UnmanagedPointer))
@@ -130,7 +130,7 @@ namespace JM.Core
             return vec;
         }
 
-        public byte[] Command(string name)
+        public byte[] GetCommand(string name)
         {
             byte[] buffer = new byte[1024];
             UInt32 count;
@@ -144,7 +144,7 @@ namespace JM.Core
             return null;
         }
 
-        public byte[] Command(int id)
+        public byte[] GetCommand(int id)
         {
             byte[] buffer = new byte[1024];
             UInt32 count;

@@ -2,7 +2,7 @@
 
 namespace JM.Diag.W80
 {
-    internal class Commbox : ICommbox
+    internal class Commbox : ICommbox, V1.ICommbox
     {
         public const int BOXINFO_LEN = 12;
         public const int MAXPORT_NUM = 4;
@@ -168,6 +168,68 @@ namespace JM.Diag.W80
         public const byte DISCONNECT_COMMBOX = 3;
         public const byte OTHER_ERROR = 4;
 
+        // 錯誤標識
+        public const byte ERR_OPEN = 0x01; //OpenComm() 失敗
+        public const byte ERR_CHECK = 0x02; //CheckEcm() 失敗
+
+        //接頭標識定義
+        public const byte OBDII_16 = 0x00;
+        public const byte UNIVERSAL_3 = 0x01;
+        public const byte BENZ_38 = 0x02;
+        public const byte BMW_20 = 0x03;
+        public const byte AUDI_4 = 0x04;
+        public const byte FIAT_3 = 0x05;
+        public const byte CITROEN_2 = 0x06;
+        public const byte CHRYSLER_6 = 0x07;
+        public const byte TOYOTA_17R = 0x20;
+        public const byte TOYOTA_17F = 0x21;
+        public const byte HONDA_3 = 0x22;
+        public const byte MITSUBISHI = 0x23;
+        public const byte HYUNDAI = 0x23;
+        public const byte NISSAN = 0x24;
+        public const byte SUZUKI_3 = 0x25;
+        public const byte DAIHATSU_4 = 0x26;
+        public const byte ISUZU_3 = 0x27;
+        public const byte CANBUS_16 = 0x28;
+        public const byte GM_12 = 0x29;
+        public const byte KIA_20 = 0x30;
+
+        //常量定義
+        public const int TRYTIMES = 3;
+
+        //通訊通道定義
+        public const byte SK0 = 0;
+        public const byte SK1 = 1;
+        public const byte SK2 = 2;
+        public const byte SK3 = 3;
+        public const byte SK4 = 4;
+        public const byte SK5 = 5;
+        public const byte SK6 = 6;
+        public const byte SK7 = 7;
+        public const byte SK_NO = 0xFF;
+        public const byte RK0 = 0;
+        public const byte RK1 = 1;
+        public const byte RK2 = 2;
+        public const byte RK3 = 3;
+        public const byte RK4 = 4;
+        public const byte RK5 = 5;
+        public const byte RK6 = 6;
+        public const byte RK7 = 7;
+        public const byte RK_NO = 0xFF;
+
+        //協議常量標誌定義
+        public const byte NO_PACK = 0x80; //發送的命令不需要打包
+        public const byte UN_PACK = 0x08; //接收到的數據解包處理
+        public const byte MFR_1 = 0x00;
+        public const byte MFR_2 = 0x02;
+        public const byte MFR_3 = 0x03;
+        public const byte MFR_4 = 0x04;
+        public const byte MFR_5 = 0x05;
+        public const byte MFR_6 = 0x06;
+        public const byte MFR_7 = 0x07;
+        public const byte MFR_N = 0x01;
+
+        private byte buffID;
         private byte lastError;
         private ushort boxVer;
         private Box box;
@@ -178,6 +240,7 @@ namespace JM.Diag.W80
         private Core.Timer reqWaitTime;
         private Core.Timer resByteToByte;
         private Core.Timer resWaitTime;
+        private ConnectorType connector;
 
         public Commbox()
         {
@@ -195,14 +258,14 @@ namespace JM.Diag.W80
 
         public ushort BoxVer
         {
-            get
-            {
-                return boxVer;
-            }
-            private set
-            {
-                boxVer = value;
-            }
+            get { return boxVer; }
+            private set { boxVer = value; }
+        }
+
+        public byte BuffID
+        {
+            get { return buffID; }
+            set { buffID = value; }
         }
 
         public bool CheckIdle()
@@ -315,9 +378,14 @@ namespace JM.Diag.W80
             return len;
         }
 
-        public int RecvBytes(byte[] buffer, int offset, int length)
+        private int RecvBytes(byte[] buffer, int offset, int length)
         {
             return ReadData(buffer, offset, length, Core.Timer.FromMilliseconds(500));
+        }
+
+        public int ReadBytes(byte[] buffer, int offset, int length)
+        {
+            return ReadData(buffer, offset, length, resWaitTime);
         }
 
         private bool GetCmdData(byte[] buffer, int offset, int maxlen)
@@ -701,7 +769,7 @@ namespace JM.Diag.W80
                     }
                 }
             }
-            throw new System.IO.IOException();
+            throw new System.IO.IOException(Core.SysDB.GetText("Open Commbox Fail!"));
         }
 
         public void Close()
@@ -826,14 +894,26 @@ namespace JM.Diag.W80
             return DoCmd(RESET);
         }
 
-        public void SetConnector(ConnectorType cnn)
+        public ConnectorType Connector
         {
-            throw new NotImplementedException();
+            get { return connector; }
+            set { connector = value; }
         }
 
-        public ILink<IProtocol> CreateProtocol(ProtocolType type)
+        public void SetConnector(ConnectorType cnn)
         {
-            throw new NotImplementedException();
+            Connector = cnn;
+        }
+
+        public IProtocol CreateProtocol(ProtocolType type)
+        {
+            switch (type)
+            {
+                case ProtocolType.MIKUNI:
+                    return new V1.Mikuni(this);
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }
