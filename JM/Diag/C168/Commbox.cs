@@ -1690,7 +1690,7 @@ namespace JM.Diag.C168
             throw new NotImplementedException();
         }
 
-        public ILink<IProtocol> CreateProtocol(ProtocolType type)
+        public IProtocol CreateProtocol(ProtocolType type)
         {
             throw new NotImplementedException();
         }

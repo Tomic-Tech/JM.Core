@@ -10,6 +10,6 @@ namespace JM.Diag
         void Open();
         void Close();
         void SetConnector(ConnectorType cnn);
-        ILink<IProtocol> CreateProtocol(ProtocolType type);
+        IProtocol CreateProtocol(ProtocolType type);
     }
 }

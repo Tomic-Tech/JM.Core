@@ -6,7 +6,6 @@ namespace JM.Core
     public class MustCallFirst : IDisposable
     {
         static MustCallFirst instance;
-        private string rootPath;
         private bool disposed = false;
 
         static MustCallFirst()
@@ -26,9 +25,8 @@ namespace JM.Core
             }
         }
 
-        public void Init()
+        public void Init(string rootPath)
         {
-            rootPath = Environment.GetCommandLineArgs() [1];
             RegisterInit(rootPath);
             SysDBInit(rootPath);
         }

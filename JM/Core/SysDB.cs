@@ -11,7 +11,7 @@ namespace JM.Core
         private static extern void GetText([MarshalAs(UnmanagedType.LPStr)]string name, 
                                            [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
 
-        public static string Text(string name)
+        public static string GetText(string name)
         {
             StringBuilder builder = new StringBuilder(100);
             GetText(name, builder);

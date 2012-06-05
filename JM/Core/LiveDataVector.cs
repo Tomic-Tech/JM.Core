@@ -24,10 +24,7 @@ namespace JM.Core
 
         internal IntPtr UnmanagedPointer
         {
-            get
-            {
-                return p;
-            }
+            get { return p; }
         }
 
         void IDisposable.Dispose()
@@ -66,6 +63,11 @@ namespace JM.Core
                 return new LiveData(ptr);
             }
             return null;
+        }
+
+        public LiveData this[int index]
+        {
+            get { return Index(index); }
         }
     }
 }
