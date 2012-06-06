@@ -13,8 +13,6 @@ namespace JM.Core
         private Dictionary<int, int> showPositions;
         private List<int> enabledIndexes;
         private int currentEnabledIndex;
-        private int enabledSize;
-        private int showSize;
         private object mutex;
 
         [DllImport("JMCore", EntryPoint = "live_data_vector_new", CallingConvention = CallingConvention.Cdecl)]
@@ -37,16 +35,21 @@ namespace JM.Core
             showPositions = new Dictionary<int, int>();
             enabledIndexes = new List<int>();
             currentEnabledIndex = -1;
-            enabledSize = -1;
-            showSize = -1;
             mutex = new object();
+        }
 
+        internal void Initialize()
+        {
             for (int i = 0; i < Size(p); i++)
             {
                 IntPtr ptr = Index(p, i);
                 if (ptr != IntPtr.Zero)
                 {
                     LiveData ld = new LiveData(ptr);
+                    ld.Index = i;
+                    string content = ld.Content;
+                    string shortName = ld.ShortName;
+                    liveDatas.Add(ld);
                     ld.PropertyChanged += (sender, e) =>
                     {
                         LiveData liveData = (LiveData)sender;
@@ -54,18 +57,9 @@ namespace JM.Core
                         {
 
                         }
-                        else if (e.PropertyName == "Showed")
-                        {
-                            SetShowed(liveData.Index, liveData.Showed);
-                        }
-                        else if (e.PropertyName == "Enabled")
-                        {
-                            SetEnabled(liveData.Index, liveData.Enabled);
-                        }
                     };
                     ld.Enabled = ld.Enabled;
                     ld.Showed = ld.Showed;
-                    liveDatas.Add(ld);
                 }
             }
         }
@@ -115,62 +109,12 @@ namespace JM.Core
 
         public int EnabledCount
         {
-            get { return enabledSize; }
+            get { return enabledIndexes.Count; }
         }
 
         public int ShowedCount
         {
-            get { return showSize; }
-        }
-
-        public void SetShowed(int index, bool showed)
-        {
-            lock (mutex)
-            {
-                if (this[index].Showed)
-                {
-                    if (this[index].Enabled && showed)
-                    {
-                        ++showSize;
-                    }
-                }
-                else
-                {
-                    if (this[index].Enabled && !showed)
-                    {
-                        --showSize;
-                    }
-                }
-            }
-        }
-
-        public void SetEnabled(int index, bool enabled)
-        {
-            lock (mutex)
-            {
-                if (this[index].Enabled)
-                {
-                    if (enabled)
-                    {
-                        ++enabledSize;
-                        if (this[index].Showed)
-                        {
-                            ++showSize;
-                        }
-                    }
-                }
-                else
-                {
-                    if (!enabled)
-                    {
-                        --enabledSize;
-                        if (this[index].Showed)
-                        {
-                            --showSize;
-                        }
-                    }
-                }
-            }
+            get { return showIndexes.Count; }
         }
 
         public int NextShowedIndex()

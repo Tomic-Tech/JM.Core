@@ -127,6 +127,7 @@ namespace JM.Core
                 return null;
             }
 
+            vec.Initialize();
             return vec;
         }
 
