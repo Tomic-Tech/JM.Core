@@ -51,7 +51,7 @@ namespace JM.Core
         private static extern void SetShowed(IntPtr p, bool enabled);
 
         [DllImport("JMCore", EntryPoint = "live_data_index", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int Index(IntPtr p);
+        private static extern int GetIndex(IntPtr p);
 
         [DllImport("JMCore", EntryPoint = "live_data_set_index", CallingConvention = CallingConvention.Cdecl)]
         private static extern void SetIndex(IntPtr p, int enabled);
@@ -108,7 +108,7 @@ namespace JM.Core
 
         public int Index
         {
-            get { return Index(p); }
+            get { return GetIndex(p); }
             set { SetIndex(p, value); }
         }
 		
