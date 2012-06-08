@@ -15,6 +15,9 @@ namespace JM.Core
         private int currentEnabledIndex;
         private object mutex;
 
+        public delegate void ValueChange(int index, string value);
+        public ValueChange OnValueChange;
+
         [DllImport("JMCore", EntryPoint = "live_data_vector_new", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr New();
 
@@ -22,7 +25,7 @@ namespace JM.Core
         private static extern void Dispose(IntPtr p);
 
         [DllImport("JMCore", EntryPoint = "live_data_vector_index", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr Index(IntPtr p, int index);
+        private static extern IntPtr Index(IntPtr p, uint index);
 
         [DllImport("JMCore", EntryPoint = "live_data_vector_size", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint Size(IntPtr p);
@@ -42,24 +45,19 @@ namespace JM.Core
         {
             for (int i = 0; i < Size(p); i++)
             {
-                IntPtr ptr = Index(p, i);
+                IntPtr ptr = Index(p, Convert.ToUInt32(i));
                 if (ptr != IntPtr.Zero)
                 {
                     LiveData ld = new LiveData(ptr);
                     ld.Index = i;
-                    string content = ld.Content;
-                    string shortName = ld.ShortName;
                     liveDatas.Add(ld);
                     ld.PropertyChanged += (sender, e) =>
                     {
-                        LiveData liveData = (LiveData)sender;
-                        if (e.PropertyName == "Value")
+                        if (OnValueChange != null)
                         {
-
+                            OnValueChange(ShowedPosition(ld.Index), ld.Value);
                         }
                     };
-                    ld.Enabled = ld.Enabled;
-                    ld.Showed = ld.Showed;
                 }
             }
         }
@@ -163,9 +161,9 @@ namespace JM.Core
                 {
                     return -1;
                 }
-            }
 
-            return showIndexes[index];
+                return showIndexes[index];
+            }
         }
 
         public void DeployEnabledIndex()

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace JM.Core
 {
@@ -13,11 +14,11 @@ namespace JM.Core
         }
 
         [DllImport("JMCore", EntryPoint = "live_data_short_name", CallingConvention = CallingConvention.Cdecl)]
-        [return:MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(UTF8Marshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
         private static extern string GetShortName(IntPtr p);
 
         [DllImport("JMCore", EntryPoint = "live_data_content", CallingConvention = CallingConvention.Cdecl)]
-        [return:MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(UTF8Marshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
         private static extern string GetContent(IntPtr p);
 
         [DllImport("JMCore", EntryPoint = "live_data_unit", CallingConvention = CallingConvention.Cdecl)]
@@ -39,10 +40,10 @@ namespace JM.Core
         private static extern int GetCmdID(IntPtr p);
 
         [DllImport("JMCore", EntryPoint = "live_data_enabled", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool GetEnabled(IntPtr p);
+        private static extern int GetEnabled(IntPtr p);
 
         [DllImport("JMCore", EntryPoint = "live_data_set_enabled", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SetEnabled(IntPtr p, bool enabled);
+        private static extern void SetEnabled(IntPtr p, int enabled);
 
         [DllImport("JMCore", EntryPoint = "live_data_showed", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool GetShowed(IntPtr p);
@@ -55,10 +56,10 @@ namespace JM.Core
 
         [DllImport("JMCore", EntryPoint = "live_data_set_index", CallingConvention = CallingConvention.Cdecl)]
         private static extern void SetIndex(IntPtr p, int enabled);
-		
+
         public string ShortName
         {
-            get { return  GetShortName(p); }
+            get { return GetShortName(p); }
         }
 		
         public string Content
@@ -96,8 +97,16 @@ namespace JM.Core
 
         public bool Enabled
         {
-            get { return GetEnabled(p); }
-            set { SetEnabled(p, value); OnPropertyChanged("Enabled"); }
+            get
+            {
+                int ret = GetEnabled(p);
+                return ret != 0;
+            }
+            set
+            {
+                SetEnabled(p, value ? 1 : 0);
+                OnPropertyChanged("Enabled");
+            }
         }
 
         public bool Showed
