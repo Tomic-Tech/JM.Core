@@ -356,7 +356,7 @@ namespace JM.Diag.W80
             return false;
         }
 
-        private int ReadData(byte[] buffer, int offset, int length, Core.Timer time)
+        public int ReadData(byte[] buffer, int offset, int length, Core.Timer time)
         {
             vs.ReadTimeout = time.TimeSpan;
             int len = vs.Read(buffer, offset, length);
@@ -911,6 +911,8 @@ namespace JM.Diag.W80
             {
                 case ProtocolType.MIKUNI:
                     return new V1.Mikuni(this);
+                case ProtocolType.ISO14230:
+                    return new V1.KWP2000(this);
                 default:
                     throw new NotImplementedException();
             }

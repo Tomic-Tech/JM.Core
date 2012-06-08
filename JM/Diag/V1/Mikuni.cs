@@ -83,7 +83,7 @@ namespace JM.Diag.V1
             func.SetTimeout(txB2B, rxB2B, txF2F, rxF2F, total);
         }
 
-        public void Config<T>(T options)
+        public void Config(object options)
         {
             if (!Box.SetCommCtrl((byte)(PWC | RZFC | CK | REFC), SET_NULL) ||
                 !Box.SetCommLine(SK_NO, RK1) ||

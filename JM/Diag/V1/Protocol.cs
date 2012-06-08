@@ -401,6 +401,54 @@ namespace JM.Diag.V1
             }
         }
 
+        public byte COMS
+        {
+            get
+            {
+                if (box is W80.Commbox)
+                {
+                    return W80.Commbox.COMS;
+                }
+                return 0;
+            }
+        }
+
+        public byte REC_FR
+        {
+            get
+            {
+                if (box is W80.Commbox)
+                {
+                    return W80.Commbox.REC_FR;
+                }
+                return 0;
+            }
+        }
+
+        public byte REC_LEN_1
+        {
+            get
+            {
+                if (box is W80.Commbox)
+                {
+                    return W80.Commbox.REC_LEN_1;
+                }
+                return 0;
+            }
+        }
+
+        public byte SET55_BAUD
+        {
+            get
+            {
+                if (box is W80.Commbox)
+                {
+                    return W80.Commbox.SET55_BAUD;
+                }
+                return 0;
+            }
+        }
+
         public abstract void FinishExecute(bool isFinish);
     }
 }

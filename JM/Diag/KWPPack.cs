@@ -8,6 +8,12 @@ namespace JM.Diag
         protected KWPOptions options;
         private KWPMode mode;
 
+        public KWPMode Mode
+        {
+            get { return mode; }
+            set { mode = value; }
+        }
+
         public const int KWP8X_HEADER_LENGTH = 3;
         public const int KWPCX_HEADER_LENGTH = 3;
         public const int KWP80_HEADER_LENGTH = 4;
@@ -135,11 +141,7 @@ namespace JM.Diag
 
         public void Config(KWPOptions opts)
         {
-            options.LinkMode = opts.LinkMode;
-            options.LLine = opts.LLine;
-            options.MsgMode = opts.MsgMode;
-            options.SourceAddress = opts.SourceAddress;
-            options.TargetAddress = opts.TargetAddress;
+            options = opts;
         }
     }
 }

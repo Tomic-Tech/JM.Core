@@ -15,6 +15,6 @@ namespace JM.Diag
         void StartKeepLink(bool run);
         void SetKeepLink(byte[] data, int offset, int count, IPack pack);
         void SetTimeout(int txB2B, int rxB2B, int txF2F, int rxF2F, int total);
-        void Config<T>(T options);
+        void Config(object options);
     }
 }
