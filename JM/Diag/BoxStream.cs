@@ -27,6 +27,10 @@ namespace JM.Diag
         private BoxStream()
         {
             type = StreamType.Unknow;
+            toCommbox = new Stream();
+            fromCommbox = new Stream();
+            mre = new ManualResetEvent(false);
+            virtualStream = new VirtualStream(toCommbox, fromCommbox, mre);
         }
 
         public StreamType Type

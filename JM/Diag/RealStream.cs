@@ -51,16 +51,24 @@ namespace JM.Diag
             writting = true;
             while (writting)
             {
-                int avail = toCommbox.BytesToRead;
-                if (avail <= 0)
+                try
+                {
+                    int avail = toCommbox.BytesToRead;
+                    if (avail <= 0)
+                    {
+                        Thread.Sleep(inter);
+                        continue;
+                    }
+
+                    byte[] result = new byte[avail];
+                    toCommbox.Read(result, 0, avail);
+                    real.Write(result, 0, result.Length);
+                }
+                catch
                 {
                     Thread.Sleep(inter);
                     continue;
                 }
-
-                byte[] result = new byte[avail];
-                toCommbox.Read(result, 0, avail);
-                real.Write(result, 0, result.Length);
             }
         }
 
@@ -69,17 +77,25 @@ namespace JM.Diag
             reading = true;
             while (reading)
             {
-                int avail = real.BytesToRead;
-                if (avail <= 0)
+                try
+                {
+                    int avail = real.BytesToRead;
+                    if (avail <= 0)
+                    {
+                        Thread.Sleep(inter);
+                        continue;
+                    }
+
+                    byte[] cache = new byte[avail];
+                    avail = real.Read(cache, 0, avail);
+                    avail = fromCommbox.Write(cache, 0, avail);
+                    mre.Set();
+                }
+                catch
                 {
                     Thread.Sleep(inter);
                     continue;
                 }
-
-                byte[] cache = new byte[avail];
-                avail = real.Read(cache, 0, avail);
-                avail = fromCommbox.Write(cache, 0, avail);
-                mre.Set();
             }
         }
 
