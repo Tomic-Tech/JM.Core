@@ -8,6 +8,7 @@ namespace JM.Diag
     public interface IPack
     {
         byte[] Pack(byte[] data, int offset, int count);
+
         byte[] Unpack(byte[] data, int offset, int count);
     }
 }

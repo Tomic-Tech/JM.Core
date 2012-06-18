@@ -22,7 +22,7 @@ namespace JM.Diag.V1
 
         public int SendFrames(byte[] data, int offset, int count, IPack pack)
         {
-            return SendOneFrame(data, offset, count, pack);
+            return func.SendOneFrame(data, offset, count, pack, true);
         }
 
         private byte[] ReadOneFrame(IPack pack, bool isFinish)
@@ -90,12 +90,12 @@ namespace JM.Diag.V1
                 !Box.SetCommLink((byte)(RS_232 | BIT9_MARK | SEL_SL | UN_DB20), 0xFF, 2) ||
                 !Box.SetCommBaud(19200) ||
                 !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(100)) ||
-                !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(1)) ||
+                !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(500)) ||
                 !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(400)) ||
-                !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(500)) ||
+                !Box.SetCommTime(SETRECFROUT, Core.Timer.FromSeconds(1)) ||
                 !Box.SetCommTime(SETLINKTIME, Core.Timer.FromMilliseconds(500)))
             {
-                throw new IOException();
+                throw new IOException(Core.SysDB.GetText("Communication Fail"));
             }
 
             Thread.Sleep(TimeSpan.FromSeconds(1));

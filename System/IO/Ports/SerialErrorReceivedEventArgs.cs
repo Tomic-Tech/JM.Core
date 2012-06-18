@@ -4,24 +4,24 @@
 
 namespace System.IO.Ports
 {
-	public class SerialErrorReceivedEventArgs : EventArgs
-	{
+    public class SerialErrorReceivedEventArgs : EventArgs
+    {
 
-		internal SerialErrorReceivedEventArgs (SerialError eventType)
-		{
-			this.eventType = eventType;
-		}
+        internal SerialErrorReceivedEventArgs (SerialError eventType)
+        {
+            this.eventType = eventType;
+        }
 
-		// properties
+        // properties
 
-		public SerialError EventType {
-			get {
-				return eventType;
-			}
-		}
+        public SerialError EventType {
+            get {
+                return eventType;
+            }
+        }
 
-		SerialError eventType;
-	}
+        SerialError eventType;
+    }
 }
 
 #endif

@@ -61,39 +61,39 @@ namespace JM.Core
         {
             get { return GetShortName(p); }
         }
-		
+        
         public string Content
         {
             get { return GetContent(p); }
         }
-		
-		public string Unit
-		{
+        
+        public string Unit
+        {
             get { return GetUnit(p); }
-		}
-		
-		public string DefaultValue
-		{
-			get { return GetDefaultValue(p); }
-		}
-		
-		public string Value
-		{
-			get
-			{
+        }
+        
+        public string DefaultValue
+        {
+            get { return GetDefaultValue(p); }
+        }
+        
+        public string Value
+        {
+            get
+            {
                 return GetValue(p);
-			}
+            }
             set
             {
                 SetValue(p, value);
                 OnPropertyChanged("Value");
             }
-		}
-		
-		public int CmdID
-		{
-			get { return GetCmdID(p); }
-		}
+        }
+        
+        public int CmdID
+        {
+            get { return GetCmdID(p); }
+        }
 
         public bool Enabled
         {
@@ -112,7 +112,8 @@ namespace JM.Core
         public bool Showed
         {
             get { return GetShowed(p); }
-            set { SetShowed(p, value); OnPropertyChanged("Showed"); }
+            set { SetShowed(p, value);
+                OnPropertyChanged("Showed"); }
         }
 
         public int Index
@@ -120,7 +121,7 @@ namespace JM.Core
             get { return GetIndex(p); }
             set { SetIndex(p, value); }
         }
-		
+        
     }
 }
 

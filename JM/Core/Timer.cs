@@ -1,46 +1,51 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace JM.Core
 {
     public class Timer
     {
-        private TimeSpan time;
+        private long ticks;
 
         public Timer()
         {
-            time = new TimeSpan();
+            ticks = 0;
+        }
+
+        public Timer(long ticks)
+        {
+            this.ticks = ticks;
         }
 
         public Timer(TimeSpan time)
         {
-            this.time = time;
+            ticks = Convert.ToInt64((Stopwatch.Frequency / 1000) * time.TotalMilliseconds);
         }
 
         public static Timer FromMicroseconds(double time)
         {
-            Timer result = new Timer(TimeSpan.FromTicks(Convert.ToInt64(time * 10)));
-            return result;
+            return new Timer(Convert.ToInt64((Stopwatch.Frequency / 1000000) * time));
         }
 
         public static Timer FromMilliseconds(double time)
         {
-            return new Timer(TimeSpan.FromMilliseconds(time));
+            return new Timer(Convert.ToInt64((Stopwatch.Frequency / 1000) * time));
         }
 
         public static Timer FromSeconds(double time)
         {
-            return new Timer(TimeSpan.FromSeconds(time));
+            return new Timer(Convert.ToInt64(Stopwatch.Frequency * time));
         }
 
         public double Microseconds
         {
             get
             {
-                return time.Ticks / 10;
+                return Convert.ToInt64((ticks / Stopwatch.Frequency) * 1000000);
             }
             set
             {
-                time = TimeSpan.FromTicks(Convert.ToInt64(value * 10));
+                ticks = Convert.ToInt64((Stopwatch.Frequency / 1000000) * value);
             }
         }
 
@@ -48,11 +53,11 @@ namespace JM.Core
         {
             get
             {
-                return time.TotalMilliseconds;
+                return Convert.ToInt64((ticks / Stopwatch.Frequency) * 1000);
             }
             set
             {
-                time = TimeSpan.FromMilliseconds(value);
+                ticks = Convert.ToInt64((Stopwatch.Frequency / 1000) * value);
             }
         }
 
@@ -60,19 +65,27 @@ namespace JM.Core
         {
             get
             {
-                return time.TotalSeconds;
+                return Convert.ToInt64((ticks / Stopwatch.Frequency));
             }
             set
             {
-                time = TimeSpan.FromSeconds(value);
+                ticks = Convert.ToInt64(Stopwatch.Frequency * value);
             }
         }
 
-        public TimeSpan TimeSpan
+        //public TimeSpan TimeSpan
+        //{
+        //    get
+        //    {
+        //        return TimeSpan.FromMilliseconds(Milliseconds);
+        //    }
+        //}
+
+        public long Ticks
         {
             get
             {
-                return time;
+                return ticks;
             }
         }
 

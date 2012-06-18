@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JM.Diag.V1
 {
-    internal class Default<T> where T : Diag.V1.Protocol, Diag.IProtocol 
+    internal class Default<T> where T : Diag.V1.Protocol, Diag.IProtocol
     {
         private Diag.V1.ICommbox commbox;
         private T protocol;
@@ -15,15 +15,15 @@ namespace JM.Diag.V1
             this.protocol = protocol;
         }
 
-        public int SendOneFrame(byte [] buffer, int offset, int length, Diag.IPack pack, bool needRecv)
+        public int SendOneFrame(byte[] buffer, int offset, int length, Diag.IPack pack, bool needRecv)
         {
             byte[] sendBuff = pack.Pack(buffer, offset, length);
             commbox.BuffID = 0;
             byte receive = 0;
 
-            if (commbox.GetType() == typeof(Diag.W80.Commbox))
+            if (commbox.GetType() == typeof(Diag.W80.Commbox<SerialPortStream>))
             {
-                receive = W80.Commbox.RECEIVE;
+                receive = W80.Constant.RECEIVE;
             }
             
             if (!commbox.NewBatch(commbox.BuffID))
@@ -45,8 +45,7 @@ namespace JM.Diag.V1
                 {
                     return 0;
                 }
-            }
-            else
+            } else
             {
                 if (!commbox.SendOutData(sendBuff, 0, sendBuff.Length) ||
                     !commbox.EndBatch() ||
@@ -77,9 +76,9 @@ namespace JM.Diag.V1
         public void SetKeepLink(byte[] data, int offset, int length)
         {
             byte linkBlock = 0;
-            if (commbox.GetType() == typeof(Diag.W80.Commbox))
+            if (commbox.GetType() == typeof(Diag.W80.Commbox<SerialPortStream>))
             {
-                linkBlock = Diag.W80.Commbox.LINKBLOCK;
+                linkBlock = W80.Constant.LINKBLOCK;
             }
             if (!commbox.NewBatch(linkBlock))
             {

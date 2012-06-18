@@ -13,8 +13,8 @@ namespace JM.Diag.C168
         {
             cmdBuffID = 0;
             cmdUsedNum = 0;
-            cmdBuffAdd = new byte[Commbox.MAXIM_BLOCK + 2];
-            cmdBuffUsed = new byte[Commbox.MAXIM_BLOCK];
+            cmdBuffAdd = new byte[Constant.MAXIM_BLOCK + 2];
+            cmdBuffUsed = new byte[Constant.MAXIM_BLOCK];
         }
 
         public byte CmdBuffID
