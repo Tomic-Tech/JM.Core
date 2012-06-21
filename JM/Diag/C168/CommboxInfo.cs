@@ -62,9 +62,9 @@
             timeBaseDB = 0;
             timeExternDB = 0;
             cmdBuffLen = 0;
-            version = new byte[Commbox.VERSIONLEN];
-            commboxID = new byte[Commbox.COMMBOXIDLEN];
-            commboxPort = new byte[Commbox.COMMBOXPORTNUM];
+            version = new byte[Constant.VERSIONLEN];
+            commboxID = new byte[Constant.COMMBOXIDLEN];
+            commboxPort = new byte[Constant.COMMBOXPORTNUM];
             headPassword = 0;
         }
     }

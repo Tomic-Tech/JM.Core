@@ -21,9 +21,9 @@ namespace JM.Diag.V1
             commbox.BuffID = 0;
             byte receive = 0;
 
-            if (commbox.GetType() == typeof(Diag.W80.Commbox))
+            if (commbox.GetType() == typeof(Diag.W80.Commbox<SerialPortStream>))
             {
-                receive = W80.Commbox.RECEIVE;
+                receive = W80.Constant.RECEIVE;
             }
             
             if (!commbox.NewBatch(commbox.BuffID))
@@ -77,9 +77,9 @@ namespace JM.Diag.V1
         public void SetKeepLink(byte[] data, int offset, int length)
         {
             byte linkBlock = 0;
-            if (commbox.GetType() == typeof(Diag.W80.Commbox))
+            if (commbox.GetType() == typeof(Diag.W80.Commbox<SerialPortStream>))
             {
-                linkBlock = Diag.W80.Commbox.LINKBLOCK;
+                linkBlock = W80.Constant.LINKBLOCK;
             }
             if (!commbox.NewBatch(linkBlock))
             {

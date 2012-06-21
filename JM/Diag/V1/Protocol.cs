@@ -21,9 +21,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.PWC;
+                    return W80.Constant.PWC;
                 }
                 return 0;
             }
@@ -33,9 +33,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RZFC;
+                    return W80.Constant.RZFC;
                 }
                 return 0;
             }
@@ -45,9 +45,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.CK;
+                    return W80.Constant.CK;
                 }
                 return 0;
             }
@@ -57,9 +57,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.REFC;
+                    return W80.Constant.REFC;
                 }
                 return 0;
             }
@@ -69,9 +69,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SET_NULL;
+                    return W80.Constant.SET_NULL;
                 }
                 return 0;
             }
@@ -81,9 +81,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK_NO;
+                    return W80.Constant.SK_NO;
                 }
                 return 0;
             }
@@ -93,9 +93,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK0;
+                    return W80.Constant.SK0;
                 }
                 return 0;
             }
@@ -105,9 +105,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK1;
+                    return W80.Constant.SK1;
                 }
                 return 0;
             }
@@ -117,9 +117,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK2;
+                    return W80.Constant.SK2;
                 }
                 return 0;
             }
@@ -129,9 +129,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK3;
+                    return W80.Constant.SK3;
                 }
                 return 0;
             }
@@ -141,9 +141,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK4;
+                    return W80.Constant.SK4;
                 }
                 return 0;
             }
@@ -153,9 +153,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK5;
+                    return W80.Constant.SK5;
                 }
                 return 0;
             }
@@ -165,9 +165,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK6;
+                    return W80.Constant.SK6;
                 }
                 return 0;
             }
@@ -177,9 +177,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SK7;
+                    return W80.Constant.SK7;
                 }
                 return 0;
             }
@@ -189,9 +189,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK_NO;
+                    return W80.Constant.RK_NO;
                 }
                 return 0;
             }
@@ -201,9 +201,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK0;
+                    return W80.Constant.RK0;
                 }
                 return 0;
             }
@@ -213,9 +213,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK1;
+                    return W80.Constant.RK1;
                 }
                 return 0;
             }
@@ -225,9 +225,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK2;
+                    return W80.Constant.RK2;
                 }
                 return 0;
             }
@@ -237,9 +237,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK3;
+                    return W80.Constant.RK3;
                 }
                 return 0;
             }
@@ -249,9 +249,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK4;
+                    return W80.Constant.RK4;
                 }
                 return 0;
             }
@@ -261,9 +261,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK5;
+                    return W80.Constant.RK5;
                 }
                 return 0;
             }
@@ -273,9 +273,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK6;
+                    return W80.Constant.RK6;
                 }
                 return 0;
             }
@@ -285,9 +285,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RK7;
+                    return W80.Constant.RK7;
                 }
                 return 0;
             }
@@ -297,9 +297,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.RS_232;
+                    return W80.Constant.RS_232;
                 }
                 return 0;
             }
@@ -309,9 +309,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.BIT9_MARK;
+                    return W80.Constant.BIT9_MARK;
                 }
                 return 0;
             }
@@ -321,9 +321,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SEL_SL;
+                    return W80.Constant.SEL_SL;
                 }
                 return 0;
             }
@@ -333,9 +333,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.UN_DB20;
+                    return W80.Constant.UN_DB20;
                 }
                 return 0;
             }
@@ -345,9 +345,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SETBYTETIME;
+                    return W80.Constant.SETBYTETIME;
                 }
                 return 0;
             }
@@ -357,9 +357,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SETWAITTIME;
+                    return W80.Constant.SETWAITTIME;
                 }
                 return 0;
             }
@@ -369,9 +369,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SETRECBBOUT;
+                    return W80.Constant.SETRECBBOUT;
                 }
                 return 0;
             }
@@ -381,9 +381,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SETRECFROUT;
+                    return W80.Constant.SETRECFROUT;
                 }
                 return 0;
             }
@@ -393,9 +393,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.LINKBLOCK;
+                    return W80.Constant.LINKBLOCK;
                 }
                 return 0;
             }
@@ -405,9 +405,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.COMS;
+                    return W80.Constant.COMS;
                 }
                 return 0;
             }
@@ -417,9 +417,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.REC_FR;
+                    return W80.Constant.REC_FR;
                 }
                 return 0;
             }
@@ -429,9 +429,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.REC_LEN_1;
+                    return W80.Constant.REC_LEN_1;
                 }
                 return 0;
             }
@@ -441,9 +441,9 @@ namespace JM.Diag.V1
         {
             get
             {
-                if (box is W80.Commbox)
+                if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Commbox.SET55_BAUD;
+                    return W80.Constant.SET55_BAUD;
                 }
                 return 0;
             }

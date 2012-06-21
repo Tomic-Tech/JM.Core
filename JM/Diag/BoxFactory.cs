@@ -1,28 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 
 namespace JM.Diag
 {
     public class BoxFactory
     {
-        private static BoxFactory instance;
+        private static readonly BoxFactory instance = new BoxFactory();
         private Dictionary<BoxVersion, ICommbox> commboxes;
         private BoxVersion version;
-
-        static BoxFactory()
-        {
-            instance = new BoxFactory();
-        }
+        private StreamType streamType;
 
         private BoxFactory()
         {
             commboxes = new Dictionary<BoxVersion, ICommbox>();
             version = BoxVersion.C168;
+            streamType = Diag.StreamType.SerialPort;
         }
 
         public static BoxFactory Instance
         {
             get { return instance; }
+        }
+
+        public StreamType StreamType
+        {
+            get { return streamType; }
+            set
+            {
+                streamType = value;
+            }
         }
 
         public BoxVersion Version
@@ -39,10 +46,18 @@ namespace JM.Diag
                 switch (version)
                 {
                     case BoxVersion.C168:
-                        commboxes[version] = new C168.Commbox();
+                        {
+                            SerialPort port = new SerialPort();
+                            SerialPortStream stream = new SerialPortStream(port);
+                            commboxes[version] = new C168.Commbox<SerialPortStream>(stream);
+                        }
                         break;
                     case BoxVersion.W80:
-                        commboxes[version] = new W80.Commbox();
+                        {
+                            SerialPort port = new SerialPort();
+                            SerialPortStream stream = new SerialPortStream(port);
+                            commboxes[version] = new W80.Commbox<SerialPortStream>(stream);
+                        }
                         break;
                     default:
                         throw new NotImplementedException();

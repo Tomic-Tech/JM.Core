@@ -25,7 +25,7 @@ namespace JM.Diag.W80
             get { return timeExternB; }
             set { timeExternB = value; }
         }
-        private byte[] port = new byte[Commbox.MAXBUFF_NUM]; //端口
+        private byte[] port = new byte[Constant.MAXBUFF_NUM]; //端口
 
         public byte[] Port
         {
@@ -45,7 +45,7 @@ namespace JM.Diag.W80
             get { return isDoNow; }
             set { isDoNow = value; }
         }
-        private byte[] buf = new byte[Commbox.MAXBUFF_LEN]; //缓冲区
+        private byte[] buf = new byte[Constant.MAXBUFF_LEN]; //缓冲区
 
         public byte[] Buf
         {
