@@ -4,23 +4,23 @@
 
 namespace System.IO.Ports
 {
-	public class SerialPinChangedEventArgs : EventArgs
-	{
-		internal SerialPinChangedEventArgs (SerialPinChange eventType)
-		{
-			this.eventType = eventType;
-		}
+    public class SerialPinChangedEventArgs : EventArgs
+    {
+        internal SerialPinChangedEventArgs (SerialPinChange eventType)
+        {
+            this.eventType = eventType;
+        }
 
-		// properties
+        // properties
 
-		public SerialPinChange EventType {
-			get {
-				return eventType;
-			}
-		}
+        public SerialPinChange EventType {
+            get {
+                return eventType;
+            }
+        }
 
-		SerialPinChange eventType;
-	}
+        SerialPinChange eventType;
+    }
 }
 
 #endif

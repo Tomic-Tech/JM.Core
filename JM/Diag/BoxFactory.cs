@@ -49,14 +49,14 @@ namespace JM.Diag
                         {
                             SerialPort port = new SerialPort();
                             SerialPortStream stream = new SerialPortStream(port);
-                            commboxes[version] = new C168.Commbox<SerialPortStream>(stream);
+                            commboxes [version] = new C168.Commbox<SerialPortStream>(stream);
                         }
                         break;
                     case BoxVersion.W80:
                         {
                             SerialPort port = new SerialPort();
                             SerialPortStream stream = new SerialPortStream(port);
-                            commboxes[version] = new W80.Commbox<SerialPortStream>(stream);
+                            commboxes [version] = new W80.Commbox<SerialPortStream>(stream);
                         }
                         break;
                     default:
@@ -70,7 +70,7 @@ namespace JM.Diag
             get
             {
                 if (commboxes.ContainsKey(Version))
-                    return commboxes[Version];
+                    return commboxes [Version];
                 return null;
             }
         }

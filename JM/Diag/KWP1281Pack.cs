@@ -11,6 +11,7 @@ namespace JM.Diag
         private byte frameCounter;
         protected KWP1281Options options;
         public static byte FRAME_END = 0x03;
+
         KWP1281Pack()
         {
             frameCounter = 0;
@@ -24,11 +25,11 @@ namespace JM.Diag
         public byte[] Pack(byte[] data, int offset, int count)
         {
             byte[] result = new byte[count + 3];
-            result[0] = Utils.LowByte(count + 2);
-            result[1] = frameCounterIncrement();
+            result [0] = Utils.LowByte(count + 2);
+            result [1] = frameCounterIncrement();
 
             Array.Copy(data, offset, result, 2, count);
-            result[result.Length - 1] = FRAME_END;
+            result [result.Length - 1] = FRAME_END;
             return result;
         }
 

@@ -92,12 +92,10 @@ namespace JM.Diag.W80
         public const byte GET_CMD = 0x28;
         public const byte GET_PORT = 0x2C;
         public const byte GET_BOXID = 0x30;
-
         public const byte DO_BAT_C = 0x34;
         public const byte DO_BAT_CN = 0x38;
         public const byte DO_BAT_L = 0x3C;
         public const byte DO_BAT_LN = 0x40;
-
         public const byte SET55_BAUD = 0x44;
         public const byte SET_ONEBYONE = 0x48;
         public const byte SET_BAUD = 0x4C;
@@ -105,7 +103,6 @@ namespace JM.Diag.W80
         public const byte STOP_LINK = 0x54;
         public const byte CLEAR_LINK = 0x58;
         public const byte GET_PORT1 = 0x5C;
-
         public const byte SEND_DATA = 0x60;
         public const byte SET_CTRL = 0x64;
         public const byte SET_PORT0 = 0x68;
@@ -115,7 +112,6 @@ namespace JM.Diag.W80
         public const byte DELAYSHORT = 0x78;
         public const byte DELAYTIME = 0x7C;
         public const byte DELAYDWORD = 0x80;
-
         public const byte SETBYTETIME = 0x88;
         public const byte SETVPWSTART = 0x08; //最终要将SETVPWSTART转换成SETBYTETIME
         public const byte SETWAITTIME = 0x8C;
@@ -131,7 +127,6 @@ namespace JM.Diag.W80
         public const byte ADD_BYTE = 0xAC;
         public const byte SUB_BYTE = 0xB0;
         public const byte INVERT_BYTE = 0xB4;
-
         public const byte REC_FR = 0xE0;
         public const byte REC_LEN_1 = 0xE1;
         public const byte REC_LEN_2 = 0xE2;
@@ -149,7 +144,6 @@ namespace JM.Diag.W80
         public const byte REC_LEN_14 = 0xEE;
         public const byte REC_LEN_15 = 0xEF;
         public const byte RECEIVE = 0xF0;
-
         public const byte RECV_ERR = 0xAA; //接收错误
         public const byte RECV_OK = 0x55; //接收正确
         public const byte BUSY = 0xBB; //开始执行
@@ -162,7 +156,6 @@ namespace JM.Diag.W80
         public const byte RF_SETDTR_H = 0xD2;
         public const byte RF_SET_BAUD = 0xD3;
         public const byte RF_SET_ADDR = 0xD8;
-
         public const byte COMMBOXID_ERR = 1;
         public const byte DISCONNECT_COMM = 2;
         public const byte DISCONNECT_COMMBOX = 3;

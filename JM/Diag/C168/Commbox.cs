@@ -30,16 +30,16 @@ namespace JM.Diag.C168
             isDB20 = false;
             isDoNow = true;
             password = new byte[10];
-            password[0] = 0x0C;
-            password[1] = 0x22;
-            password[2] = 0x17;
-            password[3] = 0x41;
-            password[4] = 0x57;
-            password[5] = 0x2D;
-            password[6] = 0x43;
-            password[7] = 0x17;
-            password[8] = 0x2D;
-            password[9] = 0x4D;
+            password [0] = 0x0C;
+            password [1] = 0x22;
+            password [2] = 0x17;
+            password [3] = 0x41;
+            password [4] = 0x57;
+            password [5] = 0x2D;
+            password [6] = 0x43;
+            password [7] = 0x17;
+            password [8] = 0x2D;
+            password [9] = 0x4D;
             position = 0;
             reqByteToByte = new Core.Timer();
             reqWaitTime = new Core.Timer();
@@ -58,10 +58,11 @@ namespace JM.Diag.C168
             }
 
             byte[] receiveBuffer = new byte[1];
-            receiveBuffer[0] = Constant.SUCCESS;
+            receiveBuffer [0] = Constant.SUCCESS;
             Stream.ReadTimeout = Core.Timer.FromMilliseconds(200);
-            while (Stream.Read(receiveBuffer, 0, 1) != 0) ;
-            if (receiveBuffer[0] == Constant.SUCCESS)
+            while (Stream.Read(receiveBuffer, 0, 1) != 0)
+                ;
+            if (receiveBuffer [0] == Constant.SUCCESS)
                 return true;
             lastError = Constant.KEEPLINK_ERROR;
             return false;
@@ -71,14 +72,13 @@ namespace JM.Diag.C168
         {
             Stream.ReadTimeout = time;
             byte[] receiveBuffer = new byte[1];
-            receiveBuffer[0] = 0;
+            receiveBuffer [0] = 0;
             if (Stream.Read(receiveBuffer, 0, 1) == 1)
             {
-                if (receiveBuffer[0] == Constant.SEND_OK)
+                if (receiveBuffer [0] == Constant.SEND_OK)
                 {
                     return true;
-                }
-                else if (receiveBuffer[0] >= Constant.UP_TIMEOUT && receiveBuffer[0] <= Constant.ERROR_REC)
+                } else if (receiveBuffer [0] >= Constant.UP_TIMEOUT && receiveBuffer [0] <= Constant.ERROR_REC)
                 {
                     lastError = Constant.SENDDATA_ERROR;
                     return false;
@@ -90,7 +90,7 @@ namespace JM.Diag.C168
 
         public uint GetBoxVer()
         {
-            return (uint)((commboxInfo.Version[0] << 8) | (commboxInfo.Version[1]));
+            return (uint)((commboxInfo.Version [0] << 8) | (commboxInfo.Version [1]));
         }
 
         private bool CommboxCommand(byte commandWord, byte[] buff, int offset, int length)
@@ -104,8 +104,7 @@ namespace JM.Diag.C168
                     return false;
                 }
                 checksum--;
-            }
-            else
+            } else
             {
                 if (length != 0)
                 {
@@ -116,24 +115,27 @@ namespace JM.Diag.C168
 
             int i;
             byte[] command = new byte[length + 2];
-            command[0] = (byte)(checksum + commboxInfo.HeadPassword);
+            command [0] = (byte)(checksum + commboxInfo.HeadPassword);
             for (i = 1; i <= length; i++)
             {
-                command[i] = buff[offset + i - 1];
-                checksum += command[i];
+                command [i] = buff [offset + i - 1];
+                checksum += command [i];
             }
-            command[command.Length - 1] = checksum;
+            command [command.Length - 1] = checksum;
             for (i = 0; i < 3; i++)
             {
                 if (commandWord != Constant.STOP_REC && commandWord != Constant.STOP_EXECUTE)
                 {
-                    if (!CheckIdle() || Stream.Write(command, 0, command.Length) != command.Length)
+                    if (!CheckIdle() || Stream.Write(
+                        command,
+                        0,
+                        command.Length
+                    ) != command.Length)
                     {
                         lastError = Constant.SENDDATA_ERROR;
                         continue;
                     }
-                }
-                else
+                } else
                 {
                     if (Stream.Write(command, 0, command.Length) != command.Length)
                     {
@@ -150,24 +152,24 @@ namespace JM.Diag.C168
 
         private bool CommboxEcuOld(byte commandWord, byte[] buff, int offset, int length)
         {
-            if (cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK] < length + 1)
+            if (cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK] < length + 1)
             {
                 lastError = Constant.NOBUFF_TOSEND;
                 return false;
             }
             byte[] command = new byte[5 + length];
-            command[0] = (byte)(Constant.WR_DATA + commboxInfo.HeadPassword);
-            command[1] = (byte)(length + 2);
-            command[2] = cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK];
-            command[3] = (byte)(length - 1);
-            byte checksum = (byte)(Constant.WR_DATA + command[1] + command[2] + command[3]);
+            command [0] = (byte)(Constant.WR_DATA + commboxInfo.HeadPassword);
+            command [1] = (byte)(length + 2);
+            command [2] = cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK];
+            command [3] = (byte)(length - 1);
+            byte checksum = (byte)(Constant.WR_DATA + command [1] + command [2] + command [3]);
 
             for (int i = 0; i < length; i++)
             {
-                command[i + 4] = buff[i];
-                checksum += buff[i];
+                command [i + 4] = buff [i];
+                checksum += buff [i];
             }
-            command[command.Length - 1] = checksum;
+            command [command.Length - 1] = checksum;
             for (int i = 0; i < 3; i++)
             {
                 if (!CheckIdle() || Stream.Write(command, 0, command.Length) != command.Length)
@@ -183,25 +185,25 @@ namespace JM.Diag.C168
 
         private bool CommboxEcuNew(byte commandWord, byte[] buff, int offset, int length)
         {
-            if (cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK] < length + 1)
+            if (cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK] < length + 1)
             {
                 lastError = Constant.NOBUFF_TOSEND;
                 return false;
             }
             byte[] command = new byte[6 + length];
-            command[0] = (byte)(Constant.WR_DATA + commboxInfo.HeadPassword);
-            command[1] = (byte)(length + 3);
-            command[2] = cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK];
-            command[3] = Constant.SEND_CMD;
-            command[4] = (byte)(length - 1);
-            byte checksum = (byte)(Constant.WR_DATA + command[1] + command[2] + command[3] + command[4]);
+            command [0] = (byte)(Constant.WR_DATA + commboxInfo.HeadPassword);
+            command [1] = (byte)(length + 3);
+            command [2] = cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK];
+            command [3] = Constant.SEND_CMD;
+            command [4] = (byte)(length - 1);
+            byte checksum = (byte)(Constant.WR_DATA + command [1] + command [2] + command [3] + command [4]);
 
             for (int i = 0; i < length; i++)
             {
-                command[i + 5] = buff[i];
-                checksum += buff[i];
+                command [i + 5] = buff [i];
+                checksum += buff [i];
             }
-            command[command.Length - 1] = checksum;
+            command [command.Length - 1] = checksum;
             for (int i = 0; i < 3; i++)
             {
                 if (!CheckIdle() || Stream.Write(command, 0, command.Length) != command.Length)
@@ -226,24 +228,26 @@ namespace JM.Diag.C168
                     {
                         //增加发送长命令
                         ret = CommboxEcuNew(commandWord, buff, offset, length);
-                    }
-                    else
+                    } else
                     {
                         //保持与旧盒子兼容
                         ret = CommboxEcuOld(commandWord, buff, offset, length);
                     }
                     if (!ret)
                         return ret;
-                    return CommboxDo(Constant.D0_BAT, cmdBuffInfo.CmdBuffAdd, Constant.SWAPBLOCK, 1);
-                }
-                else
+                    return CommboxDo(
+                        Constant.D0_BAT,
+                        cmdBuffInfo.CmdBuffAdd,
+                        Constant.SWAPBLOCK,
+                        1
+                    );
+                } else
                 {
                     lastError = Constant.ILLIGICAL_LEN;
                     return false;
                 }
 
-            }
-            else
+            } else
             {
                 return CommboxCommand(commandWord, buff, offset, length);
             }
@@ -267,16 +271,17 @@ namespace JM.Diag.C168
         {
             Stream.ReadTimeout = time;
             byte[] receiveBuffer = new byte[1];
-            receiveBuffer[0] = 0;
+            receiveBuffer [0] = 0;
             if (Stream.Read(receiveBuffer, 0, 1) != 1)
             {
                 lastError = Constant.TIMEOUT_ERROR;
                 return false;
             }
-            if (receiveBuffer[0] == Constant.SUCCESS)
+            if (receiveBuffer [0] == Constant.SUCCESS)
                 return true;
-            while (Stream.Read(receiveBuffer, 0, 1) == 1) ;
-            lastError = receiveBuffer[0];
+            while (Stream.Read(receiveBuffer, 0, 1) == 1)
+                ;
+            lastError = receiveBuffer [0];
             return false;
         }
 
@@ -287,24 +292,29 @@ namespace JM.Diag.C168
             byte checksum = command;
             if (ReadData(cmdInfo, 0, 2, Core.Timer.FromMilliseconds(150)) != 2)
                 return 0;
-            if (cmdInfo[0] != command)
+            if (cmdInfo [0] != command)
             {
-                lastError = cmdInfo[0];
+                lastError = cmdInfo [0];
                 Stream.Clear();
                 return 0;
             }
-            if (ReadData(receiveBuffer, offset, cmdInfo[1], Core.Timer.FromMilliseconds(150)) != cmdInfo[1] ||
+            if (ReadData(
+                receiveBuffer,
+                offset,
+                cmdInfo[1],
+                Core.Timer.FromMilliseconds(150)
+            ) != cmdInfo [1] ||
                 ReadData(cmdInfo, 0, 1, Core.Timer.FromMilliseconds(150)) != 1)
                 return 0;
-            checksum += cmdInfo[1];
+            checksum += cmdInfo [1];
             for (i = 0; i < cmdInfo[1]; i++)
-                checksum += receiveBuffer[i];
-            if (checksum != cmdInfo[0])
+                checksum += receiveBuffer [i];
+            if (checksum != cmdInfo [0])
             {
                 lastError = Constant.CHECKSUM_ERROR;
                 return 0;
             }
-            return cmdInfo[1];
+            return cmdInfo [1];
         }
 
         public int ReadData(byte[] receiveBuffer, int offset, int length, Core.Timer totalTime)
@@ -318,12 +328,12 @@ namespace JM.Diag.C168
             byte checksum = 0;
             int i = 0;
             int len = 0;
-            cmdTemp[4] = 0;
+            cmdTemp [4] = 0;
             Random rand = new Random();
             while (i < 4)
             {
-                cmdTemp[i] = (byte)rand.Next();
-                cmdTemp[4] += cmdTemp[i++];
+                cmdTemp [i] = (byte)rand.Next();
+                cmdTemp [4] += cmdTemp [i++];
             }
 
             if (Stream.Write(cmdTemp, 0, 5) != 5)
@@ -333,16 +343,16 @@ namespace JM.Diag.C168
             }
             len = password.Length - 1;
             i = 0;
-            checksum = (byte)(cmdTemp[4] + cmdTemp[4]);
+            checksum = (byte)(cmdTemp [4] + cmdTemp [4]);
             while (i < len)
             {
-                checksum += (byte)(password[i] ^ cmdTemp[i % 5]);
+                checksum += (byte)(password [i] ^ cmdTemp [i % 5]);
                 i++;
             }
             System.Threading.Thread.Sleep(20);
             if (GetCmdData(Constant.GETINFO, cmdTemp, 0) == 0)
                 return false;
-            commboxInfo.HeadPassword = cmdTemp[0];
+            commboxInfo.HeadPassword = cmdTemp [0];
 
             if (checksum != commboxInfo.HeadPassword)
             {
@@ -375,10 +385,10 @@ namespace JM.Diag.C168
             commboxInfo.CommboxTimeUnit = 0;
             int pos = 0;
             for (int i = 0; i < Constant.MINITIMELEN; i++)
-                commboxInfo.CommboxTimeUnit = commboxInfo.CommboxTimeUnit * 256 + cmdTemp[pos++];
-            commboxInfo.TimeBaseDB = cmdTemp[pos++];
-            commboxInfo.TimeExternDB = cmdTemp[pos++];
-            commboxInfo.CmdBuffLen = cmdTemp[pos++];
+                commboxInfo.CommboxTimeUnit = commboxInfo.CommboxTimeUnit * 256 + cmdTemp [pos++];
+            commboxInfo.TimeBaseDB = cmdTemp [pos++];
+            commboxInfo.TimeExternDB = cmdTemp [pos++];
+            commboxInfo.CmdBuffLen = cmdTemp [pos++];
             if (commboxInfo.TimeBaseDB == 0 || commboxInfo.CommboxTimeUnit == 0 || commboxInfo.CmdBuffLen == 0)
             {
                 lastError = Constant.COMMTIME_ZERO;
@@ -386,20 +396,20 @@ namespace JM.Diag.C168
             }
 
             for (int i = 0; i < Constant.COMMBOXIDLEN; i++)
-                commboxInfo.CommboxID[i] = cmdTemp[pos++];
+                commboxInfo.CommboxID [i] = cmdTemp [pos++];
             for (int i = 0; i < Constant.VERSIONLEN; i++)
-                commboxInfo.Version[i] = cmdTemp[pos++];
-            commboxInfo.CommboxPort[0] = Constant.NULLADD;
-            commboxInfo.CommboxPort[1] = Constant.NULLADD;
-            commboxInfo.CommboxPort[2] = Constant.NULLADD;
-            commboxInfo.CommboxPort[3] = Constant.NULLADD;
+                commboxInfo.Version [i] = cmdTemp [pos++];
+            commboxInfo.CommboxPort [0] = Constant.NULLADD;
+            commboxInfo.CommboxPort [1] = Constant.NULLADD;
+            commboxInfo.CommboxPort [2] = Constant.NULLADD;
+            commboxInfo.CommboxPort [3] = Constant.NULLADD;
 
             cmdBuffInfo.CmdBuffID = Constant.NULLADD;
             cmdBuffInfo.CmdUsedNum = 0;
             for (int i = 0; i < Constant.MAXIM_BLOCK; i++)
-                cmdBuffInfo.CmdBuffAdd[i] = Constant.NULLADD;
-            cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] = commboxInfo.CmdBuffLen;
-            cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK] = 0;
+                cmdBuffInfo.CmdBuffAdd [i] = Constant.NULLADD;
+            cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] = commboxInfo.CmdBuffLen;
+            cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK] = 0;
 
             return true;
         }
@@ -434,8 +444,7 @@ namespace JM.Diag.C168
                 }
                 Stream.SerialPort.Close();
                 return false;
-            }
-            catch (Exception)
+            } catch (Exception)
             {
                 return false;
             }
@@ -449,8 +458,7 @@ namespace JM.Diag.C168
                 if (!OpenBox(portName, 9600))
                 {
                     continue;
-                }
-                else
+                } else
                 {
                     return;
                 }
@@ -506,8 +514,7 @@ namespace JM.Diag.C168
                     return false;
                 Stream.SerialPort.DiscardInBuffer();
                 return true;
-            }
-            catch (Exception)
+            } catch (Exception)
             {
                 lastError = Constant.DISCONNECT_COMM;
                 return false;
@@ -539,26 +546,25 @@ namespace JM.Diag.C168
                 lastError = Constant.APPLICATION_NOW;
                 return false;
             }
-            if (cmdBuffInfo.CmdBuffAdd[buffID] != Constant.NULLADD && buffID != Constant.LINKBLOCK && !DelBatch(buffID))
+            if (cmdBuffInfo.CmdBuffAdd [buffID] != Constant.NULLADD && buffID != Constant.LINKBLOCK && !DelBatch(buffID))
                 return false;
-            cmdTemp[0] = Constant.WR_DATA;
-            cmdTemp[1] = 0x01;
+            cmdTemp [0] = Constant.WR_DATA;
+            cmdTemp [1] = 0x01;
             if (buffID == Constant.LINKBLOCK)
             {
-                cmdTemp[2] = 0xFF;
-                cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] = commboxInfo.CmdBuffLen;
-            }
-            else
+                cmdTemp [2] = 0xFF;
+                cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] = commboxInfo.CmdBuffLen;
+            } else
             {
-                cmdTemp[2] = cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK];
+                cmdTemp [2] = cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK];
             }
-            if ((cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK]) <= 1)
+            if ((cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK]) <= 1)
             {
                 lastError = Constant.BUFFFLOW;
                 return false;
             }
-            cmdTemp[3] = (byte)(Constant.WR_DATA + 0x01 + cmdTemp[2]);
-            cmdTemp[0] += commboxInfo.HeadPassword;
+            cmdTemp [3] = (byte)(Constant.WR_DATA + 0x01 + cmdTemp [2]);
+            cmdTemp [0] += commboxInfo.HeadPassword;
             cmdBuffInfo.CmdBuffID = buffID;
             isDoNow = false;
             return true;
@@ -566,8 +572,8 @@ namespace JM.Diag.C168
 
         public bool AddToBuff(byte commandWord, byte[] data, int offset, int length)
         {
-            byte checksum = cmdTemp[cmdTemp[1] + 2];
-            position = cmdTemp[1] + length + 1;
+            byte checksum = cmdTemp [cmdTemp [1] + 2];
+            position = cmdTemp [1] + length + 1;
             if (cmdBuffInfo.CmdBuffID == Constant.NULLADD)
             {
                 //数据块标识登记是否有申请?
@@ -576,7 +582,7 @@ namespace JM.Diag.C168
                 return false;
             }
 
-            if ((cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK]) < position)
+            if ((cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK]) < position)
             {
                 //检查是否有足够的空间存储?
                 isDoNow = true;
@@ -592,35 +598,34 @@ namespace JM.Diag.C168
                     if (commandWord == Constant.SEND_DATA && GetBoxVer() > 0x400)
                     {
                         //增加发送长命令
-                        cmdTemp[cmdTemp[1] + 2] = Constant.SEND_CMD;
+                        cmdTemp [cmdTemp [1] + 2] = Constant.SEND_CMD;
                         checksum += Constant.SEND_CMD;
-                        cmdTemp[1]++;
-                        cmdTemp[cmdTemp[1] + 2] = (byte)(commandWord + length);
+                        cmdTemp [1]++;
+                        cmdTemp [cmdTemp [1] + 2] = (byte)(commandWord + length);
                         if (length != 0)
-                            cmdTemp[cmdTemp[1] + 2]--;
-                        checksum += cmdTemp[cmdTemp[1] + 2];
-                        cmdTemp[1]++;
+                            cmdTemp [cmdTemp [1] + 2]--;
+                        checksum += cmdTemp [cmdTemp [1] + 2];
+                        cmdTemp [1]++;
                         for (int i = 0; i < length; i++, cmdTemp[1]++)
                         {
-                            cmdTemp[cmdTemp[1] + 2] = data[i + offset];
-                            checksum += data[i + offset];
+                            cmdTemp [cmdTemp [1] + 2] = data [i + offset];
+                            checksum += data [i + offset];
                         }
-                        cmdTemp[cmdTemp[1] + 2] = (byte)(checksum + length + 2);
+                        cmdTemp [cmdTemp [1] + 2] = (byte)(checksum + length + 2);
                         position++;
-                    }
-                    else
+                    } else
                     {
-                        cmdTemp[cmdTemp[1] + 2] = (byte)(commandWord + length);
+                        cmdTemp [cmdTemp [1] + 2] = (byte)(commandWord + length);
                         if (length != 0)
-                            cmdTemp[cmdTemp[1] + 2]--;
-                        checksum += cmdTemp[cmdTemp[1] + 2];
-                        cmdTemp[1]++;
+                            cmdTemp [cmdTemp [1] + 2]--;
+                        checksum += cmdTemp [cmdTemp [1] + 2];
+                        cmdTemp [1]++;
                         for (int i = 0; i < length; i++, cmdTemp[1]++)
                         {
-                            cmdTemp[cmdTemp[1] + 2] = data[i + offset];
-                            checksum += data[i + offset];
+                            cmdTemp [cmdTemp [1] + 2] = data [i + offset];
+                            checksum += data [i + offset];
                         }
-                        cmdTemp[cmdTemp[1] + 2] = (byte)(checksum + length + 1);
+                        cmdTemp [cmdTemp [1] + 2] = (byte)(checksum + length + 1);
                         position++;
                     }
                     return true;
@@ -645,7 +650,7 @@ namespace JM.Diag.C168
                 return false;
             }
 
-            if (cmdTemp[1] == 0x01)
+            if (cmdTemp [1] == 0x01)
             {
                 cmdBuffInfo.CmdBuffID = Constant.NULLADD;
                 lastError = Constant.NOADDDATA;
@@ -654,9 +659,9 @@ namespace JM.Diag.C168
 
             while (times != 0)
             {
-                if (!CheckIdle() || Stream.Write(cmdTemp, 0, cmdTemp[1] + 3) != cmdTemp[1] + 3)
+                if (!CheckIdle() || Stream.Write(cmdTemp, 0, cmdTemp [1] + 3) != cmdTemp [1] + 3)
                     continue;
-                else if (SendOk(Core.Timer.FromMilliseconds(20 * (cmdTemp[1] + 10))))
+                else if (SendOk(Core.Timer.FromMilliseconds(20 * (cmdTemp [1] + 10))))
                     break;
                 if (!StopNow(true))
                 {
@@ -670,13 +675,13 @@ namespace JM.Diag.C168
                 return false;
             }
             if (cmdBuffInfo.CmdBuffID == Constant.LINKBLOCK)
-                cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] = (byte)(commboxInfo.CmdBuffLen - cmdTemp[1]);
+                cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] = (byte)(commboxInfo.CmdBuffLen - cmdTemp [1]);
             else
             {
-                cmdBuffInfo.CmdBuffAdd[cmdBuffInfo.CmdBuffID] = cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK];
-                cmdBuffInfo.CmdBuffUsed[cmdBuffInfo.CmdUsedNum] = cmdBuffInfo.CmdBuffID;
+                cmdBuffInfo.CmdBuffAdd [cmdBuffInfo.CmdBuffID] = cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK];
+                cmdBuffInfo.CmdBuffUsed [cmdBuffInfo.CmdUsedNum] = cmdBuffInfo.CmdBuffID;
                 cmdBuffInfo.CmdUsedNum++;
-                cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK] += cmdTemp[1];
+                cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK] += cmdTemp [1];
             }
             cmdBuffInfo.CmdBuffID = Constant.NULLADD;
             return true;
@@ -696,7 +701,7 @@ namespace JM.Diag.C168
                 return true;
             }
 
-            if (cmdBuffInfo.CmdBuffAdd[buffID] == Constant.NULLADD)
+            if (cmdBuffInfo.CmdBuffAdd [buffID] == Constant.NULLADD)
             {
                 //数据块标识登记是否有申请?
                 lastError = Constant.NOUSED_BUFF;
@@ -704,35 +709,39 @@ namespace JM.Diag.C168
             }
 
             if (buffID == Constant.LINKBLOCK)
-                cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] = commboxInfo.CmdBuffLen;
+                cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] = commboxInfo.CmdBuffLen;
             else
             {
                 int i;
                 for (i = 0; i < cmdBuffInfo.CmdUsedNum; i++)
-                    if (cmdBuffInfo.CmdBuffUsed[i] == buffID)
+                    if (cmdBuffInfo.CmdBuffUsed [i] == buffID)
                         break;
                 byte[] data = new byte[3];
-                data[0] = cmdBuffInfo.CmdBuffAdd[buffID];
+                data [0] = cmdBuffInfo.CmdBuffAdd [buffID];
                 if (i < cmdBuffInfo.CmdUsedNum - 1)
                 {
-                    data[1] = cmdBuffInfo.CmdBuffAdd[cmdBuffInfo.CmdBuffUsed[i + 1]];
-                    data[2] = (byte)(cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK] - data[1]);
-                    if (!DoSet((byte)(Constant.COPY_DATA - Constant.COPY_DATA % 4), data, 0, 3))
+                    data [1] = cmdBuffInfo.CmdBuffAdd [cmdBuffInfo.CmdBuffUsed [i + 1]];
+                    data [2] = (byte)(cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK] - data [1]);
+                    if (!DoSet(
+                        (byte)(Constant.COPY_DATA - Constant.COPY_DATA % 4),
+                        data,
+                        0,
+                        3
+                    ))
                         return false;
-                }
-                else
+                } else
                 {
-                    data[1] = cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK];
+                    data [1] = cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK];
                 }
-                int deleteBuffLen = data[1] - data[0];
+                int deleteBuffLen = data [1] - data [0];
                 for (i = i + 1; i < cmdBuffInfo.CmdUsedNum; i++)
                 {
-                    cmdBuffInfo.CmdBuffUsed[i - 1] = cmdBuffInfo.CmdBuffUsed[i];
-                    cmdBuffInfo.CmdBuffAdd[cmdBuffInfo.CmdBuffUsed[i]] -= (byte)deleteBuffLen;
+                    cmdBuffInfo.CmdBuffUsed [i - 1] = cmdBuffInfo.CmdBuffUsed [i];
+                    cmdBuffInfo.CmdBuffAdd [cmdBuffInfo.CmdBuffUsed [i]] -= (byte)deleteBuffLen;
                 }
                 cmdBuffInfo.CmdUsedNum--;
-                cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK] -= (byte)deleteBuffLen;
-                cmdBuffInfo.CmdBuffAdd[buffID] = Constant.NULLADD;
+                cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK] -= (byte)deleteBuffLen;
+                cmdBuffInfo.CmdBuffAdd [buffID] = Constant.NULLADD;
             }
             return true;
         }
@@ -742,8 +751,7 @@ namespace JM.Diag.C168
             if (isDoNow)
             {
                 return DoSet(command, buffer, offset, length);
-            }
-            else
+            } else
             {
                 return AddToBuff(command, buffer, offset, length);
             }
@@ -757,17 +765,27 @@ namespace JM.Diag.C168
         public bool SetLineLevel(byte valueLow, byte valueHigh)
         {
             //只有一个字节的数据，设定端口1
-            commboxInfo.CommboxPort[1] &= (byte)(~valueLow);
-            commboxInfo.CommboxPort[1] |= valueHigh;
-            return SendCmdToBox(Constant.SETPORT1, commboxInfo.CommboxPort, 1, 1);
+            commboxInfo.CommboxPort [1] &= (byte)(~valueLow);
+            commboxInfo.CommboxPort [1] |= valueHigh;
+            return SendCmdToBox(
+                Constant.SETPORT1,
+                commboxInfo.CommboxPort,
+                1,
+                1
+            );
         }
 
         public bool SetCommCtrl(byte valueOpen, byte valueClose)
         {
             //只有一个字节的数据，设定端口2
-            commboxInfo.CommboxPort[2] &= (byte)(~valueOpen);
-            commboxInfo.CommboxPort[2] |= valueClose;
-            return SendCmdToBox(Constant.SETPORT2, commboxInfo.CommboxPort, 2, 1);
+            commboxInfo.CommboxPort [2] &= (byte)(~valueOpen);
+            commboxInfo.CommboxPort [2] |= valueClose;
+            return SendCmdToBox(
+                Constant.SETPORT2,
+                commboxInfo.CommboxPort,
+                2,
+                1
+            );
         }
 
         public bool SetCommLine(byte sendLine, byte recLine)
@@ -777,8 +795,13 @@ namespace JM.Diag.C168
                 sendLine = 0x0F;
             if (recLine > 7)
                 recLine = 0x0F;
-            commboxInfo.CommboxPort[0] = (byte)(sendLine + recLine * 16);
-            return SendCmdToBox(Constant.SETPORT0, commboxInfo.CommboxPort, 0, 1);
+            commboxInfo.CommboxPort [0] = (byte)(sendLine + recLine * 16);
+            return SendCmdToBox(
+                Constant.SETPORT0,
+                commboxInfo.CommboxPort,
+                0,
+                1
+            );
         }
 
         public bool TurnOverOneByOne()
@@ -803,15 +826,14 @@ namespace JM.Diag.C168
                     return false;
                 while (length-- > 0)
                 {
-                    if (buff[length] != echoBuff[length])
+                    if (buff [length] != echoBuff [length])
                     {
                         lastError = Constant.CHECKSUM_ERROR;
                         return false;
                     }
                 }
                 return CheckResult(Core.Timer.FromMilliseconds(100));
-            }
-            else
+            } else
             {
                 return AddToBuff(Constant.ECHO, echoBuff, 0, length);
             }
@@ -822,8 +844,7 @@ namespace JM.Diag.C168
             if (isRunLink)
             {
                 return SendCmdToBox(Constant.RUNLINK);
-            }
-            else
+            } else
             {
                 return SendCmdToBox(Constant.STOPLINK);
             }
@@ -834,7 +855,7 @@ namespace JM.Diag.C168
             byte[] ctrlWord = new byte[3]; //通讯控制字3
             byte modeControl = (byte)(ctrlWord1 & 0xE0);
             int length = 3;
-            ctrlWord[0] = ctrlWord1;
+            ctrlWord [0] = ctrlWord1;
             if ((ctrlWord1 & 0x04) != 0)
                 isDB20 = true;
             else
@@ -843,11 +864,10 @@ namespace JM.Diag.C168
             if (modeControl == Constant.SET_VPW || modeControl == Constant.SET_PWM)
             {
                 return SendCmdToBox(Constant.SETTING, ctrlWord, 0, 1);
-            }
-            else
+            } else
             {
-                ctrlWord[1] = ctrlWord2;
-                ctrlWord[2] = ctrlWord3;
+                ctrlWord [1] = ctrlWord2;
+                ctrlWord [2] = ctrlWord3;
                 if (ctrlWord3 == 0)
                 {
                     length--;
@@ -876,14 +896,13 @@ namespace JM.Diag.C168
                 lastError = Constant.COMMBAUD_OUT;
                 return false;
             }
-            baudTime[0] = (byte)(instructNum / 256);
-            baudTime[1] = (byte)(instructNum % 256);
+            baudTime [0] = (byte)(instructNum / 256);
+            baudTime [1] = (byte)(instructNum % 256);
 
-            if (baudTime[0] == 0)
+            if (baudTime [0] == 0)
             {
                 return SendCmdToBox(Constant.SETBAUD, baudTime, 1, 1);
-            }
-            else
+            } else
             {
                 return SendCmdToBox(Constant.SETBAUD, baudTime, 0, 2);
             }
@@ -920,8 +939,7 @@ namespace JM.Diag.C168
                     microTime = (microTime * 2) / 3;
                 type = (byte)(type + (Constant.SETBYTETIME & 0xF0));
                 microTime = (microTime / (commboxInfo.CommboxTimeUnit / 1000000.0));
-            }
-            else
+            } else
             {
                 microTime = (microTime / commboxInfo.TimeBaseDB) / (commboxInfo.CommboxTimeUnit / 1000000.0);
             }
@@ -934,14 +952,13 @@ namespace JM.Diag.C168
 
             if (type == Constant.SETBYTETIME || type == Constant.SETWAITTIME || type == Constant.SETRECBBOUT || type == Constant.SETRECFROUT || type == Constant.SETLINKTIME)
             {
-                timeBuff[0] = (byte)(microTime / 256);
-                timeBuff[1] = (byte)(microTime % 256);
-                if (timeBuff[0] == 0)
+                timeBuff [0] = (byte)(microTime / 256);
+                timeBuff [1] = (byte)(microTime % 256);
+                if (timeBuff [0] == 0)
                 {
                     return SendCmdToBox(type, timeBuff, 1, 1);
                 }
-            }
-            else
+            } else
             {
                 return SendCmdToBox(type, timeBuff, 0, 2);
             }
@@ -970,7 +987,7 @@ namespace JM.Diag.C168
             byte startAdd;
             if (cmdBuffInfo.CmdBuffID != buffID)
             {
-                if (cmdBuffInfo.CmdBuffAdd[buffID] == Constant.NULLADD)
+                if (cmdBuffInfo.CmdBuffAdd [buffID] == Constant.NULLADD)
                 {
                     lastError = Constant.NOUSED_BUFF;
                     return false;
@@ -978,33 +995,30 @@ namespace JM.Diag.C168
 
                 if (buffID == Constant.LINKBLOCK)
                 {
-                    length = commboxInfo.CmdBuffLen - cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK];
-                }
-                else
+                    length = commboxInfo.CmdBuffLen - cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK];
+                } else
                 {
                     int i;
                     for (i = 0; i < cmdBuffInfo.CmdUsedNum; i++)
-                        if (cmdBuffInfo.CmdBuffUsed[i] == buffID)
+                        if (cmdBuffInfo.CmdBuffUsed [i] == buffID)
                             break;
                     if (i == cmdBuffInfo.CmdUsedNum - 1)
-                        length = cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK] - cmdBuffInfo.CmdBuffAdd[buffID];
+                        length = cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK] - cmdBuffInfo.CmdBuffAdd [buffID];
                     else
-                        length = cmdBuffInfo.CmdBuffAdd[buffID + 1] - cmdBuffInfo.CmdBuffAdd[buffID];
+                        length = cmdBuffInfo.CmdBuffAdd [buffID + 1] - cmdBuffInfo.CmdBuffAdd [buffID];
                 }
-                startAdd = cmdBuffInfo.CmdBuffAdd[buffID];
-            }
-            else
+                startAdd = cmdBuffInfo.CmdBuffAdd [buffID];
+            } else
             {
-                length = cmdBuffInfo.CmdBuffAdd[Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK];
-                startAdd = cmdBuffInfo.CmdBuffAdd[Constant.SWAPBLOCK];
+                length = cmdBuffInfo.CmdBuffAdd [Constant.LINKBLOCK] - cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK];
+                startAdd = cmdBuffInfo.CmdBuffAdd [Constant.SWAPBLOCK];
             }
 
             if (buffAdd < length)
             {
                 buffAdd += startAdd;
                 return true;
-            }
-            else
+            } else
             {
                 lastError = Constant.OUTADDINBUFF;
                 return false;
@@ -1015,8 +1029,8 @@ namespace JM.Diag.C168
         {
             byte[] temp = new byte[4];
             lastError = 0;
-            temp[0] = buffer[1];
-            if (!GetAbsAdd(buffer[0], ref temp[0]))
+            temp [0] = buffer [1];
+            if (!GetAbsAdd(buffer [0], ref temp [0]))
                 return false;
             switch (type)
             {
@@ -1026,35 +1040,35 @@ namespace JM.Diag.C168
                     break;
                 case Constant.UPDATE_1BYTE: //add + data
                 case Constant.SUB_BYTE:
-                    temp[1] = buffer[2];
+                    temp [1] = buffer [2];
                     break;
                 case Constant.INC_2DATA: //add + add
-                    temp[1] = buffer[3];
-                    if (!GetAbsAdd(buffer[2], ref cmdTemp[1]))
+                    temp [1] = buffer [3];
+                    if (!GetAbsAdd(buffer [2], ref cmdTemp [1]))
                         return false;
                     break;
                 case Constant.COPY_DATA: // add + add + data
                 case Constant.ADD_1BYTE:
-                    temp[1] = buffer[3];
-                    if (!GetAbsAdd(buffer[2], ref temp[1]))
+                    temp [1] = buffer [3];
+                    if (!GetAbsAdd(buffer [2], ref temp [1]))
                         return false;
-                    temp[2] = buffer[4];
+                    temp [2] = buffer [4];
                     break;
                 case Constant.UPDATE_2BYTE: // add + data + add + data
                 case Constant.ADD_2BYTE:
-                    temp[1] = buffer[2];
-                    temp[2] = buffer[4];
-                    if (!GetAbsAdd(buffer[3], ref temp[2]))
+                    temp [1] = buffer [2];
+                    temp [2] = buffer [4];
+                    if (!GetAbsAdd(buffer [3], ref temp [2]))
                         return false;
-                    temp[3] = buffer[5];
+                    temp [3] = buffer [5];
                     break;
                 case Constant.ADD_DATA: // add + add + add
                 case Constant.SUB_DATA:
-                    temp[1] = buffer[3];
-                    if (!GetAbsAdd(buffer[2], ref temp[1]))
+                    temp [1] = buffer [3];
+                    if (!GetAbsAdd(buffer [2], ref temp [1]))
                         return false;
-                    temp[2] = buffer[5];
-                    if (!GetAbsAdd(buffer[4], ref temp[2]))
+                    temp [2] = buffer [5];
+                    if (!GetAbsAdd(buffer [4], ref temp [2]))
                         return false;
                     break;
                 default:
@@ -1089,34 +1103,30 @@ namespace JM.Diag.C168
                         return false;
                     }
                     delayWord = Constant.DELAYLONG;
-                }
-                else
+                } else
                 {
                     delayWord = Constant.DELAYTIME;
                 }
             }
 
-            timeBuff[0] = (byte)(microTime / 256);
-            timeBuff[1] = (byte)(microTime % 256);
+            timeBuff [0] = (byte)(microTime / 256);
+            timeBuff [1] = (byte)(microTime % 256);
 
-            if (timeBuff[0] == 0)
+            if (timeBuff [0] == 0)
             {
                 if (isDoNow)
                 {
                     return CommboxDo(delayWord, timeBuff, 1, 1);
-                }
-                else
+                } else
                 {
                     return AddToBuff(delayWord, timeBuff, 1, 1);
                 }
-            }
-            else
+            } else
             {
                 if (isDoNow)
                 {
                     return CommboxDo(delayWord, timeBuff, 0, 2);
-                }
-                else
+                } else
                 {
                     return AddToBuff(delayWord, timeBuff, 0, 2);
                 }
@@ -1133,8 +1143,7 @@ namespace JM.Diag.C168
             if (isDoNow)
             {
                 return CommboxDo(Constant.SEND_DATA, buffer, offset, length);
-            }
-            else
+            } else
             {
                 return AddToBuff(Constant.SEND_DATA, buffer, offset, length);
             }
@@ -1153,7 +1162,7 @@ namespace JM.Diag.C168
                     else
                     {
                         Stream.ReadTimeout = Core.Timer.FromMilliseconds(600);
-                        if ((Stream.Read(receiveBuffer, 0, 1) != 1) || receiveBuffer[0] != Constant.RUN_ERR)
+                        if ((Stream.Read(receiveBuffer, 0, 1) != 1) || receiveBuffer [0] != Constant.RUN_ERR)
                         {
                             lastError = Constant.TIMEOUT_ERROR;
                             return false;
@@ -1162,8 +1171,7 @@ namespace JM.Diag.C168
                     }
                 }
                 return false;
-            }
-            else
+            } else
             {
                 return CommboxDo(Constant.STOP_REC, null, 0, 0);
             }
@@ -1174,17 +1182,17 @@ namespace JM.Diag.C168
             int length = buffID.Length;
             for (int i = 0; i < buffID.Length; i++)
             {
-                if (cmdBuffInfo.CmdBuffAdd[buffID[i]] == Constant.NULLADD)
+                if (cmdBuffInfo.CmdBuffAdd [buffID [i]] == Constant.NULLADD)
                 {
                     lastError = Constant.NOUSED_BUFF;
                     return false;
                 }
-                buffID[i] = cmdBuffInfo.CmdBuffAdd[buffID[i]];
+                buffID [i] = cmdBuffInfo.CmdBuffAdd [buffID [i]];
             }
             byte commandWord = Constant.D0_BAT;
             if (repeat)
                 commandWord = Constant.D0_BAT_FOR;
-            if (commandWord == Constant.D0_BAT && buffID[0] == cmdBuffInfo.CmdBuffUsed[0])
+            if (commandWord == Constant.D0_BAT && buffID [0] == cmdBuffInfo.CmdBuffUsed [0])
             {
                 length = 0;
                 commandWord = Constant.DO_BAT_00;

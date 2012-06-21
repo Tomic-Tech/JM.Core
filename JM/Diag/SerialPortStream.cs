@@ -34,7 +34,8 @@ namespace JM.Diag
 
         private int ReadWithoutTimeout(byte[] buffer, int offset, int count)
         {
-            while (BytesToRead < count) ;
+            while (BytesToRead < count)
+                ;
             return ReadImmediately(buffer, offset, count);
         }
 
@@ -77,11 +78,9 @@ namespace JM.Diag
                 }
 
                 return ReadWithTimeout(buffer, offset, count);
-            }
-            catch
+            } catch
             {
-            }
-            finally
+            } finally
             {
             }
             return 0;
@@ -93,11 +92,9 @@ namespace JM.Diag
             {
                 serialPort.Write(buffer, offset, count);
                 return count;
-            }
-            catch
+            } catch
             {
-            }
-            finally
+            } finally
             {
             }
             return 0;

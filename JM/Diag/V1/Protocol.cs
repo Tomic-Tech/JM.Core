@@ -7,6 +7,7 @@ namespace JM.Diag.V1
     internal abstract class Protocol
     {
         private ICommbox box;
+
         public Protocol(ICommbox box)
         {
             this.box = box;

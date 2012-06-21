@@ -13,10 +13,10 @@ namespace JM.Diag
         public byte[] Pack(byte[] data, int offset, int count)
         {
             byte[] result = new byte[count + 3];
-            result[0] = HEAD_FORMAT;
+            result [0] = HEAD_FORMAT;
             Array.Copy(data, offset, result, 1, count);
-            result[count + 1] = 0x0D;
-            result[count + 2] = 0x0A;
+            result [count + 1] = 0x0D;
+            result [count + 2] = 0x0A;
 
             return result;
         }

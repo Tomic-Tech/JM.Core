@@ -7,6 +7,7 @@ namespace JM.Diag.V1
     internal class KWP2000 : Diag.V1.Protocol, Diag.IProtocol
     {
         private delegate void StartCommunication();
+
         private Default<KWP2000> func;
         private KWPOptions options;
         private Dictionary<KWPStartType, StartCommunication> startComms;
@@ -25,27 +26,45 @@ namespace JM.Diag.V1
         private void StartCommunicationInit()
         {
             startComms = new Dictionary<KWPStartType, StartCommunication>();
-            startComms[KWPStartType.Fast] = () =>
+            startComms [KWPStartType.Fast] = () =>
             {
                 byte valueOpen = 0;
                 if (options.LLine)
                 {
                     valueOpen = (byte)(PWC | RZFC | CK);
-                }
-                else
+                } else
                 {
                     valueOpen = (byte)(PWC | RZFC | CK);
                 }
 
                 if (!Box.SetCommCtrl(valueOpen, SET_NULL) ||
                     !Box.SetCommLine(sendLine, recvLine) ||
-                    !Box.SetCommLink((byte)(RS_232 | BIT9_MARK | SEL_SL | UN_DB20), SET_NULL, SET_NULL) ||
+                    !Box.SetCommLink(
+                    (byte)(RS_232 | BIT9_MARK | SEL_SL | UN_DB20),
+                    SET_NULL,
+                    SET_NULL
+                ) ||
                     !Box.SetCommBaud(options.Baudrate) ||
-                    !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(5)) ||
-                    !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(0)) ||
-                    !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(400)) ||
-                    !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(500)) ||
-                    !Box.SetCommTime(SETLINKTIME, Core.Timer.FromMilliseconds(500)))
+                    !Box.SetCommTime(
+                    SETBYTETIME,
+                    Core.Timer.FromMilliseconds(5)
+                ) ||
+                    !Box.SetCommTime(
+                    SETWAITTIME,
+                    Core.Timer.FromMilliseconds(0)
+                ) ||
+                    !Box.SetCommTime(
+                    SETRECBBOUT,
+                    Core.Timer.FromMilliseconds(400)
+                ) ||
+                    !Box.SetCommTime(
+                    SETRECFROUT,
+                    Core.Timer.FromMilliseconds(500)
+                ) ||
+                    !Box.SetCommTime(
+                    SETLINKTIME,
+                    Core.Timer.FromMilliseconds(500)
+                ))
                 {
                     throw new System.IO.IOException();
                 }
@@ -62,7 +81,11 @@ namespace JM.Diag.V1
                     !Box.CommboxDelay(Core.Timer.FromMilliseconds(25)) ||
                     !Box.SetLineLevel(SET_NULL, COMS) ||
                     !Box.CommboxDelay(Core.Timer.FromMilliseconds(25)) ||
-                    !Box.SendOutData(options.FastCmd, 0, options.FastCmd.Length) ||
+                    !Box.SendOutData(
+                    options.FastCmd,
+                    0,
+                    options.FastCmd.Length
+                ) ||
                     !Box.RunReceive(REC_FR) ||
                     !Box.EndBatch())
                 {
@@ -84,15 +107,30 @@ namespace JM.Diag.V1
                 Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(55));
             };
 
-            startComms[KWPStartType.AddressCode] = () =>
+            startComms [KWPStartType.AddressCode] = () =>
             {
                 if (!Box.SetCommCtrl((byte)(PWC | REFC | RZFC | CK), SET_NULL) ||
                     !Box.SetCommBaud(5) ||
-                    !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(5)) ||
-                    !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(12)) ||
-                    !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(400)) ||
-                    !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(500)) ||
-                    !Box.SetCommTime(SETLINKTIME, Core.Timer.FromMilliseconds(500)))
+                    !Box.SetCommTime(
+                    SETBYTETIME,
+                    Core.Timer.FromMilliseconds(5)
+                ) ||
+                    !Box.SetCommTime(
+                    SETWAITTIME,
+                    Core.Timer.FromMilliseconds(12)
+                ) ||
+                    !Box.SetCommTime(
+                    SETRECBBOUT,
+                    Core.Timer.FromMilliseconds(400)
+                ) ||
+                    !Box.SetCommTime(
+                    SETRECFROUT,
+                    Core.Timer.FromMilliseconds(500)
+                ) ||
+                    !Box.SetCommTime(
+                    SETLINKTIME,
+                    Core.Timer.FromMilliseconds(500)
+                ))
                 {
                     throw new System.IO.IOException();
                 }
@@ -107,7 +145,10 @@ namespace JM.Diag.V1
                 }
 
                 if (!Box.SendOutData(new byte[] { options.AddrCode }, 0, 1) ||
-                    !Box.SetCommLine((recvLine == RK_NO) ? sendLine : SK_NO, recvLine) ||
+                    !Box.SetCommLine(
+                    (recvLine == RK_NO) ? sendLine : SK_NO,
+                    recvLine
+                ) ||
                     !Box.RunReceive(SET55_BAUD) ||
                     !Box.RunReceive(REC_LEN_1) ||
                     !Box.TurnOverOneByOne() ||
@@ -122,7 +163,12 @@ namespace JM.Diag.V1
 
                 byte[] temp = new byte[3];
                 if (!Box.RunBatch(new byte[] { Box.BuffID }, 1, false) ||
-                    (Box.ReadData(temp, 0, temp.Length, Core.Timer.FromSeconds(5)) <= 0) ||
+                    (Box.ReadData(
+                    temp,
+                    0,
+                    temp.Length,
+                    Core.Timer.FromSeconds(5)
+                ) <= 0) ||
                     !Box.CheckResult(Core.Timer.FromSeconds(5)))
                 {
                     Box.DelBatch(Box.BuffID);
@@ -130,12 +176,15 @@ namespace JM.Diag.V1
                 }
 
                 if (!Box.DelBatch(Box.BuffID) ||
-                    !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(55)))
+                    !Box.SetCommTime(
+                    SETWAITTIME,
+                    Core.Timer.FromMilliseconds(55)
+                ))
                 {
                     throw new System.IO.IOException();
                 }
 
-                if (temp[2] != 0)
+                if (temp [2] != 0)
                 {
                     throw new System.IO.IOException();
                 }
@@ -170,9 +219,9 @@ namespace JM.Diag.V1
                 return null;
             }
 
-            if (temp[1] == options.SourceAddress)
+            if (temp [1] == options.SourceAddress)
             {
-                if (temp[0] == 0x80)
+                if (temp [0] == 0x80)
                 {
                     byte[] b = new byte[1];
                     length = Box.ReadBytes(b, 0, 1);
@@ -182,7 +231,7 @@ namespace JM.Diag.V1
                         return null;
                     }
 
-                    length = Convert.ToInt32(b[0]);
+                    length = Convert.ToInt32(b [0]);
                     if (length <= 0)
                     {
                         FinishExecute(isFinish);
@@ -193,12 +242,15 @@ namespace JM.Diag.V1
                     frameLength += temp.Length;
                     Array.Copy(result, frameLength, b, 0, 1);
                     ++frameLength;
-                    length = Box.ReadBytes(result, KWPPack.KWP80_HEADER_LENGTH, length + KWPPack.KWP_CHECKSUM_LENGTH);
+                    length = Box.ReadBytes(
+                        result,
+                        KWPPack.KWP80_HEADER_LENGTH,
+                        length + KWPPack.KWP_CHECKSUM_LENGTH
+                    );
                     frameLength += length;
-                }
-                else
+                } else
                 {
-                    length = Convert.ToInt32(temp[0] - 0x80);
+                    length = Convert.ToInt32(temp [0] - 0x80);
                     if (length <= 0)
                     {
                         FinishExecute(isFinish);
@@ -207,15 +259,18 @@ namespace JM.Diag.V1
 
                     Array.Copy(result, 0, temp, 0, temp.Length);
                     frameLength += temp.Length;
-                    length = Box.ReadBytes(result, temp.Length, length + KWPPack.KWP_CHECKSUM_LENGTH);
+                    length = Box.ReadBytes(
+                        result,
+                        temp.Length,
+                        length + KWPPack.KWP_CHECKSUM_LENGTH
+                    );
                     frameLength += length;
                 }
-            }
-            else
+            } else
             {
-                if (temp[0] == 0x00)
+                if (temp [0] == 0x00)
                 {
-                    length = Convert.ToInt32(temp[1]);
+                    length = Convert.ToInt32(temp [1]);
                     if (length <= 0)
                     {
                         FinishExecute(isFinish);
@@ -225,10 +280,9 @@ namespace JM.Diag.V1
                     frameLength += temp.Length;
                     length = Box.ReadBytes(result, temp.Length, length);
                     frameLength += length;
-                }
-                else
+                } else
                 {
-                    length = Convert.ToInt32(temp[0]);
+                    length = Convert.ToInt32(temp [0]);
                     if (length <= 0)
                     {
                         FinishExecute(isFinish);
@@ -237,7 +291,11 @@ namespace JM.Diag.V1
 
                     Array.Copy(result, 0, temp, 0, temp.Length);
                     frameLength += temp.Length;
-                    length = Box.ReadBytes(result, temp.Length, length - KWPPack.KWP_CHECKSUM_LENGTH);
+                    length = Box.ReadBytes(
+                        result,
+                        temp.Length,
+                        length - KWPPack.KWP_CHECKSUM_LENGTH
+                    );
                     frameLength += length;
                 }
             }
@@ -250,10 +308,10 @@ namespace JM.Diag.V1
 
             for (i = 0; i < frameLength - 1; i++)
             {
-                checksum += result[i];
+                checksum += result [i];
             }
 
-            if (checksum != result[frameLength - 1])
+            if (checksum != result [frameLength - 1])
             {
                 return null;
             }
@@ -321,9 +379,8 @@ namespace JM.Diag.V1
             {
                 this.options = (KWPOptions)options;
                 ConfigLines();
-                startComms[this.options.StartType]();
-            }
-            else
+                startComms [this.options.StartType]();
+            } else
             {
                 throw new ArgumentException();
             }

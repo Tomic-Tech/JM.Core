@@ -15,7 +15,8 @@ namespace JM.Core
         private int currentEnabledIndex;
         private object mutex;
 
-        public delegate void ValueChange(int index, string value);
+        public delegate void ValueChange(int index,string value);
+
         public ValueChange OnValueChange;
 
         [DllImport("JMCore", EntryPoint = "live_data_vector_new", CallingConvention = CallingConvention.Cdecl)]
@@ -95,9 +96,9 @@ namespace JM.Core
             Dispose(true);
         }
 
-        public LiveData this[int index]
+        public LiveData this [int index]
         {
-            get { return liveDatas[index]; }
+            get { return liveDatas [index]; }
         }
 
         public int Count
@@ -124,7 +125,7 @@ namespace JM.Core
                     return -1;
                 }
 
-                int ret = showIndexes[currentEnabledIndex];
+                int ret = showIndexes [currentEnabledIndex];
                 ++currentEnabledIndex;
                 if (currentEnabledIndex > showIndexes.Count - 1)
                     currentEnabledIndex = 0;
@@ -141,7 +142,7 @@ namespace JM.Core
                     return -1;
                 }
 
-                return enabledIndexes[index];
+                return enabledIndexes [index];
             }
         }
 
@@ -149,7 +150,7 @@ namespace JM.Core
         {
             lock (mutex)
             {
-                return showPositions[index];
+                return showPositions [index];
             }
         }
 
@@ -162,7 +163,7 @@ namespace JM.Core
                     return -1;
                 }
 
-                return showIndexes[index];
+                return showIndexes [index];
             }
         }
 
@@ -173,7 +174,7 @@ namespace JM.Core
                 enabledIndexes.Clear();
                 for (int i = 0; i < Count; i++)
                 {
-                    if (this[i].Enabled)
+                    if (this [i].Enabled)
                     {
                         enabledIndexes.Add(i);
                     }
@@ -190,14 +191,14 @@ namespace JM.Core
                 int j = 0;
                 for (int i = 0; i < Count; i++)
                 {
-                    if (this[i].Enabled && this[i].Showed)
+                    if (this [i].Enabled && this [i].Showed)
                     {
                         showIndexes.Add(i);
-                        showPositions[i] = j++;
+                        showPositions [i] = j++;
                     }
                 }
 
-                currentEnabledIndex = showIndexes[0];
+                currentEnabledIndex = showIndexes [0];
             }
         }
     }

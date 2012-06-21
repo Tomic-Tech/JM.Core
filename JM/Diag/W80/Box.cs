@@ -11,6 +11,7 @@ namespace JM.Diag.W80
             get { return boxTimeUnit; }
             set { boxTimeUnit = value; }
         }
+
         private byte timeBaseDB; //标准时间的倍数
 
         public byte TimeBaseDB
@@ -18,6 +19,7 @@ namespace JM.Diag.W80
             get { return timeBaseDB; }
             set { timeBaseDB = value; }
         }
+
         private byte timeExternB; //扩展时间的倍数
 
         public byte TimeExternB
@@ -25,12 +27,14 @@ namespace JM.Diag.W80
             get { return timeExternB; }
             set { timeExternB = value; }
         }
+
         private byte[] port = new byte[Constant.MAXBUFF_NUM]; //端口
 
         public byte[] Port
         {
             get { return port; }
         }
+
         private bool isDB20;
 
         public bool IsDB20
@@ -38,6 +42,7 @@ namespace JM.Diag.W80
             get { return isDB20; }
             set { isDB20 = value; }
         }
+
         private bool isDoNow;
 
         public bool IsDoNow
@@ -45,12 +50,14 @@ namespace JM.Diag.W80
             get { return isDoNow; }
             set { isDoNow = value; }
         }
+
         private byte[] buf = new byte[Constant.MAXBUFF_LEN]; //缓冲区
 
         public byte[] Buf
         {
             get { return buf; }
         }
+
         private int pos;
 
         public int Pos
@@ -58,6 +65,7 @@ namespace JM.Diag.W80
             get { return pos; }
             set { pos = value; }
         }
+
         private bool isLink; //是否是链路保持块
 
         public bool IsLink
@@ -65,6 +73,7 @@ namespace JM.Diag.W80
             get { return isLink; }
             set { isLink = value; }
         }
+
         private byte runFlag;
 
         public byte RunFlag
