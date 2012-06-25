@@ -686,6 +686,8 @@ namespace JM.Diag.W80
                     return new V1.Mikuni(this);
                 case ProtocolType.ISO14230:
                     return new V1.KWP2000(this);
+                case ProtocolType.ISO9141_2:
+                    return new V1.ISO9141(this);
                 default:
                     throw new NotImplementedException();
             }
