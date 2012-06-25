@@ -11,16 +11,16 @@ namespace JM.Diag.V1
         private Default<KWP2000> func;
         private KWPOptions options;
         private Dictionary<KWPStartType, StartCommunication> startComms;
-        private byte sendLine;
-        private byte recvLine;
+        private byte kLine;
+        private byte lLine;
 
         public KWP2000(ICommbox box)
             : base(box)
         {
             this.func = new Default<KWP2000>(box, this);
             StartCommunicationInit();
-            sendLine = SK_NO;
-            recvLine = RK_NO;
+            kLine = SK_NO;
+            lLine = RK_NO;
         }
 
         private void StartCommunicationInit()
@@ -38,7 +38,7 @@ namespace JM.Diag.V1
                 }
 
                 if (!Box.SetCommCtrl(valueOpen, SET_NULL) ||
-                    !Box.SetCommLine(sendLine, recvLine) ||
+                    !Box.SetCommLine(lLine, kLine) ||
                     !Box.SetCommLink(
                     (byte)(RS_232 | BIT9_MARK | SEL_SL | UN_DB20),
                     SET_NULL,
@@ -146,8 +146,8 @@ namespace JM.Diag.V1
 
                 if (!Box.SendOutData(new byte[] { options.AddrCode }, 0, 1) ||
                     !Box.SetCommLine(
-                    (recvLine == RK_NO) ? sendLine : SK_NO,
-                    recvLine
+                    (kLine == RK_NO) ? lLine : SK_NO,
+                    kLine
                 ) ||
                     !Box.RunReceive(SET55_BAUD) ||
                     !Box.RunReceive(REC_LEN_1) ||
@@ -365,8 +365,8 @@ namespace JM.Diag.V1
             switch (options.ComLine)
             {
                 case 7:
-                    sendLine = SK1;
-                    recvLine = RK1;
+                    lLine = SK1;
+                    kLine = RK1;
                     break;
                 default:
                     throw new ArgumentException();

@@ -450,6 +450,30 @@ namespace JM.Diag.V1
             }
         }
 
+        public byte SET_DB20
+        {
+            get
+            {
+                if (box is W80.Commbox<SerialPortStream>)
+                {
+                    return W80.Constant.SET_DB20;
+                }
+                return 0;
+            }
+        }
+
+        public byte INVERTBYTE
+        {
+            get
+            {
+                if (box is W80.Commbox<SerialPortStream>)
+                {
+                    return W80.Constant.INVERTBYTE;
+                }
+                return 0;
+            }
+        }
+
         public abstract void FinishExecute(bool isFinish);
     }
 }
