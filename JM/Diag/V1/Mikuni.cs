@@ -9,6 +9,7 @@ namespace JM.Diag.V1
     internal class Mikuni : Diag.V1.Protocol, Diag.IProtocol
     {
         private Default<Mikuni> func;
+
         public Mikuni(ICommbox box)
             : base(box)
         {
@@ -32,19 +33,18 @@ namespace JM.Diag.V1
             byte before = 0;
             while (Box.ReadBytes(result, pos++, 1) == 1)
             {
-                if (before == 0x0D && (result[pos - 1] == 0x0A))
+                if (before == 0x0D && (result [pos - 1] == 0x0A))
                 {
                     break;
                 }
-                before = result[pos - 1];
+                before = result [pos - 1];
             }
 
-            if (before == 0x0D && result[pos - 1] == 0x0A)
+            if (before == 0x0D && result [pos - 1] == 0x0A)
             {
                 // break normal
-                result =  pack.Unpack(result, 0, pos);
-            }
-            else
+                result = pack.Unpack(result, 0, pos);
+            } else
             {
                 result = null;
             }

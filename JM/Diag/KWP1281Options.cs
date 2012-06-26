@@ -1,8 +1,34 @@
 ﻿namespace JM.Diag
 {
-    public struct KWP1281Options
+    public class KWP1281Options
     {
-        public int ComLine;
-        public bool LLine;
+        private int comLine;
+
+        public int ComLine
+        {
+            get
+            {
+                return comLine;
+            }
+            set
+            {
+                comLine = value;
+            }
+        }
+
+        private bool lLine;
+
+        public bool LLine
+        {
+            get
+            {
+                return lLine;
+            }
+            set
+            {
+                lLine = value;
+            }
+        }
+
     }
 }

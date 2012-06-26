@@ -87,6 +87,7 @@ namespace JM.Diag
                 addrCode = value;
             }
         }
+
         public ISO9141Options()
         {
             header = 0;

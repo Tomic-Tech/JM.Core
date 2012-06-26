@@ -40,9 +40,15 @@ namespace JM.Diag
             return result;
         }
 
-        public void Config(KWP1281Options opts)
+        public void Config(object opts)
         {
-            options = opts;
+            if (opts is KWP1281Options)
+            {
+                options = opts as KWP1281Options;
+            } else
+            {
+                throw new ArgumentException();
+            }
         }
     }
 }

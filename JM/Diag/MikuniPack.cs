@@ -28,5 +28,9 @@ namespace JM.Diag
 
             return result;
         }
+
+        public void Config(object obj)
+        {
+        }
     }
 }

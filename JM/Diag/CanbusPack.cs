@@ -32,7 +32,7 @@ namespace JM.Diag
 
             byte[] result = null;
 
-            if (options.IDMode == CanbusIDMode.Standard)
+            if (options.IdMode == CanbusIDMode.Standard)
             {
                 result = new byte[3 + count];
                 result [1] = Utils.HighByte(Utils.LowWord(options.TargetID));
@@ -99,16 +99,15 @@ namespace JM.Diag
             return result;
         }
 
-        public virtual void Config(ref CanbusOptions opts)
+        public void Config(object opts)
         {
-            options.Baud = opts.Baud;
-            options.FilterMask = opts.FilterMask;
-            options.FrameType = opts.FrameType;
-            options.HighPin = opts.HighPin;
-            options.IDMode = opts.IDMode;
-            options.IDVector = opts.IDVector;
-            options.LowPin = opts.LowPin;
-            options.TargetID = opts.TargetID;
+            if (opts is CanbusOptions)
+            {
+                options = opts as CanbusOptions;
+            } else
+            {
+                throw new ArgumentException();
+            }
         }
     }
 }

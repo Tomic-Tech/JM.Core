@@ -75,21 +75,23 @@ namespace JM.Diag.V1
             if (i < 5)
                 return null;
 
-
             List<byte> result = new List<byte>();
             int j = 3;
             int k = 0;
 
-            while (j < i)
+            while (j < i) // Multi Frame
             {
-                if ((buff[k] == buff[j]) &&
-                    (buff[k + 1] == buff[j + 1]) &&
-                    (buff[k + 2] == buff[j + 2]))
+                if ((buff [k] == buff [j]) &&
+                    (buff [k + 1] == buff [j + 1]) &&
+                    (buff [k + 2] == buff [j + 2]))
                 {
                     result.AddRange(pack.Unpack(buff, k, j - k));
+                    k = j;
                 }
                 j++;
             }
+
+            result.AddRange(pack.Unpack(buff, k, j - k)); // Add last frame or it's a single frame
 
             return result.ToArray();
         }
@@ -170,7 +172,7 @@ namespace JM.Diag.V1
                 byte [] tempBuff = new byte[3];
 
                 if (!Box.RunBatch(new byte[] { Box.BuffID}, 1, false) ||
-                    (tempLen = Box.ReadData(tempBuff, 0,3, Core.Timer.FromSeconds(3))) != 3 ||
+                    (tempLen = Box.ReadData(tempBuff, 0, 3, Core.Timer.FromSeconds(3))) != 3 ||
                     !Box.CheckResult(Core.Timer.FromMilliseconds(500)))
                 {
                     Box.DelBatch(Box.BuffID);
@@ -180,7 +182,7 @@ namespace JM.Diag.V1
                 if (!Box.DelBatch(Box.BuffID))
                     throw new IOException();
 
-                if (tempBuff[2] != 0)
+                if (tempBuff [2] != 0)
                 {
                     throw new IOException();
                 }

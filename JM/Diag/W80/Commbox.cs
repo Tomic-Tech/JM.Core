@@ -530,8 +530,8 @@ namespace JM.Diag.W80
                     Stream.SerialPort.Handshake = System.IO.Ports.Handshake.None;
                     Stream.SerialPort.DataBits = 8;
                     Stream.SerialPort.PortName = portName;
-                    Stream.SerialPort.Open();
                     Stream.SerialPort.DtrEnable = true;
+                    Stream.SerialPort.Open();
                     if (InitBox() && CheckBox())
                     {
                         Stream.Clear();

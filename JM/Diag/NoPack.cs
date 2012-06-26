@@ -22,5 +22,10 @@ namespace JM.Diag
             Array.Copy(data, offset, result, 0, count);
             return result;
         }
+
+        public void Config(object obj)
+        {
+
+        }
     }
 }

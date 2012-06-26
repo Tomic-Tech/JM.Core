@@ -41,9 +41,15 @@ namespace JM.Diag
         }
         #endregion
 
-        public void Config(ISO9141Options options)
+        public void Config(object options)
         {
-            this.options = options;
+            if (options is ISO9141Options)
+            {
+                this.options = options as ISO9141Options;
+            } else
+            {
+                throw new ArgumentException();
+            }
         }
     }
 }

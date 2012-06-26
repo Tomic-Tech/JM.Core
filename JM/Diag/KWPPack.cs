@@ -131,9 +131,15 @@ namespace JM.Diag
             return result;
         }
 
-        public void Config(KWPOptions opts)
+        public void Config(object opts)
         {
-            options = opts;
+            if (opts is KWPOptions)
+            {
+                options = opts as KWPOptions;
+            } else
+            {
+                throw new ArgumentException();
+            }
         }
     }
 }

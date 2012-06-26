@@ -112,8 +112,11 @@ namespace JM.Core
         public bool Showed
         {
             get { return GetShowed(p); }
-            set { SetShowed(p, value);
-                OnPropertyChanged("Showed"); }
+            set
+            {
+                SetShowed(p, value);
+                OnPropertyChanged("Showed");
+            }
         }
 
         public int Index

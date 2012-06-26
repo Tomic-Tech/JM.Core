@@ -301,7 +301,7 @@ namespace JM.Diag.C168
             if (ReadData(
                 receiveBuffer,
                 offset,
-                cmdInfo[1],
+                cmdInfo [1],
                 Core.Timer.FromMilliseconds(150)
             ) != cmdInfo [1] ||
                 ReadData(cmdInfo, 0, 1, Core.Timer.FromMilliseconds(150)) != 1)

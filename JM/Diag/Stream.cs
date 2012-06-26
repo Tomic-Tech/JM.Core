@@ -8,13 +8,17 @@ namespace JM.Diag
         {
             get;
         }
+
         public abstract Core.Timer ReadTimeout
         {
             get;
             set;
         }
+
         public abstract void Clear();
+
         public abstract int Read(byte[] buffer, int offset, int count);
+
         public abstract int Write(byte[] buffer, int offset, int count);
     }
 }
