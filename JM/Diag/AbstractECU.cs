@@ -5,11 +5,11 @@ namespace JM.Diag
 {
     public abstract class AbstractECU
     {
-        public delegate string CalcDataStream(byte[] recv);
-
+        public delegate string DataCalcDelegate(byte[] recv);
         public delegate string ActiveTest(bool on);
 
-        private Dictionary<string, CalcDataStream> calcDatas;
+        private Dictionary<string, DataCalcDelegate> dataStreamCalc;
+        private Dictionary<string, DataCalcDelegate> troubleCodeCalc;
         private Dictionary<string, ActiveTest> activeTests;
         private Core.VehicleDB db;
         private ICommbox commbox;
@@ -71,17 +71,30 @@ namespace JM.Diag
             }
         }
 
-        protected Dictionary<string, CalcDataStream> CalcDatas
+        protected Dictionary<string, DataCalcDelegate> DataStreamCalc
         {
             get
             {
-                return calcDatas;
+                return dataStreamCalc;
             }
             set
             {
-                calcDatas = value;
+                dataStreamCalc = value;
             }
         }
+
+        public Dictionary<string, DataCalcDelegate> TroubleCodeCalc
+        {
+            get
+            {
+                return troubleCodeCalc;
+            }
+            set
+            {
+                troubleCodeCalc = value;
+            }
+        }
+
 
         protected Dictionary<string, ActiveTest> ActiveTests
         {

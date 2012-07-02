@@ -38,18 +38,21 @@ namespace JM.Core
             {
                 case 0x00:
                     code.Append("P");
+                    code.AppendFormat("{0:X2}", buffer [pos * factor + offset]);
                     break;
                 case 0x40:
                     code.Append("C");
+                    code.AppendFormat("{0:X2}", buffer [pos * factor + offset] - 0x40);
                     break;
                 case 0x80:
                     code.Append("B");
+                    code.AppendFormat("{0:X2}", buffer [pos * factor + offset] - 0x80);
                     break;
                 default:
                     code.Append("U");
+                    code.AppendFormat("{0:X2}", buffer [pos * factor + offset] - 0xC0);
                     break;
             }
-            code.AppendFormat("{0:X2}", buffer [pos * factor + offset]);
             code.AppendFormat("{0:X2}", buffer [pos * factor + offset + 1]);
             return code.ToString();
         }

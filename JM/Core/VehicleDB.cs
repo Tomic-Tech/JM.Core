@@ -28,7 +28,7 @@ namespace JM.Core
         private static extern bool GetText(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string name, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
 
         [DllImport("JMCore", EntryPoint = "database_get_trouble_code")]
-        private static extern bool GetTroubleCode(IntPtr p, [MarshalAs(UnmanagedType.LPWStr)]string code, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
+        private static extern bool GetTroubleCode(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string code, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
 
         [DllImport("JMCore", EntryPoint = "database_get_live_data")]
         private static extern bool GetLiveData(IntPtr p, IntPtr vec);
