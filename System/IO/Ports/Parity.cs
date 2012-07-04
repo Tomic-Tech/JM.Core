@@ -9,16 +9,16 @@
 
 #if OS_ANDROID
 
-namespace System.IO.Ports 
+namespace System.IO.Ports
 {
-    public enum Parity 
+    public enum Parity
     {
         None,
         Odd,
         Even,
         Mark,
         Space
-    } 
+    }
 }
 
 #endif

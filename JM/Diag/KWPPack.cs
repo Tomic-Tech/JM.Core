@@ -37,32 +37,37 @@ namespace JM.Diag
             if (mode == KWPMode.Mode8X)
             {
                 result = new byte[KWP8X_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result [pos++] = Utils.LowByte(0x80 | count);
-                result [pos++] = Utils.LowByte(options.TargetAddress);
-                result [pos++] = Utils.LowByte(options.SourceAddress);
-            } else if (mode == KWPMode.ModeCX)
+                result[pos++] = Utils.LowByte(0x80 | count);
+                result[pos++] = Utils.LowByte(options.TargetAddress);
+                result[pos++] = Utils.LowByte(options.SourceAddress);
+            }
+            else if (mode == KWPMode.ModeCX)
             {
                 result = new byte[KWPCX_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result [pos++] = Utils.LowByte(0xC0 | count);
-                result [pos++] = Utils.LowByte(options.TargetAddress);
-                result [pos++] = Utils.LowByte(options.SourceAddress);
-            } else if (mode == KWPMode.Mode80)
+                result[pos++] = Utils.LowByte(0xC0 | count);
+                result[pos++] = Utils.LowByte(options.TargetAddress);
+                result[pos++] = Utils.LowByte(options.SourceAddress);
+            }
+            else if (mode == KWPMode.Mode80)
             {
                 result = new byte[KWP80_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result [pos++] = Utils.LowByte(0x80);
-                result [pos++] = Utils.LowByte(options.TargetAddress);
-                result [pos++] = Utils.LowByte(options.SourceAddress);
-                result [pos++] = Utils.LowByte(count);
-            } else if (mode == KWPMode.Mode00)
+                result[pos++] = Utils.LowByte(0x80);
+                result[pos++] = Utils.LowByte(options.TargetAddress);
+                result[pos++] = Utils.LowByte(options.SourceAddress);
+                result[pos++] = Utils.LowByte(count);
+            }
+            else if (mode == KWPMode.Mode00)
             {
                 result = new byte[KWP00_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result [pos++] = Utils.LowByte(0x00);
-                result [pos++] = Utils.LowByte(count);
-            } else if (mode == KWPMode.ModeXX)
+                result[pos++] = Utils.LowByte(0x00);
+                result[pos++] = Utils.LowByte(count);
+            }
+            else if (mode == KWPMode.ModeXX)
             {
                 result = new byte[KWPXX_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result [pos++] = Utils.LowByte(count);
-            } else
+                result[pos++] = Utils.LowByte(count);
+            }
+            else
             {
                 throw new ArgumentException();
             }
@@ -72,9 +77,9 @@ namespace JM.Diag
 
             for (i = 0; i < pos; i++)
             {
-                checksum += result [i];
+                checksum += result[i];
             }
-            result [i] = checksum;
+            result[i] = checksum;
             return result;
         }
 
@@ -83,25 +88,26 @@ namespace JM.Diag
             int length = 0;
             byte[] result = null;
 
-            if ((data [offset] & 0xFF) > 0x80)
+            if ((data[offset] & 0xFF) > 0x80)
             {
-                length = (data [offset] & 0xFF) - 0x80;
-                if (data [offset + 1] != options.SourceAddress)
+                length = (data[offset] & 0xFF) - 0x80;
+                if (data[offset + 1] != options.SourceAddress)
                 {
                     return null;
                 }
                 if (length != (count - KWP8X_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
                 {
-                    length = data [offset] - 0xC0; // For KWPCX 
+                    length = data[offset] - 0xC0; // For KWPCX 
                     if (length != (count - KWPCX_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
                     {
                         return null;
                     }
                 }
-            } else if ((data [offset] & 0xFF) == 0x80)
+            }
+            else if ((data[offset] & 0xFF) == 0x80)
             {
-                length = data [0] & 0xFF;
-                if (data [offset + 1] != options.SourceAddress)
+                length = data[0] & 0xFF;
+                if (data[offset + 1] != options.SourceAddress)
                 {
                     return null;
                 }
@@ -110,16 +116,18 @@ namespace JM.Diag
                 {
                     return null;
                 }
-            } else if (data [offset] == 0x00)
+            }
+            else if (data[offset] == 0x00)
             {
-                length = data [offset + 1] & 0xFF;
+                length = data[offset + 1] & 0xFF;
                 if (length != (count - KWP00_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
                 {
                     return null;
                 }
-            } else
+            }
+            else
             {
-                length = data [offset] & 0xFF;
+                length = data[offset] & 0xFF;
                 if (length != (count - KWP00_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
                 {
                     return null;
@@ -136,7 +144,8 @@ namespace JM.Diag
             if (opts is KWPOptions)
             {
                 options = opts as KWPOptions;
-            } else
+            }
+            else
             {
                 throw new ArgumentException();
             }

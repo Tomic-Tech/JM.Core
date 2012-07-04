@@ -7,15 +7,17 @@ namespace System.IO.Ports
     public class SerialErrorReceivedEventArgs : EventArgs
     {
 
-        internal SerialErrorReceivedEventArgs (SerialError eventType)
+        internal SerialErrorReceivedEventArgs(SerialError eventType)
         {
             this.eventType = eventType;
         }
 
         // properties
 
-        public SerialError EventType {
-            get {
+        public SerialError EventType
+        {
+            get
+            {
                 return eventType;
             }
         }

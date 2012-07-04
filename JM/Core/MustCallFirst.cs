@@ -56,13 +56,13 @@ namespace JM.Core
         }
 
         [DllImport("JMCore", EntryPoint = "sys_db_init", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SysDBInit([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(UTF8Marshaler))]string path);
+        private static extern void SysDBInit([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]string path);
 
         [DllImport("JMCore", EntryPoint = "sys_db_dispose", CallingConvention = CallingConvention.Cdecl)]
         private static extern void SysDBDispose();
 
         [DllImport("JMCore", EntryPoint = "register_init", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void RegisterInit([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(UTF8Marshaler))]string path);
+        private static extern void RegisterInit([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]string path);
 
         [DllImport("JMCore", EntryPoint = "register_dispose", CallingConvention = CallingConvention.Cdecl)]
         private static extern void RegisterDispose();

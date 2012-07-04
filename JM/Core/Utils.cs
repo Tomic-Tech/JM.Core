@@ -34,26 +34,26 @@ namespace JM.Core
         public static string CalcStdObdTroubleCode(byte[] buffer, int pos, int factor, int offset)
         {
             StringBuilder code = new StringBuilder();
-            switch (buffer [pos * factor + offset] & 0xC0)
+            switch (buffer[pos * factor + offset] & 0xC0)
             {
                 case 0x00:
                     code.Append("P");
-                    code.AppendFormat("{0:X2}", buffer [pos * factor + offset]);
+                    code.AppendFormat("{0:X2}", buffer[pos * factor + offset]);
                     break;
                 case 0x40:
                     code.Append("C");
-                    code.AppendFormat("{0:X2}", buffer [pos * factor + offset] - 0x40);
+                    code.AppendFormat("{0:X2}", buffer[pos * factor + offset] - 0x40);
                     break;
                 case 0x80:
                     code.Append("B");
-                    code.AppendFormat("{0:X2}", buffer [pos * factor + offset] - 0x80);
+                    code.AppendFormat("{0:X2}", buffer[pos * factor + offset] - 0x80);
                     break;
                 default:
                     code.Append("U");
-                    code.AppendFormat("{0:X2}", buffer [pos * factor + offset] - 0xC0);
+                    code.AppendFormat("{0:X2}", buffer[pos * factor + offset] - 0xC0);
                     break;
             }
-            code.AppendFormat("{0:X2}", buffer [pos * factor + offset + 1]);
+            code.AppendFormat("{0:X2}", buffer[pos * factor + offset + 1]);
             return code.ToString();
         }
     }

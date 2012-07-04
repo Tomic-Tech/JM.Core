@@ -25,7 +25,7 @@ namespace JM.Diag.V1
             {
                 receive = W80.Constant.RECEIVE;
             }
-            
+
             if (!commbox.NewBatch(commbox.BuffID))
             {
                 return 0;
@@ -45,7 +45,8 @@ namespace JM.Diag.V1
                 {
                     return 0;
                 }
-            } else
+            }
+            else
             {
                 if (!commbox.SendOutData(sendBuff, 0, sendBuff.Length) ||
                     !commbox.EndBatch() ||

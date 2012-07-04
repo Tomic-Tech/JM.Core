@@ -9,15 +9,15 @@
 
 #if OS_ANDROID
 
-namespace System.IO.Ports 
+namespace System.IO.Ports
 {
-    public enum StopBits 
+    public enum StopBits
     {
         None,
         One,
         Two,
         OnePointFive
-    } 
+    }
 }
 
 #endif

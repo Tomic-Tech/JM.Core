@@ -7,8 +7,8 @@ namespace JM.Core
     public static class SysDB
     {
 
-        [DllImport("JMCore", EntryPoint="sys_db_get_text", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void GetText([MarshalAs(UnmanagedType.LPStr)]string name, 
+        [DllImport("JMCore", EntryPoint = "sys_db_get_text", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void GetText([MarshalAs(UnmanagedType.LPStr)]string name,
                                            [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
 
         public static string GetText(string name)

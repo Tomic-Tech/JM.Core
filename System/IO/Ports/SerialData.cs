@@ -9,13 +9,13 @@
 
 #if OS_ANDROID
 
-namespace System.IO.Ports 
+namespace System.IO.Ports
 {
-    public enum SerialData 
+    public enum SerialData
     {
         Chars = 1,
         Eof
-    } 
+    }
 }
 
 #endif

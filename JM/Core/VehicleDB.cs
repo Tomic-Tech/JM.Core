@@ -10,7 +10,7 @@ namespace JM.Core
         bool disposed = false;
 
         [DllImport("JMCore", EntryPoint = "database_new")]
-        private static extern IntPtr New([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(UTF8Marshaler))]string filePath);
+        private static extern IntPtr New([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]string filePath);
 
         [DllImport("JMCore", EntryPoint = "database_dispose")]
         private static extern void Dispose(IntPtr p);
@@ -30,14 +30,19 @@ namespace JM.Core
         [DllImport("JMCore", EntryPoint = "database_get_trouble_code")]
         private static extern bool GetTroubleCode(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string code, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
 
-        [DllImport("JMCore", EntryPoint = "database_get_live_data")]
-        private static extern bool GetLiveData(IntPtr p, IntPtr vec);
+        //[DllImport("JMCore", EntryPoint = "database_get_live_data")]
+        //private static extern bool GetLiveData(IntPtr p, IntPtr vec);
+        [DllImport("JMCore", EntryPoint = "database_live_data_prepare")]
+        private static extern bool LiveDataPrepare(IntPtr p);
+
+        [DllImport("JMCore", EntryPoint = "database_live_data_next")]
+        private static extern bool LiveDataNext(IntPtr p, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder shortName, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder content, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder unit, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder defaultValue, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder value, out Int32 cmdID);
 
         [DllImport("JMCore", EntryPoint = "database_get_command")]
-        private static extern bool GetCommand(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string name, byte[]buffer, out UInt32 count);
+        private static extern bool GetCommand(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string name, byte[] buffer, out UInt32 count);
 
         [DllImport("JMCore", EntryPoint = "database_get_command_by_id")]
-        private static extern bool GetCommand(IntPtr p, Int32 id, byte[]buffer, out UInt32 count);
+        private static extern bool GetCommand(IntPtr p, Int32 id, byte[] buffer, out UInt32 count);
 
         public VehicleDB(string filePath)
         {
@@ -121,15 +126,41 @@ namespace JM.Core
         public LiveDataVector GetLiveData()
         {
             LiveDataVector vec = new LiveDataVector();
-            if (!GetLiveData(p, vec.UnmanagedPointer))
+            if (!LiveDataPrepare(p))
             {
-                vec.Close();
-                return null;
+                throw new System.Exception("Can't prepare live data");
             }
+            while (true)
+            {
+                StringBuilder shortName = new StringBuilder(100);
+                StringBuilder content = new StringBuilder(100);
+                StringBuilder unit = new StringBuilder(100);
+                StringBuilder defaultValue = new StringBuilder(100);
+                StringBuilder value = new StringBuilder(100);
+                int cmdID = 0;
 
-            vec.Initialize();
+                if (LiveDataNext(p, shortName, content, unit, defaultValue, value, out cmdID))
+                {
+                    vec.Add(new LiveData(shortName.ToString(), content.ToString(), unit.ToString(), defaultValue.ToString(), value.ToString(), cmdID, true));
+                }
+                else
+                    break;
+            }
             return vec;
         }
+
+        //public LiveDataVector GetLiveData()
+        //{
+        //    LiveDataVector vec = new LiveDataVector();
+        //    if (!GetLiveData(p, vec.UnmanagedPointer))
+        //    {
+        //        vec.Close();
+        //        return null;
+        //    }
+
+        //    vec.Initialize();
+        //    return vec;
+        //}
 
         public byte[] GetCommand(string name)
         {

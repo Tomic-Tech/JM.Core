@@ -81,9 +81,9 @@ namespace JM.Diag.V1
 
             while (j < i) // Multi Frame
             {
-                if ((buff [k] == buff [j]) &&
-                    (buff [k + 1] == buff [j + 1]) &&
-                    (buff [k + 2] == buff [j + 2]))
+                if ((buff[k] == buff[j]) &&
+                    (buff[k + 1] == buff[j + 1]) &&
+                    (buff[k + 2] == buff[j + 2]))
                 {
                     result.AddRange(pack.Unpack(buff, k, j - k));
                     k = j;
@@ -154,7 +154,7 @@ namespace JM.Diag.V1
                 if (!Box.NewBatch(Box.BuffID))
                     throw new IOException();
 
-                if (!Box.SendOutData(new byte[] { options.AddrCode}, 0, 1) ||
+                if (!Box.SendOutData(new byte[] { options.AddrCode }, 0, 1) ||
                     !Box.SetCommLine((kLine == RK_NO ? lLine : SK_NO), kLine) ||
                     !Box.RunReceive(SET55_BAUD) ||
                     !Box.RunReceive(REC_LEN_1) ||
@@ -169,9 +169,9 @@ namespace JM.Diag.V1
                 }
 
                 int tempLen = 0;
-                byte [] tempBuff = new byte[3];
+                byte[] tempBuff = new byte[3];
 
-                if (!Box.RunBatch(new byte[] { Box.BuffID}, 1, false) ||
+                if (!Box.RunBatch(new byte[] { Box.BuffID }, 1, false) ||
                     (tempLen = Box.ReadData(tempBuff, 0, 3, Core.Timer.FromSeconds(3))) != 3 ||
                     !Box.CheckResult(Core.Timer.FromMilliseconds(500)))
                 {
@@ -182,7 +182,7 @@ namespace JM.Diag.V1
                 if (!Box.DelBatch(Box.BuffID))
                     throw new IOException();
 
-                if (tempBuff [2] != 0)
+                if (tempBuff[2] != 0)
                 {
                     throw new IOException();
                 }
@@ -193,7 +193,8 @@ namespace JM.Diag.V1
                     !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(200)))
                     throw new IOException();
 
-            } else
+            }
+            else
             {
                 throw new ArgumentException();
             }

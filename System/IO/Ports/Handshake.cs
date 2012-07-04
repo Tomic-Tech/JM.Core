@@ -9,15 +9,15 @@
 
 #if OS_ANDROID
 
-namespace System.IO.Ports 
+namespace System.IO.Ports
 {
-    public enum Handshake 
+    public enum Handshake
     {
         None,
         XOnXOff,
         RequestToSend,
         RequestToSendXOnXOff
-    } 
+    }
 }
 
 #endif

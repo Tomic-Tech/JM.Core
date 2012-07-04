@@ -2,7 +2,7 @@
 
 namespace JM.Diag.W80
 {
-    internal class Commbox<T> : JM.Diag.Commbox<T>, ICommbox, V1.ICommbox where T: SerialPortStream
+    internal class Commbox<T> : JM.Diag.Commbox<T>, ICommbox, V1.ICommbox where T : SerialPortStream
     {
         private byte buffID;
         private byte lastError;
@@ -59,11 +59,11 @@ namespace JM.Diag.W80
             }
 
             byte[] buffer = new byte[1];
-            buffer [0] = Constant.READY;
+            buffer[0] = Constant.READY;
             Stream.ReadTimeout = Core.Timer.FromMilliseconds(200);
             while (Stream.Read(buffer, 0, 1) == 1)
                 ;
-            if (buffer [0] == Constant.READY || buffer [0] == Constant.ERROR)
+            if (buffer[0] == Constant.READY || buffer[0] == Constant.ERROR)
                 return true;
             return false;
         }
@@ -72,10 +72,10 @@ namespace JM.Diag.W80
         {
             Stream.ReadTimeout = Core.Timer.FromMilliseconds(200);
             byte[] buffer = new byte[1];
-            buffer [0] = 0;
+            buffer[0] = 0;
             if (Stream.Read(buffer, 0, 1) != 1)
                 return false;
-            if (buffer [0] == Constant.RECV_OK)
+            if (buffer[0] == Constant.RECV_OK)
                 return true;
             return false;
         }
@@ -84,12 +84,12 @@ namespace JM.Diag.W80
         {
             Stream.ReadTimeout = time;
             byte[] rb = new byte[1];
-            rb [0] = 0;
+            rb[0] = 0;
             if (Stream.Read(rb, 0, 1) != 1)
             {
                 return false;
             }
-            if (rb [0] == Constant.READY || rb [0] == Constant.ERROR)
+            if (rb[0] == Constant.READY || rb[0] == Constant.ERROR)
             {
                 Stream.Clear();
                 return true;
@@ -107,16 +107,16 @@ namespace JM.Diag.W80
             byte cs = cmd;
             byte[] data = new byte[length + 2];
 
-            data [0] = (byte)(cmd + box.RunFlag);
+            data[0] = (byte)(cmd + box.RunFlag);
             if (buffer != null)
             {
                 for (int i = 0; i < length; i++)
                 {
-                    cs += buffer [offset + i];
+                    cs += buffer[offset + i];
                 }
                 Array.Copy(buffer, offset, data, 1, length);
             }
-            data [data.Length - 1] = cs;
+            data[data.Length - 1] = cs;
             for (int i = 0; i < 3; i++)
             {
                 if (!CheckIdle())
@@ -141,7 +141,8 @@ namespace JM.Diag.W80
                     if (avail <= (length - len))
                     {
                         len += Stream.Read(buffer, offset + len, avail);
-                    } else
+                    }
+                    else
                     {
                         len += Stream.Read(buffer, offset + len, length - len);
                     }
@@ -168,20 +169,20 @@ namespace JM.Diag.W80
         private bool GetCmdData(byte[] buffer, int offset, int maxlen)
         {
             byte[] len = new byte[1];
-            len [0] = 0;
+            len[0] = 0;
             if (RecvBytes(buffer, 0, 1) != 1)
                 return false;
             if (RecvBytes(len, 0, 1) != 1)
                 return false;
-            if (len [0] > maxlen)
-                len [0] = Convert.ToByte(maxlen);
-            if (RecvBytes(buffer, 0, len [0]) != len [0])
+            if (len[0] > maxlen)
+                len[0] = Convert.ToByte(maxlen);
+            if (RecvBytes(buffer, 0, len[0]) != len[0])
                 return false;
             byte[] cs = new byte[1];
-            cs [0] = 0;
+            cs[0] = 0;
             if (RecvBytes(cs, 0, 1) != 1)
                 return false;
-            return len [0] > 0;
+            return len[0] > 0;
         }
 
         private bool DoCmd(byte cmd)
@@ -205,10 +206,10 @@ namespace JM.Diag.W80
                             return false;
                         tmp = new byte[2 + length];
                         if (box.IsLink)
-                            tmp [0] = 0xFF; //写链路保持
+                            tmp[0] = 0xFF; //写链路保持
                         else
-                            tmp [0] = 0x00; //写通讯命令
-                        tmp [1] = (byte)length;
+                            tmp[0] = 0x00; //写通讯命令
+                        tmp[1] = (byte)length;
                         Array.Copy(buffer, offset, tmp, 2, length);
                         return SendCmd(Constant.WR_DATA, tmp, 0, tmp.Length);
 
@@ -216,10 +217,10 @@ namespace JM.Diag.W80
                         if (length == 0)
                             return false;
                         tmp = new byte[4 + length];
-                        tmp [0] = 0; //写入位置
-                        tmp [1] = (byte)(length + 2); //数据包长度
-                        tmp [2] = Constant.SEND_DATA; //命令
-                        tmp [3] = (byte)(length - 1); //命令长度-1
+                        tmp[0] = 0; //写入位置
+                        tmp[1] = (byte)(length + 2); //数据包长度
+                        tmp[2] = Constant.SEND_DATA; //命令
+                        tmp[3] = (byte)(length - 1); //命令长度-1
                         Array.Copy(buffer, offset, tmp, 4, length);
                         if (!SendCmd(Constant.WR_DATA, tmp, 0, tmp.Length))
                             return false;
@@ -228,12 +229,13 @@ namespace JM.Diag.W80
                     default:
                         return SendCmd(cmd, buffer, offset, length);
                 }
-            } else
+            }
+            else
             {
                 //写命令到缓冲区
-                box.Buf [box.Pos++] = cmd;
+                box.Buf[box.Pos++] = cmd;
                 if (cmd == Constant.SEND_DATA)
-                    box.Buf [box.Pos++] = (byte)(length - 1);
+                    box.Buf[box.Pos++] = (byte)(length - 1);
                 startpos = box.Pos;
                 if (length > 0)
                 {
@@ -261,8 +263,8 @@ namespace JM.Diag.W80
         {
             //Addr相对AUTOBUFF_0的位置
             byte[] tmp = new byte[2];
-            tmp [0] = addr;
-            tmp [1] = (byte)length;
+            tmp[0] = addr;
+            tmp[1] = (byte)length;
             if (!DoCmd(Constant.GET_BUF, tmp, 0, 2))
                 return false;
             return GetCmdData(buffer, offset, length);
@@ -272,16 +274,16 @@ namespace JM.Diag.W80
         {
             const int PASS_LEN = 10;
             byte[] password = new byte[10];
-            password [0] = 0x0C;
-            password [1] = 0x22;
-            password [2] = 0x17;
-            password [3] = 0x41;
-            password [4] = 0x57;
-            password [5] = 0x2D;
-            password [6] = 0x43;
-            password [7] = 0x17;
-            password [8] = 0x2D;
-            password [9] = 0x4D;
+            password[0] = 0x0C;
+            password[1] = 0x22;
+            password[2] = 0x17;
+            password[3] = 0x41;
+            password[4] = 0x57;
+            password[5] = 0x2D;
+            password[6] = 0x43;
+            password[7] = 0x17;
+            password[8] = 0x2D;
+            password[9] = 0x4D;
 
             box.IsDoNow = true;
             box.RunFlag = 0;
@@ -291,11 +293,11 @@ namespace JM.Diag.W80
 
             int i;
             for (i = 1; i < 4; i++)
-                buf [i] = (byte)rand.Next();
+                buf[i] = (byte)rand.Next();
 
             byte run = 0;
             for (i = 0; i < PASS_LEN; i++)
-                run += (byte)(password [i] ^ buf [i % 3 + 1]);
+                run += (byte)(password[i] ^ buf[i % 3 + 1]);
             if (run == 0)
                 run = 0x55;
 
@@ -309,12 +311,12 @@ namespace JM.Diag.W80
             box.BoxTimeUnit = 0;
 
             for (i = 0; i < 3; i++)
-                box.BoxTimeUnit = box.BoxTimeUnit * 256 + buf [i];
-            box.TimeBaseDB = buf [i++];
-            box.TimeExternB = buf [i++];
+                box.BoxTimeUnit = box.BoxTimeUnit * 256 + buf[i];
+            box.TimeBaseDB = buf[i++];
+            box.TimeExternB = buf[i++];
 
             for (i = 0; i < Constant.MAXPORT_NUM; i++)
-                box.Port [i] = 0xFF;
+                box.Port[i] = 0xFF;
             box.Pos = 0;
             box.IsDB20 = false;
             return true;
@@ -327,23 +329,23 @@ namespace JM.Diag.W80
                 return false;
             if (!GetCmdData(buff, 0, 32))
                 return false;
-            boxVer = (ushort)(buff [10] << 8 | buff [11]);
+            boxVer = (ushort)(buff[10] << 8 | buff[11]);
             return true;
         }
 
         public bool SetLineLevel(byte valueLow, byte valueHigh)
         {
             //设定端口1
-            box.Port [1] &= (byte)(~valueLow);
-            box.Port [1] |= valueHigh;
+            box.Port[1] &= (byte)(~valueLow);
+            box.Port[1] |= valueHigh;
             return DoSet(Constant.SET_PORT1, box.Port, 1, 1);
         }
 
         public bool SetCommCtrl(byte valueOpen, byte valueClose)
         {
             //设定端口2
-            box.Port [2] &= (byte)(~valueOpen);
-            box.Port [2] |= valueClose;
+            box.Port[2] &= (byte)(~valueOpen);
+            box.Port[2] |= valueClose;
             return DoSet(Constant.SET_PORT2, box.Port, 2, 1);
         }
 
@@ -354,7 +356,7 @@ namespace JM.Diag.W80
                 sendLine = 0x0F;
             if (recvLine > 7)
                 recvLine = 0x0F;
-            box.Port [0] = (byte)(sendLine | (recvLine << 4));
+            box.Port[0] = (byte)(sendLine | (recvLine << 4));
             return DoSet(Constant.SET_PORT0, box.Port, 0, 1);
         }
 
@@ -374,15 +376,15 @@ namespace JM.Diag.W80
             byte[] ctrlWord = new byte[3];
             byte modeControl = (byte)(ctrlWord1 & 0xE0);
             int length = 3;
-            ctrlWord [0] = ctrlWord1;
+            ctrlWord[0] = ctrlWord1;
             if ((ctrlWord1 & 0x04) != 0)
                 box.IsDB20 = true;
             else
                 box.IsDB20 = false;
             if (modeControl == Constant.SET_VPW || modeControl == Constant.SET_PWM)
                 return DoSet(Constant.SET_CTRL, ctrlWord, 0, 1);
-            ctrlWord [1] = ctrlWord2;
-            ctrlWord [2] = ctrlWord3;
+            ctrlWord[1] = ctrlWord2;
+            ctrlWord[2] = ctrlWord3;
             if (ctrlWord3 == 0)
             {
                 length--;
@@ -403,10 +405,10 @@ namespace JM.Diag.W80
             instructNum += 0.5;
             if (instructNum > 65535 || instructNum < 10)
                 return false;
-            baudTime [0] = (byte)(instructNum / 256);
-            baudTime [1] = (byte)(instructNum % 256);
+            baudTime[0] = (byte)(instructNum / 256);
+            baudTime[1] = (byte)(instructNum % 256);
 
-            if (baudTime [0] == 0)
+            if (baudTime[0] == 0)
                 return DoSet(Constant.SET_BAUD, baudTime, 1, 1);
             return DoSet(Constant.SET_BAUD, baudTime, 0, 2);
         }
@@ -441,15 +443,16 @@ namespace JM.Diag.W80
                     microTime = (microTime * 2) / 3;
                 type = (byte)(type + (Constant.SETBYTETIME & 0xF0));
                 microTime = (ulong)(microTime / (box.BoxTimeUnit / 1000000.0));
-            } else
+            }
+            else
             {
                 microTime = (ulong)((microTime / box.TimeBaseDB) / (box.BoxTimeUnit / 1000000.0));
             }
 
-            timeBuff [0] = (byte)(microTime / 256);
-            timeBuff [1] = (byte)(microTime % 256);
+            timeBuff[0] = (byte)(microTime / 256);
+            timeBuff[1] = (byte)(microTime % 256);
 
-            if (timeBuff [0] == 0)
+            if (timeBuff[0] == 0)
                 return DoSet(type, timeBuff, 1, 1);
             return DoSet(type, timeBuff, 0, 2);
         }
@@ -471,16 +474,17 @@ namespace JM.Diag.W80
                     if (microTime > 65535)
                         return false;
                     delayWord = Constant.DELAYDWORD;
-                } else
+                }
+                else
                 {
                     delayWord = Constant.DELAYTIME;
                 }
             }
 
-            timeBuff [0] = (byte)(microTime / 256);
-            timeBuff [1] = (byte)(microTime % 256);
+            timeBuff[0] = (byte)(microTime / 256);
+            timeBuff[1] = (byte)(microTime % 256);
 
-            if (timeBuff [0] == 0)
+            if (timeBuff[0] == 0)
                 return DoSet(delayWord, timeBuff, 1, 1);
             return DoSet(delayWord, timeBuff, 0, 2);
         }
@@ -538,7 +542,8 @@ namespace JM.Diag.W80
                         return;
                     }
                     Stream.SerialPort.Close();
-                } catch (Exception)
+                }
+                catch (Exception)
                 {
                     continue;
                 }
@@ -552,7 +557,8 @@ namespace JM.Diag.W80
             {
                 Reset();
                 Stream.SerialPort.Close();
-            } catch (Exception)
+            }
+            catch (Exception)
             {
             }
         }
@@ -561,8 +567,8 @@ namespace JM.Diag.W80
         {
             byte[] buf = new byte[3];
             int len = 0;
-            buf [0] = addr;
-            buf [1] = data;
+            buf[0] = addr;
+            buf[1] = data;
             switch (type)
             {
                 case Constant.INC_BYTE:
@@ -585,9 +591,9 @@ namespace JM.Diag.W80
         private bool CopyBuff(byte dest, byte src, byte len)
         {
             byte[] buf = new byte[3];
-            buf [0] = dest;
-            buf [1] = src;
-            buf [2] = len;
+            buf[0] = dest;
+            buf[1] = src;
+            buf[2] = len;
             return DoSet(Constant.COPY_BYTE, buf, 0, 3);
         }
 
@@ -603,38 +609,38 @@ namespace JM.Diag.W80
         {
             int i = 0;
             box.IsDoNow = true;
-            box.Buf [box.Pos++] = 0;  //命令块以0x00标记结束
+            box.Buf[box.Pos++] = 0;  //命令块以0x00标记结束
             if (box.IsLink)
             {
                 //修改UpdateBuff使用到的地址
                 while (box.Buf[i] != 0)
                 {
-                    switch (box.Buf [i] & 0xFC)
+                    switch (box.Buf[i] & 0xFC)
                     {
                         case Constant.COPY_BYTE:
-                            box.Buf [i + 3] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
-                            box.Buf [i + 2] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
-                            box.Buf [i + 1] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
+                            box.Buf[i + 3] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
+                            box.Buf[i + 2] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
+                            box.Buf[i + 1] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
                             break;
                         case Constant.SUB_BYTE:
-                            box.Buf [i + 2] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
-                            box.Buf [i + 1] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
+                            box.Buf[i + 2] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
+                            box.Buf[i + 1] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
                             break;
                         case Constant.UPDATE_BYTE:
                         case Constant.INVERT_BYTE:
                         case Constant.ADD_BYTE:
                         case Constant.DEC_BYTE:
                         case Constant.INC_BYTE:
-                            box.Buf [i + 1] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
+                            box.Buf[i + 1] += (byte)(Constant.MAXBUFF_LEN - box.Pos);
                             break;
                     }
 
-                    if (box.Buf [i] == Constant.SEND_DATA)
-                        i += (1 + (box.Buf [i + 1] + 1) + 1);
-                    else if (box.Buf [i] >= Constant.REC_LEN_1 && box.Buf [i] <= Constant.REC_LEN_15)
+                    if (box.Buf[i] == Constant.SEND_DATA)
+                        i += (1 + (box.Buf[i + 1] + 1) + 1);
+                    else if (box.Buf[i] >= Constant.REC_LEN_1 && box.Buf[i] <= Constant.REC_LEN_15)
                         i += 1; //特殊
                     else
-                        i += (box.Buf [i] & 0x03) + 1;
+                        i += (box.Buf[i] & 0x03) + 1;
                 }
             }
 
@@ -651,7 +657,7 @@ namespace JM.Diag.W80
         public bool RunBatch(byte[] buffID, int length, bool isRunMore)
         {
             byte cmd;
-            if (buffID [0] == Constant.LINKBLOCK)
+            if (buffID[0] == Constant.LINKBLOCK)
                 cmd = isRunMore ? Constant.DO_BAT_LN : Constant.DO_BAT_L;
             else
                 cmd = isRunMore ? Constant.DO_BAT_CN : Constant.DO_BAT_C;
@@ -663,7 +669,7 @@ namespace JM.Diag.W80
             StopNow(true);
             Stream.Clear();
             for (int i = 0; i < Constant.MAXPORT_NUM; i++)
-                box.Port [i] = 0xFF;
+                box.Port[i] = 0xFF;
             return DoCmd(Constant.RESET);
         }
 

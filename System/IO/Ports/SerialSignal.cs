@@ -11,7 +11,8 @@
 
 namespace System.IO.Ports
 {
-    enum SerialSignal {
+    enum SerialSignal
+    {
         None = 0,
         Cd = 1, // Carrier detect 
         Cts = 2, // Clear to send

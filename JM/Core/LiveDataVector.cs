@@ -4,37 +4,34 @@ using System.Collections.Generic;
 
 namespace JM.Core
 {
-    public class LiveDataVector : IDisposable
+    public class LiveDataVector : List<LiveData>
     {
-        private IntPtr p;
         private bool disposed = false;
-        private List<LiveData> liveDatas;
         private List<int> showIndexes;
         private Dictionary<int, int> showPositions;
         private List<int> enabledIndexes;
         private int currentEnabledIndex;
         private object mutex;
 
-        public delegate void ValueChange(int index,string value);
+        public delegate void ValueChange(int index, string value);
 
         public ValueChange OnValueChange;
 
-        [DllImport("JMCore", EntryPoint = "live_data_vector_new", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr New();
+        //[DllImport("JMCore", EntryPoint = "live_data_vector_new", CallingConvention = CallingConvention.Cdecl)]
+        //private static extern IntPtr New();
 
-        [DllImport("JMCore", EntryPoint = "live_data_vector_dispose", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Dispose(IntPtr p);
+        //[DllImport("JMCore", EntryPoint = "live_data_vector_dispose", CallingConvention = CallingConvention.Cdecl)]
+        //private static extern void Dispose(IntPtr p);
 
-        [DllImport("JMCore", EntryPoint = "live_data_vector_index", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr Index(IntPtr p, uint index);
+        //[DllImport("JMCore", EntryPoint = "live_data_vector_index", CallingConvention = CallingConvention.Cdecl)]
+        //private static extern IntPtr Index(IntPtr p, uint index);
 
-        [DllImport("JMCore", EntryPoint = "live_data_vector_size", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint Size(IntPtr p);
+        //[DllImport("JMCore", EntryPoint = "live_data_vector_size", CallingConvention = CallingConvention.Cdecl)]
+        //private static extern uint Size(IntPtr p);
 
         public LiveDataVector()
+            : base()
         {
-            p = New();
-            liveDatas = new List<LiveData>();
             showIndexes = new List<int>();
             showPositions = new Dictionary<int, int>();
             enabledIndexes = new List<int>();
@@ -42,69 +39,86 @@ namespace JM.Core
             mutex = new object();
         }
 
-        internal void Initialize()
+        public new void Add(LiveData ld)
         {
-            for (int i = 0; i < Size(p); i++)
+            base.Add(ld);
+            ld.PropertyChanged += (sender, e) =>
             {
-                IntPtr ptr = Index(p, Convert.ToUInt32(i));
-                if (ptr != IntPtr.Zero)
+                if (OnValueChange != null)
                 {
-                    LiveData ld = new LiveData(ptr);
-                    ld.Index = i;
-                    liveDatas.Add(ld);
-                    ld.PropertyChanged += (sender, e) =>
-                    {
-                        if (OnValueChange != null)
-                        {
-                            OnValueChange(ShowedPosition(ld.Index), ld.Value);
-                        }
-                    };
+                    OnValueChange(ShowedPosition(ld.Index), ld.Value);
                 }
-            }
+            };
+
+            ld.Index = Count - 1;
         }
 
-        internal IntPtr UnmanagedPointer
-        {
-            get { return p; }
-        }
+        //internal void Initialize()
+        //{
+        //    for (int i = 0; i < Size(p); i++)
+        //    {
+        //        IntPtr ptr = Index(p, Convert.ToUInt32(i));
+        //        if (ptr != IntPtr.Zero)
+        //        {
+        //            LiveData ld = new LiveData(ptr);
+        //            ld.Index = i;
+        //            liveDatas.Add(ld);
+        //            ld.PropertyChanged += (sender, e) =>
+        //            {
+        //                if (OnValueChange != null)
+        //                {
+        //                    OnValueChange(ShowedPosition(ld.Index), ld.Value);
+        //                }
+        //            };
+        //        }
+        //    }
+        //}
 
-        void IDisposable.Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        //internal IntPtr UnmanagedPointer
+        //{
+        //    get { return p; }
+        //}
 
-        protected virtual void Dispose(bool isDisposing)
-        {
-            if (!disposed)
-            {
-                if (isDisposing)
-                {
-                    Dispose(p);
-                    disposed = true;
-                }
-            }
-        }
+        //void IDisposable.Dispose()
+        //{
+        //    Dispose(true);
+        //    GC.SuppressFinalize(this);
+        //}
 
-        public void Close()
-        {
-            ((IDisposable)this).Dispose();
-        }
+        //protected virtual void Dispose(bool isDisposing)
+        //{
+        //    if (!disposed)
+        //    {
+        //        if (isDisposing)
+        //        {
+        //            Dispose(p);
+        //            disposed = true;
+        //        }
+        //    }
+        //}
 
-        ~LiveDataVector()
-        {
-            Dispose(true);
-        }
+        //public void Close()
+        //{
+        //    ((IDisposable)this).Dispose();
+        //}
 
-        public LiveData this [int index]
-        {
-            get { return liveDatas [index]; }
-        }
+        //~LiveDataVector()
+        //{
+        //    Dispose(true);
+        //}
 
-        public int Count
-        {
-            get { return Convert.ToInt32(Size(p)); }
-        }
+        //public LiveData this[int index]
+        //{
+        //    get { return liveDatas[index]; }
+        //}
+
+        //public int Count
+        //{
+        //    get
+        //    {
+        //        return liveDatas.Count;
+        //    }
+        //}
 
         public int EnabledCount
         {
@@ -125,7 +139,7 @@ namespace JM.Core
                     return -1;
                 }
 
-                int ret = showIndexes [currentEnabledIndex];
+                int ret = showIndexes[currentEnabledIndex];
                 ++currentEnabledIndex;
                 if (currentEnabledIndex > showIndexes.Count - 1)
                     currentEnabledIndex = 0;
@@ -142,7 +156,7 @@ namespace JM.Core
                     return -1;
                 }
 
-                return enabledIndexes [index];
+                return enabledIndexes[index];
             }
         }
 
@@ -150,7 +164,7 @@ namespace JM.Core
         {
             lock (mutex)
             {
-                return showPositions [index];
+                return showPositions[index];
             }
         }
 
@@ -158,12 +172,12 @@ namespace JM.Core
         {
             lock (mutex)
             {
-                if (index > showIndexes.Count)
+                if (index >= showIndexes.Count)
                 {
                     return -1;
                 }
 
-                return showIndexes [index];
+                return showIndexes[index];
             }
         }
 
@@ -174,7 +188,7 @@ namespace JM.Core
                 enabledIndexes.Clear();
                 for (int i = 0; i < Count; i++)
                 {
-                    if (this [i].Enabled)
+                    if (this[i].Enabled)
                     {
                         enabledIndexes.Add(i);
                     }
@@ -191,14 +205,14 @@ namespace JM.Core
                 int j = 0;
                 for (int i = 0; i < Count; i++)
                 {
-                    if (this [i].Enabled && this [i].Showed)
+                    if (this[i].Enabled && this[i].Showed)
                     {
                         showIndexes.Add(i);
-                        showPositions [i] = j++;
+                        showPositions[i] = j++;
                     }
                 }
 
-                currentEnabledIndex = showIndexes [0];
+                currentEnabledIndex = showIndexes[0];
             }
         }
     }

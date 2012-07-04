@@ -9,16 +9,16 @@
 
 #if OS_ANDROID
 
-namespace System.IO.Ports 
+namespace System.IO.Ports
 {
-    public enum SerialPinChange 
+    public enum SerialPinChange
     {
         CtsChanged = 8,
         DsrChanged = 16,
         CDChanged = 32,
         Break = 64,
         Ring = 256
-    } 
+    }
 }
 
 #endif

@@ -10,15 +10,15 @@ namespace JM.Diag
         public byte[] Pack(byte[] data, int offset, int count)
         {
             byte[] result = new byte[count + 4];
-            result [0] = options.Header;
-            result [1] = options.TargetAddress;
-            result [2] = options.SourceAddress;
+            result[0] = options.Header;
+            result[1] = options.TargetAddress;
+            result[2] = options.SourceAddress;
             Array.Copy(data, offset, result, 3, count);
-            result [result.Length - 1] = 0;
+            result[result.Length - 1] = 0;
 
             for (int i = 0; i < count + 3; i++)
             {
-                result [result.Length - 1] += result [i];
+                result[result.Length - 1] += result[i];
             }
 
             return result;
@@ -29,9 +29,9 @@ namespace JM.Diag
             byte cs = 0;
             for (int i = 0; i < count - 1; i++)
             {
-                cs += data [offset + i];
+                cs += data[offset + i];
             }
-            if (cs != data [offset + count - 1])
+            if (cs != data[offset + count - 1])
             {
                 return null;
             }
@@ -46,7 +46,8 @@ namespace JM.Diag
             if (options is ISO9141Options)
             {
                 this.options = options as ISO9141Options;
-            } else
+            }
+            else
             {
                 throw new ArgumentException();
             }

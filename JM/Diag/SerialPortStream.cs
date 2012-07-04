@@ -78,9 +78,11 @@ namespace JM.Diag
                 }
 
                 return ReadWithTimeout(buffer, offset, count);
-            } catch
+            }
+            catch
             {
-            } finally
+            }
+            finally
             {
             }
             return 0;
@@ -92,9 +94,11 @@ namespace JM.Diag
             {
                 serialPort.Write(buffer, offset, count);
                 return count;
-            } catch
+            }
+            catch
             {
-            } finally
+            }
+            finally
             {
             }
             return 0;

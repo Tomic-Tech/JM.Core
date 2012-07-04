@@ -2,19 +2,21 @@
 
 #if OS_ANDROID
 
-namespace System.IO.Ports 
+namespace System.IO.Ports
 {
     public class SerialDataReceivedEventArgs : EventArgs
     {
-        internal SerialDataReceivedEventArgs (SerialData eventType)
+        internal SerialDataReceivedEventArgs(SerialData eventType)
         {
             this.eventType = eventType;
         }
 
         // properties
 
-        public SerialData EventType {
-            get {
+        public SerialData EventType
+        {
+            get
+            {
                 return eventType;
             }
         }

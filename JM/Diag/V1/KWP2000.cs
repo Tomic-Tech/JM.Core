@@ -26,13 +26,14 @@ namespace JM.Diag.V1
         private void StartCommunicationInit()
         {
             startComms = new Dictionary<KWPStartType, StartCommunication>();
-            startComms [KWPStartType.Fast] = () =>
+            startComms[KWPStartType.Fast] = () =>
             {
                 byte valueOpen = 0;
                 if (options.LLine)
                 {
                     valueOpen = (byte)(PWC | RZFC | CK);
-                } else
+                }
+                else
                 {
                     valueOpen = (byte)(PWC | RZFC | CK);
                 }
@@ -107,7 +108,7 @@ namespace JM.Diag.V1
                 Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(55));
             };
 
-            startComms [KWPStartType.AddressCode] = () =>
+            startComms[KWPStartType.AddressCode] = () =>
             {
                 if (!Box.SetCommCtrl((byte)(PWC | REFC | RZFC | CK), SET_NULL) ||
                     !Box.SetCommBaud(5) ||
@@ -184,7 +185,7 @@ namespace JM.Diag.V1
                     throw new System.IO.IOException();
                 }
 
-                if (temp [2] != 0)
+                if (temp[2] != 0)
                 {
                     throw new System.IO.IOException();
                 }
@@ -219,9 +220,9 @@ namespace JM.Diag.V1
                 return null;
             }
 
-            if (temp [1] == options.SourceAddress)
+            if (temp[1] == options.SourceAddress)
             {
-                if (temp [0] == 0x80)
+                if (temp[0] == 0x80)
                 {
                     byte[] b = new byte[1];
                     length = Box.ReadBytes(b, 0, 1);
@@ -231,7 +232,7 @@ namespace JM.Diag.V1
                         return null;
                     }
 
-                    length = Convert.ToInt32(b [0]);
+                    length = Convert.ToInt32(b[0]);
                     if (length <= 0)
                     {
                         FinishExecute(isFinish);
@@ -248,9 +249,10 @@ namespace JM.Diag.V1
                         length + KWPPack.KWP_CHECKSUM_LENGTH
                     );
                     frameLength += length;
-                } else
+                }
+                else
                 {
-                    length = Convert.ToInt32(temp [0] - 0x80);
+                    length = Convert.ToInt32(temp[0] - 0x80);
                     if (length <= 0)
                     {
                         FinishExecute(isFinish);
@@ -266,11 +268,12 @@ namespace JM.Diag.V1
                     );
                     frameLength += length;
                 }
-            } else
+            }
+            else
             {
-                if (temp [0] == 0x00)
+                if (temp[0] == 0x00)
                 {
-                    length = Convert.ToInt32(temp [1]);
+                    length = Convert.ToInt32(temp[1]);
                     if (length <= 0)
                     {
                         FinishExecute(isFinish);
@@ -280,9 +283,10 @@ namespace JM.Diag.V1
                     frameLength += temp.Length;
                     length = Box.ReadBytes(result, temp.Length, length);
                     frameLength += length;
-                } else
+                }
+                else
                 {
-                    length = Convert.ToInt32(temp [0]);
+                    length = Convert.ToInt32(temp[0]);
                     if (length <= 0)
                     {
                         FinishExecute(isFinish);
@@ -308,10 +312,10 @@ namespace JM.Diag.V1
 
             for (i = 0; i < frameLength - 1; i++)
             {
-                checksum += result [i];
+                checksum += result[i];
             }
 
-            if (checksum != result [frameLength - 1])
+            if (checksum != result[frameLength - 1])
             {
                 return null;
             }
@@ -379,8 +383,9 @@ namespace JM.Diag.V1
             {
                 this.options = (KWPOptions)options;
                 ConfigLines();
-                startComms [this.options.StartType]();
-            } else
+                startComms[this.options.StartType]();
+            }
+            else
             {
                 throw new ArgumentException();
             }

@@ -25,11 +25,11 @@ namespace JM.Diag
         public byte[] Pack(byte[] data, int offset, int count)
         {
             byte[] result = new byte[count + 3];
-            result [0] = Utils.LowByte(count + 2);
-            result [1] = frameCounterIncrement();
+            result[0] = Utils.LowByte(count + 2);
+            result[1] = frameCounterIncrement();
 
             Array.Copy(data, offset, result, 2, count);
-            result [result.Length - 1] = FRAME_END;
+            result[result.Length - 1] = FRAME_END;
             return result;
         }
 
@@ -45,7 +45,8 @@ namespace JM.Diag
             if (opts is KWP1281Options)
             {
                 options = opts as KWP1281Options;
-            } else
+            }
+            else
             {
                 throw new ArgumentException();
             }

@@ -2,7 +2,7 @@
 
 namespace JM.Diag
 {
-    public abstract class Commbox<T> where T: Stream
+    public abstract class Commbox<T> where T : Stream
     {
         private T stream;
 
