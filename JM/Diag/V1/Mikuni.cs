@@ -9,6 +9,7 @@ namespace JM.Diag.V1
     internal class Mikuni : Diag.V1.Protocol, Diag.IProtocol
     {
         private Default<Mikuni> func;
+        private MikuniOptions options;
 
         public Mikuni(ICommbox box)
             : base(box)
@@ -86,9 +87,27 @@ namespace JM.Diag.V1
 
         public void Config(object options)
         {
+            if (!(options is MikuniOptions))
+            {
+                throw new ArgumentException();
+            }
+
+            this.options = options as MikuniOptions;
+
+            byte parity = 0;
+
+            if (this.options.Parity == MikuniParity.None)
+            {
+                parity = BIT9_MARK;
+            }
+            else
+            {
+                parity = BIT9_ODD;
+            }
+            
             if (!Box.SetCommCtrl((byte)(PWC | RZFC | CK | REFC), SET_NULL) ||
                 !Box.SetCommLine(SK_NO, RK1) ||
-                !Box.SetCommLink((byte)(RS_232 | BIT9_MARK | SEL_SL | UN_DB20), 0xFF, 2) ||
+                !Box.SetCommLink((byte)(RS_232 | parity | SEL_SL | UN_DB20), 0xFF, 2) ||
                 !Box.SetCommBaud(19200) ||
                 !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(100)) ||
                 !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(500)) ||

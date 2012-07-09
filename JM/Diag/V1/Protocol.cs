@@ -318,6 +318,42 @@ namespace JM.Diag.V1
             }
         }
 
+        public byte BIT9_EVEN
+        {
+            get
+            {
+                if (box is W80.Commbox<SerialPortStream>)
+                {
+                    return W80.Constant.BIT9_EVEN;
+                }
+                return 0;
+            }
+        }
+
+        public byte BIT9_ODD
+        {
+            get
+            {
+                if (box is W80.Commbox<SerialPortStream>)
+                {
+                    return W80.Constant.BIT9_ODD;
+                }
+                return 0;
+            }
+        }
+
+        public byte BIT9_SPACE
+        {
+            get
+            {
+                if (box is W80.Commbox<SerialPortStream>)
+                {
+                    return W80.Constant.BIT9_SPACE;
+                }
+                return 0;
+            }
+        }
+
         public byte SEL_SL
         {
             get
