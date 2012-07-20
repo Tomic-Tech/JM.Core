@@ -11,6 +11,6 @@ namespace JM.Diag
 
         byte[] Unpack(byte[] data, int offset, int count);
 
-        void Config(object obj);
+        bool Config(object obj);
     }
 }

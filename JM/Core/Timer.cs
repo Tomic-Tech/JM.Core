@@ -19,57 +19,57 @@ namespace JM.Core
 
         public Timer(TimeSpan time)
         {
-            ticks = Convert.ToInt64((Stopwatch.Frequency / 1000) * time.TotalMilliseconds);
+            ticks = Convert.ToInt64((Convert.ToDouble(Stopwatch.Frequency) / 1000) * time.TotalMilliseconds);
         }
 
-        public static Timer FromMicroseconds(double time)
+        public static Timer FromMicroseconds(long time)
         {
-            return new Timer(Convert.ToInt64((Stopwatch.Frequency / 1000000) * time));
+            return new Timer(Stopwatch.Frequency * time / 1000000);
         }
 
-        public static Timer FromMilliseconds(double time)
+        public static Timer FromMilliseconds(long time)
         {
-            return new Timer(Convert.ToInt64((Stopwatch.Frequency / 1000) * time));
+            return new Timer(Stopwatch.Frequency * time / 1000);
         }
 
-        public static Timer FromSeconds(double time)
+        public static Timer FromSeconds(long time)
         {
-            return new Timer(Convert.ToInt64(Stopwatch.Frequency * time));
+            return new Timer(Stopwatch.Frequency * time);
         }
 
-        public double Microseconds
-        {
-            get
-            {
-                return Convert.ToInt64((ticks / Stopwatch.Frequency) * 1000000);
-            }
-            set
-            {
-                ticks = Convert.ToInt64((Stopwatch.Frequency / 1000000) * value);
-            }
-        }
-
-        public double Milliseconds
+        public long Microseconds
         {
             get
             {
-                return Convert.ToInt64((ticks / Stopwatch.Frequency) * 1000);
+                return ticks * 1000000 / Stopwatch.Frequency;
             }
             set
             {
-                ticks = Convert.ToInt64((Stopwatch.Frequency / 1000) * value);
+                ticks = Stopwatch.Frequency * value / 1000000;
             }
         }
 
-        public double Seconds
+        public long Milliseconds
         {
             get
             {
-                return Convert.ToInt64((ticks / Stopwatch.Frequency));
+                return ticks * 1000 / Stopwatch.Frequency;
             }
             set
             {
-                ticks = Convert.ToInt64(Stopwatch.Frequency * value);
+                ticks = Stopwatch.Frequency * value / 1000;
+            }
+        }
+
+        public long Seconds
+        {
+            get
+            {
+                return ticks / Stopwatch.Frequency;
+            }
+            set
+            {
+                ticks = Stopwatch.Frequency * value;
             }
         }
 

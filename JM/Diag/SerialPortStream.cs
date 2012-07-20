@@ -21,98 +21,134 @@ namespace JM.Diag
             get { return serialPort; }
         }
 
-        public override void Clear()
+        public override bool Clear()
         {
-            serialPort.DiscardInBuffer();
-            serialPort.DiscardOutBuffer();
+            try
+            {
+                serialPort.DiscardInBuffer();
+                serialPort.DiscardOutBuffer();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private int ReadImmediately(byte[] buffer, int offset, int count)
         {
-            return serialPort.Read(buffer, offset, count);
+            try
+            {
+                int ret = serialPort.Read(buffer, offset, count);
+                Core.Log.Write("Recv", buffer, offset, count);
+                return ret;
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         private int ReadWithoutTimeout(byte[] buffer, int offset, int count)
         {
-            while (BytesToRead < count)
-                ;
-            return ReadImmediately(buffer, offset, count);
+            try
+            {
+                while (BytesToRead < count)
+                    ;
+                return ReadImmediately(buffer, offset, count);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         private int ReadWithTimeout(byte[] buffer, int offset, int count)
         {
-            int len = 0;
-            Stopwatch watch = Stopwatch.StartNew();
-            while (watch.ElapsedTicks < ReadTimeout.Ticks)
+            try
             {
-                int size = BytesToRead;
-                if (size >= count)
+                int len = 0;
+                Stopwatch watch = Stopwatch.StartNew();
+                while (watch.ElapsedTicks < ReadTimeout.Ticks)
                 {
-                    serialPort.Read(buffer, len + offset, count);
-                    len += count;
-                    break;
-                }
+                    int size = BytesToRead;
+                    if (size >= count)
+                    {
+                        serialPort.Read(buffer, len + offset, count);
+                        len += count;
+                        break;
+                    }
 
-                if (size != 0)
-                {
-                    serialPort.Read(buffer, len + offset, size);
-                    len += size;
-                    count -= size;
+                    if (size != 0)
+                    {
+                        serialPort.Read(buffer, len + offset, size);
+                        len += size;
+                        count -= size;
+                    }
                 }
+                watch.Stop();
+                Core.Log.Write("Recv", buffer, offset, len);
+                return len;
             }
-            watch.Stop();
-            return len;
+            catch
+            {
+                return 0;
+            }
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            try
+            if (count <= BytesToRead)
             {
-                if (count <= BytesToRead)
-                {
-                    return ReadImmediately(buffer, offset, count);
-                }
-                if (ReadTimeout.Ticks <= 0)
-                {
-                    return ReadWithoutTimeout(buffer, offset, count);
-                }
+                return ReadImmediately(buffer, offset, count);
+            }
+            if (ReadTimeout.Ticks <= 0)
+            {
+                return ReadWithoutTimeout(buffer, offset, count);
+            }
 
-                return ReadWithTimeout(buffer, offset, count);
-            }
-            catch
-            {
-            }
-            finally
-            {
-            }
-            return 0;
+            return ReadWithTimeout(buffer, offset, count);
         }
 
         public override int Write(byte[] buffer, int offset, int count)
         {
             try
             {
+                Core.Log.Write("Send", buffer, offset, count);
                 serialPort.Write(buffer, offset, count);
                 return count;
             }
             catch
             {
+                return 0;
             }
-            finally
-            {
-            }
-            return 0;
         }
 
         public override int BytesToRead
         {
-            get { return serialPort.BytesToRead; }
+            get
+            {
+                try
+                {
+                    return serialPort.BytesToRead;
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
         }
 
         public override Core.Timer ReadTimeout
         {
-            get { return readTimeout; }
-            set { readTimeout = value; }
+            get
+            {
+                return readTimeout;
+            }
+            set
+            {
+                readTimeout = value;
+            }
         }
     }
 }

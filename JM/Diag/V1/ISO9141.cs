@@ -101,41 +101,42 @@ namespace JM.Diag.V1
             return func.SendAndRecv(data, offset, count, pack);
         }
 
-        public void StartKeepLink(bool run)
+        public bool KeepLink(bool run)
         {
-            func.StartKeepLink(run);
+            return func.StartKeepLink(run);
         }
 
-        public void SetKeepLink(byte[] data, int offset, int count, IPack pack)
+        public bool SetKeepLink(byte[] data, int offset, int count, IPack pack)
         {
             byte[] buff = pack.Pack(data, offset, count);
-            func.SetKeepLink(buff, 0, buff.Length);
+            return func.SetKeepLink(buff, 0, buff.Length);
         }
 
-        public void SetTimeout(int txB2B, int rxB2B, int txF2F, int rxF2F, int total)
+        public bool SetTimeout(int txB2B, int rxB2B, int txF2F, int rxF2F, int total)
         {
-            func.SetTimeout(txB2B, rxB2B, txF2F, rxF2F, total);
+            return func.SetTimeout(txB2B, rxB2B, txF2F, rxF2F, total);
         }
 
-        private void ConfigLines()
+        private bool ConfigLines()
         {
             switch (options.ComLine)
             {
                 case 7:
                     lLine = SK1;
                     kLine = RK1;
-                    break;
+                    return true;
                 default:
-                    throw new ArgumentException();
+                    return false;
             }
         }
 
-        public void Config(object opts)
+        public bool Config(object opts)
         {
             if (opts is ISO9141Options)
             {
                 options = (ISO9141Options)opts;
-                ConfigLines();
+                if (!ConfigLines())
+                    return false;
 
                 if (!Box.SetCommCtrl((byte)(PWC | RZFC | CK), SET_NULL) ||
                     !Box.SetCommLine(lLine, kLine) ||
@@ -146,13 +147,13 @@ namespace JM.Diag.V1
                     !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(400)) ||
                     !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(500)) ||
                     !Box.SetCommTime(SETLINKTIME, Core.Timer.FromMilliseconds(500)))
-                    throw new IOException();
+                    return false;
 
                 Thread.Sleep(TimeSpan.FromSeconds(1));
 
                 Box.BuffID = 0;
                 if (!Box.NewBatch(Box.BuffID))
-                    throw new IOException();
+                    return false;
 
                 if (!Box.SendOutData(new byte[] { options.AddrCode }, 0, 1) ||
                     !Box.SetCommLine((kLine == RK_NO ? lLine : SK_NO), kLine) ||
@@ -165,7 +166,7 @@ namespace JM.Diag.V1
                     !Box.EndBatch())
                 {
                     Box.DelBatch(Box.BuffID);
-                    throw new IOException();
+                    return false;
                 }
 
                 int tempLen = 0;
@@ -176,27 +177,28 @@ namespace JM.Diag.V1
                     !Box.CheckResult(Core.Timer.FromMilliseconds(500)))
                 {
                     Box.DelBatch(Box.BuffID);
-                    throw new IOException();
+                    return false;
                 }
 
                 if (!Box.DelBatch(Box.BuffID))
-                    throw new IOException();
+                    return false;
 
                 if (tempBuff[2] != 0)
                 {
-                    throw new IOException();
+                    return false;
                 }
 
                 if (!Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(5)) ||
                     !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(15)) ||
                     !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(80)) ||
                     !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(200)))
-                    throw new IOException();
+                    return false;
 
+                return true;
             }
             else
             {
-                throw new ArgumentException();
+                return false;
             }
         }
         #endregion

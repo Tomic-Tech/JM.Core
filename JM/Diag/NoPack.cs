@@ -18,14 +18,21 @@ namespace JM.Diag
 
         private static byte[] JustCopy(byte[] data, int offset, int count)
         {
-            byte[] result = new byte[count];
-            Array.Copy(data, offset, result, 0, count);
-            return result;
+            try
+            {
+                byte[] result = new byte[count];
+                Array.Copy(data, offset, result, 0, count);
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
-        public void Config(object obj)
+        public bool Config(object obj)
         {
-
+            return true;
         }
     }
 }

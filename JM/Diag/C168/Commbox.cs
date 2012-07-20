@@ -422,16 +422,16 @@ namespace JM.Diag.C168
 
         private bool OpenBox(string port, int baud)
         {
-            Stream.SerialPort.PortName = port;
-            Stream.SerialPort.BaudRate = baud;
-            Stream.SerialPort.DataBits = 8;
-            Stream.SerialPort.StopBits = System.IO.Ports.StopBits.One;
-            Stream.SerialPort.Parity = System.IO.Ports.Parity.None;
-            Stream.SerialPort.Handshake = System.IO.Ports.Handshake.None;
-            Stream.SerialPort.ReadTimeout = 500;
-            Stream.SerialPort.WriteTimeout = 500;
             try
             {
+                Stream.SerialPort.PortName = port;
+                Stream.SerialPort.BaudRate = baud;
+                Stream.SerialPort.DataBits = 8;
+                Stream.SerialPort.StopBits = System.IO.Ports.StopBits.One;
+                Stream.SerialPort.Parity = System.IO.Ports.Parity.None;
+                Stream.SerialPort.Handshake = System.IO.Ports.Handshake.None;
+                Stream.SerialPort.ReadTimeout = 500;
+                Stream.SerialPort.WriteTimeout = 500;
                 Stream.SerialPort.Open();
                 System.Threading.Thread.Sleep(50);
                 Stream.SerialPort.DtrEnable = true;
@@ -451,13 +451,13 @@ namespace JM.Diag.C168
                 Stream.SerialPort.Close();
                 return false;
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }
         }
 
-        public void Open()
+        public bool Open()
         {
             string[] portNames = System.IO.Ports.SerialPort.GetPortNames();
             foreach (string portName in portNames)
@@ -468,21 +468,30 @@ namespace JM.Diag.C168
                 }
                 else
                 {
-                    return;
+                    return true;
                 }
             }
+            return false;
         }
 
-        public void Close()
+        public bool Close()
         {
             if (Stream.SerialPort.IsOpen)
             {
-                StopNow(true);
-                DoSet(Constant.RESET, null, 0, 0);
-                SetRF(Constant.RESET_RF, 0);
-                Stream.SerialPort.Close();
-                return;
+                try
+                {
+                    StopNow(true);
+                    DoSet(Constant.RESET, null, 0, 0);
+                    SetRF(Constant.RESET_RF, 0);
+                    Stream.SerialPort.Close();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
+            return true;
         }
 
         private bool DoSetPCBaud(byte baud)
@@ -523,7 +532,7 @@ namespace JM.Diag.C168
                 Stream.SerialPort.DiscardInBuffer();
                 return true;
             }
-            catch (Exception)
+            catch
             {
                 lastError = Constant.DISCONNECT_COMM;
                 return false;
@@ -1250,14 +1259,14 @@ namespace JM.Diag.C168
             return false;
         }
 
-        public void SetConnector(ConnectorType cnn)
+        public bool SetConnector(ConnectorType cnn)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public IProtocol CreateProtocol(ProtocolType type)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

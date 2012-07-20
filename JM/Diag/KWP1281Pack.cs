@@ -24,32 +24,44 @@ namespace JM.Diag
 
         public byte[] Pack(byte[] data, int offset, int count)
         {
-            byte[] result = new byte[count + 3];
-            result[0] = Utils.LowByte(count + 2);
-            result[1] = frameCounterIncrement();
+            try
+            {
+                byte[] result = new byte[count + 3];
+                result[0] = Utils.LowByte(count + 2);
+                result[1] = frameCounterIncrement();
 
-            Array.Copy(data, offset, result, 2, count);
-            result[result.Length - 1] = FRAME_END;
-            return result;
+                Array.Copy(data, offset, result, 2, count);
+                result[result.Length - 1] = FRAME_END;
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public byte[] Unpack(byte[] data, int offset, int count)
         {
-            byte[] result = new byte[count - 2];
-            Array.Copy(data, offset + 1, result, 0, count - 2);
-            return result;
+            try
+            {
+                byte[] result = new byte[count - 2];
+                Array.Copy(data, offset + 1, result, 0, count - 2);
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
-        public void Config(object opts)
+        public bool Config(object opts)
         {
             if (opts is KWP1281Options)
             {
                 options = opts as KWP1281Options;
+                return true;
             }
-            else
-            {
-                throw new ArgumentException();
-            }
+            return false;
         }
     }
 }

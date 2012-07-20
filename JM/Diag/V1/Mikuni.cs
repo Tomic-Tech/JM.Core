@@ -69,56 +69,63 @@ namespace JM.Diag.V1
             return func.SendAndRecv(data, offset, count, pack);
         }
 
-        public void StartKeepLink(bool isRun)
+        public bool KeepLink(bool isRun)
         {
-            func.StartKeepLink(isRun);
+            return func.StartKeepLink(isRun);
         }
 
-        public void SetKeepLink(byte[] data, int offset, int count, IPack pack)
+        public bool SetKeepLink(byte[] data, int offset, int count, IPack pack)
         {
             byte[] packData = pack.Pack(data, offset, count);
-            func.SetKeepLink(packData, 0, packData.Length);
+            return func.SetKeepLink(packData, 0, packData.Length);
         }
 
-        public void SetTimeout(int txB2B, int rxB2B, int txF2F, int rxF2F, int total)
+        public bool SetTimeout(int txB2B, int rxB2B, int txF2F, int rxF2F, int total)
         {
-            func.SetTimeout(txB2B, rxB2B, txF2F, rxF2F, total);
+            return func.SetTimeout(txB2B, rxB2B, txF2F, rxF2F, total);
         }
 
-        public void Config(object options)
+        public bool Config(object options)
         {
             if (!(options is MikuniOptions))
             {
-                throw new ArgumentException();
+                return false;
             }
 
             this.options = options as MikuniOptions;
 
             byte parity = 0;
+            byte cmd2 = SET_NULL;
+            byte cmd3 = SET_NULL;
 
             if (this.options.Parity == MikuniParity.None)
             {
                 parity = BIT9_MARK;
+                cmd2 = 0xFF;
+                cmd3 = 0x02;
             }
             else
             {
-                parity = BIT9_ODD;
+                parity = BIT9_EVEN;
+                cmd2 = 0xFF;
+                cmd3 = 0x03;
             }
             
             if (!Box.SetCommCtrl((byte)(PWC | RZFC | CK | REFC), SET_NULL) ||
                 !Box.SetCommLine(SK_NO, RK1) ||
-                !Box.SetCommLink((byte)(RS_232 | parity | SEL_SL | UN_DB20), 0xFF, 2) ||
+                !Box.SetCommLink((byte)(RS_232 | parity | SEL_SL | UN_DB20), cmd2, cmd3) ||
                 !Box.SetCommBaud(19200) ||
-                !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(100)) ||
-                !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(500)) ||
-                !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(400)) ||
-                !Box.SetCommTime(SETRECFROUT, Core.Timer.FromSeconds(1)) ||
+                !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(5)) ||
+                !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(0)) ||
+                !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(500)) ||
+                !Box.SetCommTime(SETRECFROUT, Core.Timer.FromSeconds(2)) ||
                 !Box.SetCommTime(SETLINKTIME, Core.Timer.FromMilliseconds(500)))
             {
-                throw new IOException(Core.SysDB.GetText("Communication Fail"));
+                return false;
             }
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
+            return true;
         }
 
         public override void FinishExecute(bool isFinish)
@@ -127,7 +134,7 @@ namespace JM.Diag.V1
             {
                 Box.StopNow(true);
                 Box.DelBatch(Box.BuffID);
-                Box.CheckResult(Core.Timer.FromMilliseconds(500));
+                //Box.CheckResult(Core.Timer.FromMilliseconds(500));
             }
         }
     }

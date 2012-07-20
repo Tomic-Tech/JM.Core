@@ -29,126 +29,149 @@ namespace JM.Diag
 
         public byte[] Pack(byte[] data, int offset, int count)
         {
-            int pos = 0;
-            byte checksum = 0;
-            int i = 0;
-            byte[] result = null;
+            try
+            {
+                int pos = 0;
+                byte checksum = 0;
+                int i = 0;
+                byte[] result = null;
 
-            if (mode == KWPMode.Mode8X)
-            {
-                result = new byte[KWP8X_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result[pos++] = Utils.LowByte(0x80 | count);
-                result[pos++] = Utils.LowByte(options.TargetAddress);
-                result[pos++] = Utils.LowByte(options.SourceAddress);
-            }
-            else if (mode == KWPMode.ModeCX)
-            {
-                result = new byte[KWPCX_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result[pos++] = Utils.LowByte(0xC0 | count);
-                result[pos++] = Utils.LowByte(options.TargetAddress);
-                result[pos++] = Utils.LowByte(options.SourceAddress);
-            }
-            else if (mode == KWPMode.Mode80)
-            {
-                result = new byte[KWP80_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result[pos++] = Utils.LowByte(0x80);
-                result[pos++] = Utils.LowByte(options.TargetAddress);
-                result[pos++] = Utils.LowByte(options.SourceAddress);
-                result[pos++] = Utils.LowByte(count);
-            }
-            else if (mode == KWPMode.Mode00)
-            {
-                result = new byte[KWP00_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result[pos++] = Utils.LowByte(0x00);
-                result[pos++] = Utils.LowByte(count);
-            }
-            else if (mode == KWPMode.ModeXX)
-            {
-                result = new byte[KWPXX_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
-                result[pos++] = Utils.LowByte(count);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
+                if (mode == KWPMode.Mode8X)
+                {
+                    result = new byte[KWP8X_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
+                    result[pos++] = Utils.LowByte(0x80 | count);
+                    result[pos++] = Utils.LowByte(options.TargetAddress);
+                    result[pos++] = Utils.LowByte(options.SourceAddress);
+                }
+                else if (mode == KWPMode.ModeCX)
+                {
+                    result = new byte[KWPCX_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
+                    result[pos++] = Utils.LowByte(0xC0 | count);
+                    result[pos++] = Utils.LowByte(options.TargetAddress);
+                    result[pos++] = Utils.LowByte(options.SourceAddress);
+                }
+                else if (mode == KWPMode.Mode80)
+                {
+                    result = new byte[KWP80_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
+                    result[pos++] = Utils.LowByte(0x80);
+                    result[pos++] = Utils.LowByte(options.TargetAddress);
+                    result[pos++] = Utils.LowByte(options.SourceAddress);
+                    result[pos++] = Utils.LowByte(count);
+                }
+                else if (mode == KWPMode.Mode00)
+                {
+                    result = new byte[KWP00_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
+                    result[pos++] = Utils.LowByte(0x00);
+                    result[pos++] = Utils.LowByte(count);
+                }
+                else if (mode == KWPMode.ModeXX)
+                {
+                    result = new byte[KWPXX_HEADER_LENGTH + count + KWP_CHECKSUM_LENGTH];
+                    result[pos++] = Utils.LowByte(count);
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
 
-            Array.Copy(data, offset, result, pos, count);
-            pos += count;
+                Array.Copy(data, offset, result, pos, count);
+                pos += count;
 
-            for (i = 0; i < pos; i++)
-            {
-                checksum += result[i];
+                for (i = 0; i < pos; i++)
+                {
+                    checksum += result[i];
+                }
+                result[i] = checksum;
+                return result;
             }
-            result[i] = checksum;
-            return result;
+            catch
+            {
+                return null;
+            }
         }
 
         public byte[] Unpack(byte[] data, int offset, int count)
         {
-            int length = 0;
-            byte[] result = null;
-
-            if ((data[offset] & 0xFF) > 0x80)
+            try
             {
-                length = (data[offset] & 0xFF) - 0x80;
-                if (data[offset + 1] != options.SourceAddress)
+                int length = 0;
+                byte[] result = null;
+
+                if ((data[offset] & 0xFF) > 0x80)
                 {
-                    return null;
-                }
-                if (length != (count - KWP8X_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
-                {
-                    length = data[offset] - 0xC0; // For KWPCX 
-                    if (length != (count - KWPCX_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
+                    length = (data[offset] & 0xFF) - 0x80;
+                    if (data[offset + 1] != options.SourceAddress)
                     {
                         return null;
                     }
+                    if (length != (count - KWP8X_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
+                    {
+                        length = data[offset] - 0xC0; // For KWPCX 
+                        if (length != (count - KWPCX_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            offset = offset + KWPCX_HEADER_LENGTH;
+                        }
+                    }
+                    else
+                    {
+                        offset = offset + KWP8X_HEADER_LENGTH;
+                    }
                 }
-            }
-            else if ((data[offset] & 0xFF) == 0x80)
-            {
-                length = data[0] & 0xFF;
-                if (data[offset + 1] != options.SourceAddress)
+                else if ((data[offset] & 0xFF) == 0x80)
                 {
-                    return null;
+                    length = data[offset + 3] & 0xFF;
+                    if (data[offset + 1] != options.SourceAddress)
+                    {
+                        return null;
+                    }
+
+                    if (length != (count - KWP80_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
+                    {
+                        return null;
+                    }
+                    offset = offset + KWP80_HEADER_LENGTH;
+                }
+                else if (data[offset] == 0x00)
+                {
+                    length = data[offset + 1] & 0xFF;
+                    if (length != (count - KWP00_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
+                    {
+                        return null;
+                    }
+                    offset = offset + KWP00_HEADER_LENGTH;
+                }
+                else
+                {
+                    length = data[offset] & 0xFF;
+                    if (length != (count - KWPXX_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
+                    {
+                        return null;
+                    }
+                    offset = offset + KWPXX_HEADER_LENGTH;
                 }
 
-                if (length != (count - KWP80_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
-                {
-                    return null;
-                }
+                result = new byte[length];
+                Array.Copy(data, offset, result, 0, length);
+                return result;
             }
-            else if (data[offset] == 0x00)
+            catch
             {
-                length = data[offset + 1] & 0xFF;
-                if (length != (count - KWP00_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
-                {
-                    return null;
-                }
+                return null;
             }
-            else
-            {
-                length = data[offset] & 0xFF;
-                if (length != (count - KWP00_HEADER_LENGTH - KWP_CHECKSUM_LENGTH))
-                {
-                    return null;
-                }
-            }
-
-            result = new byte[length];
-            Array.Copy(data, offset + KWP8X_HEADER_LENGTH, result, 0, length);
-            return result;
         }
 
-        public void Config(object opts)
+        public bool Config(object opts)
         {
             if (opts is KWPOptions)
             {
                 options = opts as KWPOptions;
+                return true;
             }
-            else
-            {
-                throw new ArgumentException();
-            }
+            return false;
         }
     }
 }

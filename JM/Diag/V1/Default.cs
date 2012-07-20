@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace JM.Diag.V1
 {
@@ -28,11 +29,13 @@ namespace JM.Diag.V1
 
             if (!commbox.NewBatch(commbox.BuffID))
             {
+                //throw new IOException(Core.SysDB.GetText("Communication Fail"));
                 return 0;
             }
 
             if (length <= 0)
             {
+                //throw new IOException(Core.SysDB.GetText("Communication Fail"));
                 return 0;
             }
 
@@ -43,6 +46,7 @@ namespace JM.Diag.V1
                     !commbox.EndBatch() ||
                     !commbox.RunBatch(new byte[] { commbox.BuffID }, 1, false))
                 {
+                    //throw new IOException(Core.SysDB.GetText("Communication Fail"));
                     return 0;
                 }
             }
@@ -52,6 +56,7 @@ namespace JM.Diag.V1
                     !commbox.EndBatch() ||
                     !commbox.RunBatch(new byte[] { commbox.BuffID }, 1, false))
                 {
+                    //throw new IOException(Core.SysDB.GetText("Communication Fail"));
                     return 0;
                 }
             }
@@ -66,15 +71,16 @@ namespace JM.Diag.V1
             while (times-- != 0)
             {
                 if (protocol.SendFrames(data, offset, count, pack) != count)
-                {
-                    return null;
-                }
-                return protocol.ReadFrames(pack);
+                    continue;
+                byte[] result = protocol.ReadFrames(pack);
+                if (result == null)
+                    continue;
+                return result;
             }
             return null;
         }
 
-        public void SetKeepLink(byte[] data, int offset, int length)
+        public bool SetKeepLink(byte[] data, int offset, int length)
         {
             byte linkBlock = 0;
             if (commbox.GetType() == typeof(Diag.W80.Commbox<SerialPortStream>))
@@ -83,27 +89,32 @@ namespace JM.Diag.V1
             }
             if (!commbox.NewBatch(linkBlock))
             {
-                throw new System.IO.IOException();
+                //throw new System.IO.IOException();
+                return false;
             }
 
             if (!commbox.SendOutData(data, offset, length) ||
                 !commbox.EndBatch())
             {
-                throw new System.IO.IOException();
+                //throw new System.IO.IOException(Core.SysDB.GetText("KeepLink Fail"));
+                return false;
             }
+            return true;
         }
 
-        public void StartKeepLink(bool isRun)
+        public bool StartKeepLink(bool isRun)
         {
             if (!commbox.KeepLink(isRun))
             {
-                throw new System.IO.IOException();
+                //throw new System.IO.IOException(Core.SysDB.GetText("KeepLink Fail"));
+                return false;
             }
+            return true;
         }
 
-        public void SetTimeout(long txB2B, long rxB2B, long txF2F, long rxF2F, long total)
+        public bool SetTimeout(long txB2B, long rxB2B, long txF2F, long rxF2F, long total)
         {
-
+            return true;
         }
     }
 }

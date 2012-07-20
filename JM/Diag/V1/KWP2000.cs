@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace JM.Diag.V1
 {
     internal class KWP2000 : Diag.V1.Protocol, Diag.IProtocol
     {
-        private delegate void StartCommunication();
+        private delegate bool StartCommunication();
 
         private Default<KWP2000> func;
         private KWPOptions options;
@@ -38,36 +39,19 @@ namespace JM.Diag.V1
                     valueOpen = (byte)(PWC | RZFC | CK);
                 }
 
+                Box.BuffID = 0xFF;
+
                 if (!Box.SetCommCtrl(valueOpen, SET_NULL) ||
                     !Box.SetCommLine(lLine, kLine) ||
-                    !Box.SetCommLink(
-                    (byte)(RS_232 | BIT9_MARK | SEL_SL | UN_DB20),
-                    SET_NULL,
-                    SET_NULL
-                ) ||
+                    !Box.SetCommLink((byte)(RS_232 | BIT9_MARK | SEL_SL | UN_DB20), SET_NULL, SET_NULL) ||
                     !Box.SetCommBaud(options.Baudrate) ||
-                    !Box.SetCommTime(
-                    SETBYTETIME,
-                    Core.Timer.FromMilliseconds(5)
-                ) ||
-                    !Box.SetCommTime(
-                    SETWAITTIME,
-                    Core.Timer.FromMilliseconds(0)
-                ) ||
-                    !Box.SetCommTime(
-                    SETRECBBOUT,
-                    Core.Timer.FromMilliseconds(400)
-                ) ||
-                    !Box.SetCommTime(
-                    SETRECFROUT,
-                    Core.Timer.FromMilliseconds(500)
-                ) ||
-                    !Box.SetCommTime(
-                    SETLINKTIME,
-                    Core.Timer.FromMilliseconds(500)
-                ))
+                    !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(5)) ||
+                    !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(0)) ||
+                    !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(400)) ||
+                    !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(500)) ||
+                    !Box.SetCommTime(SETLINKTIME, Core.Timer.FromMilliseconds(500)))
                 {
-                    throw new System.IO.IOException();
+                    return false;
                 }
 
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -75,65 +59,47 @@ namespace JM.Diag.V1
 
                 if (!Box.NewBatch(Box.BuffID))
                 {
-                    throw new System.IO.IOException();
+                    return false;
                 }
 
                 if (!Box.SetLineLevel(COMS, SET_NULL) ||
                     !Box.CommboxDelay(Core.Timer.FromMilliseconds(25)) ||
                     !Box.SetLineLevel(SET_NULL, COMS) ||
                     !Box.CommboxDelay(Core.Timer.FromMilliseconds(25)) ||
-                    !Box.SendOutData(
-                    options.FastCmd,
-                    0,
-                    options.FastCmd.Length
-                ) ||
+                    !Box.SendOutData(options.FastCmd, 0, options.FastCmd.Length) ||
                     !Box.RunReceive(REC_FR) ||
                     !Box.EndBatch())
                 {
                     Box.DelBatch(Box.BuffID);
-                    throw new System.IO.IOException();
+                    return false;
                 }
 
-                if (!Box.RunBatch(new byte[] { Box.BuffID }, 1, false))
+                if (!Box.RunBatch(new byte[] { Box.BuffID }, 1, false) ||
+                    (ReadOneFrame(new NoPack()) == null))
                 {
-                    throw new System.IO.IOException();
+                    Box.DelBatch(Box.BuffID);
+                    return false;
                 }
 
-                byte[] recv = ReadOneFrame(new NoPack());
-                if (recv == null)
+                if (!Box.DelBatch(Box.BuffID) ||
+                    !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(55)))
                 {
-                    throw new System.IO.IOException();
+                    return false;
                 }
-
-                Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(55));
+                return true;
             };
 
             startComms[KWPStartType.AddressCode] = () =>
             {
                 if (!Box.SetCommCtrl((byte)(PWC | REFC | RZFC | CK), SET_NULL) ||
                     !Box.SetCommBaud(5) ||
-                    !Box.SetCommTime(
-                    SETBYTETIME,
-                    Core.Timer.FromMilliseconds(5)
-                ) ||
-                    !Box.SetCommTime(
-                    SETWAITTIME,
-                    Core.Timer.FromMilliseconds(12)
-                ) ||
-                    !Box.SetCommTime(
-                    SETRECBBOUT,
-                    Core.Timer.FromMilliseconds(400)
-                ) ||
-                    !Box.SetCommTime(
-                    SETRECFROUT,
-                    Core.Timer.FromMilliseconds(500)
-                ) ||
-                    !Box.SetCommTime(
-                    SETLINKTIME,
-                    Core.Timer.FromMilliseconds(500)
-                ))
+                    !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(5)) ||
+                    !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(12)) ||
+                    !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(400)) ||
+                    !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(500)) ||
+                    !Box.SetCommTime(SETLINKTIME, Core.Timer.FromMilliseconds(500)))
                 {
-                    throw new System.IO.IOException();
+                    return false;
                 }
 
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -142,14 +108,11 @@ namespace JM.Diag.V1
 
                 if (!Box.NewBatch(Box.BuffID))
                 {
-                    throw new System.IO.IOException();
+                    return false;
                 }
 
                 if (!Box.SendOutData(new byte[] { options.AddrCode }, 0, 1) ||
-                    !Box.SetCommLine(
-                    (kLine == RK_NO) ? lLine : SK_NO,
-                    kLine
-                ) ||
+                    !Box.SetCommLine((kLine == RK_NO) ? lLine : SK_NO, kLine) ||
                     !Box.RunReceive(SET55_BAUD) ||
                     !Box.RunReceive(REC_LEN_1) ||
                     !Box.TurnOverOneByOne() ||
@@ -159,37 +122,29 @@ namespace JM.Diag.V1
                     !Box.EndBatch())
                 {
                     Box.DelBatch(Box.BuffID);
-                    throw new System.IO.IOException();
+                    return false;
                 }
 
                 byte[] temp = new byte[3];
                 if (!Box.RunBatch(new byte[] { Box.BuffID }, 1, false) ||
-                    (Box.ReadData(
-                    temp,
-                    0,
-                    temp.Length,
-                    Core.Timer.FromSeconds(5)
-                ) <= 0) ||
+                    (Box.ReadData(temp, 0, temp.Length, Core.Timer.FromSeconds(5)) <= 0) ||
                     !Box.CheckResult(Core.Timer.FromSeconds(5)))
                 {
                     Box.DelBatch(Box.BuffID);
-                    throw new System.IO.IOException();
+                    return false;
                 }
 
                 if (!Box.DelBatch(Box.BuffID) ||
-                    !Box.SetCommTime(
-                    SETWAITTIME,
-                    Core.Timer.FromMilliseconds(55)
-                ))
+                    !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(55)))
                 {
-                    throw new System.IO.IOException();
+                    return false;
                 }
 
                 if (temp[2] != 0)
                 {
-                    throw new System.IO.IOException();
+                    return false;
                 }
-
+                return true;
             };
         }
 
@@ -199,7 +154,7 @@ namespace JM.Diag.V1
             {
                 Box.StopNow(true);
                 Box.DelBatch(Box.BuffID);
-                Box.CheckResult(Core.Timer.FromMilliseconds(500));
+                //Box.CheckResult(Core.Timer.FromMilliseconds(500));
             }
         }
 
@@ -239,15 +194,11 @@ namespace JM.Diag.V1
                         return null;
                     }
 
-                    Array.Copy(result, 0, temp, 0, temp.Length);
+                    Array.Copy(temp, 0, result, 0, temp.Length);
                     frameLength += temp.Length;
-                    Array.Copy(result, frameLength, b, 0, 1);
+                    Array.Copy(b, 0, result, frameLength, 1);
                     ++frameLength;
-                    length = Box.ReadBytes(
-                        result,
-                        KWPPack.KWP80_HEADER_LENGTH,
-                        length + KWPPack.KWP_CHECKSUM_LENGTH
-                    );
+                    length = Box.ReadBytes(result, KWPPack.KWP80_HEADER_LENGTH, length + KWPPack.KWP_CHECKSUM_LENGTH);
                     frameLength += length;
                 }
                 else
@@ -259,13 +210,9 @@ namespace JM.Diag.V1
                         return null;
                     }
 
-                    Array.Copy(result, 0, temp, 0, temp.Length);
+                    Array.Copy(temp, 0, result, 0, temp.Length);
                     frameLength += temp.Length;
-                    length = Box.ReadBytes(
-                        result,
-                        temp.Length,
-                        length + KWPPack.KWP_CHECKSUM_LENGTH
-                    );
+                    length = Box.ReadBytes(result, temp.Length, length + KWPPack.KWP_CHECKSUM_LENGTH);
                     frameLength += length;
                 }
             }
@@ -279,7 +226,7 @@ namespace JM.Diag.V1
                         FinishExecute(isFinish);
                         return null;
                     }
-                    Array.Copy(result, 0, temp, 0, temp.Length);
+                    Array.Copy(temp, 0, result, 0, temp.Length);
                     frameLength += temp.Length;
                     length = Box.ReadBytes(result, temp.Length, length);
                     frameLength += length;
@@ -293,13 +240,9 @@ namespace JM.Diag.V1
                         return null;
                     }
 
-                    Array.Copy(result, 0, temp, 0, temp.Length);
+                    Array.Copy(temp, 0, result, 0, temp.Length);
                     frameLength += temp.Length;
-                    length = Box.ReadBytes(
-                        result,
-                        temp.Length,
-                        length - KWPPack.KWP_CHECKSUM_LENGTH
-                    );
+                    length = Box.ReadBytes(result, temp.Length, length - KWPPack.KWP_CHECKSUM_LENGTH);
                     frameLength += length;
                 }
             }
@@ -330,7 +273,7 @@ namespace JM.Diag.V1
 
         public int SendFrames(byte[] data, int offset, int count, IPack pack)
         {
-            return SendOneFrame(data, offset, count, pack);
+            return func.SendOneFrame(data, offset, count, pack, true);
         }
 
         public byte[] ReadOneFrame(IPack pack)
@@ -348,47 +291,45 @@ namespace JM.Diag.V1
             return func.SendAndRecv(data, offset, count, pack);
         }
 
-        public void StartKeepLink(bool run)
+        public bool KeepLink(bool run)
         {
-            func.StartKeepLink(run);
+            return func.StartKeepLink(run);
         }
 
-        public void SetKeepLink(byte[] data, int offset, int count, IPack pack)
+        public bool SetKeepLink(byte[] data, int offset, int count, IPack pack)
         {
             byte[] buff = pack.Pack(data, offset, count);
-            func.SetKeepLink(buff, 0, buff.Length);
+            return func.SetKeepLink(buff, 0, buff.Length);
         }
 
-        public void SetTimeout(int txB2B, int rxB2B, int txF2F, int rxF2F, int total)
+        public bool SetTimeout(int txB2B, int rxB2B, int txF2F, int rxF2F, int total)
         {
-            func.SetTimeout(txB2B, rxB2B, txF2F, rxF2F, total);
+            return func.SetTimeout(txB2B, rxB2B, txF2F, rxF2F, total);
         }
 
-        private void ConfigLines()
+        private bool ConfigLines()
         {
             switch (options.ComLine)
             {
                 case 7:
                     lLine = SK1;
                     kLine = RK1;
-                    break;
+                    return true;
                 default:
-                    throw new ArgumentException();
+                    return false;
             }
         }
 
-        public void Config(object options)
+        public bool Config(object options)
         {
             if (options is KWPOptions)
             {
                 this.options = (KWPOptions)options;
-                ConfigLines();
-                startComms[this.options.StartType]();
+                if (!ConfigLines())
+                    return false;
+                return startComms[this.options.StartType]();
             }
-            else
-            {
-                throw new ArgumentException();
-            }
+            return false;
         }
     }
 }

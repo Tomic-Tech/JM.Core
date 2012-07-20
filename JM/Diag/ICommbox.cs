@@ -7,11 +7,11 @@ namespace JM.Diag
 {
     public interface ICommbox
     {
-        void Open();
+        bool Open();
 
-        void Close();
+        bool Close();
 
-        void SetConnector(ConnectorType cnn);
+        bool SetConnector(ConnectorType cnn);
 
         IProtocol CreateProtocol(ProtocolType type);
     }

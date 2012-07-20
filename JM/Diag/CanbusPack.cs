@@ -25,94 +25,106 @@ namespace JM.Diag
 
         public byte[] Pack(byte[] data, int offset, int count)
         {
-            if (count > 8 || count <= 0)
+            try
+            {
+                if (count > 8 || count <= 0)
+                {
+                    return null;
+                }
+
+                byte[] result = null;
+
+                if (options.IdMode == CanbusIDMode.Standard)
+                {
+                    result = new byte[3 + count];
+                    result[1] = Utils.HighByte(Utils.LowWord(options.TargetID));
+                    result[2] = Utils.LowByte(Utils.LowWord(options.TargetID));
+                    if (options.FrameType == CanbusFrameType.Data)
+                    {
+                        result[0] = Utils.LowByte(count | (int)CanbusIDMode.Standard | (int)CanbusFrameType.Data);
+                    }
+                    else
+                    {
+                        result[0] = Utils.LowByte(count | (int)CanbusIDMode.Standard | (int)CanbusFrameType.Remote);
+                    }
+                    Array.Copy(data, offset, result, 3, count);
+                }
+                else
+                {
+                    result = new byte[5 + count];
+                    result[1] = Utils.HighByte(Utils.HighWord(options.TargetID));
+                    result[2] = Utils.LowByte(Utils.HighWord(options.TargetID));
+                    result[3] = Utils.HighByte(Utils.LowWord(options.TargetID));
+                    result[4] = Utils.LowByte(Utils.LowWord(options.TargetID));
+                    if (options.FrameType == CanbusFrameType.Data)
+                    {
+                        result[0] = Utils.LowByte(count | (int)CanbusIDMode.Extension | (int)CanbusFrameType.Data);
+                    }
+                    else
+                    {
+                        result[0] = Utils.LowByte(count | (int)CanbusIDMode.Extension | (int)CanbusFrameType.Remote);
+                    }
+                    Array.Copy(data, offset, result, 5, count);
+                }
+
+                return result;
+            }
+            catch
             {
                 return null;
             }
-
-            byte[] result = null;
-
-            if (options.IdMode == CanbusIDMode.Standard)
-            {
-                result = new byte[3 + count];
-                result[1] = Utils.HighByte(Utils.LowWord(options.TargetID));
-                result[2] = Utils.LowByte(Utils.LowWord(options.TargetID));
-                if (options.FrameType == CanbusFrameType.Data)
-                {
-                    result[0] = Utils.LowByte(count | (int)CanbusIDMode.Standard | (int)CanbusFrameType.Data);
-                }
-                else
-                {
-                    result[0] = Utils.LowByte(count | (int)CanbusIDMode.Standard | (int)CanbusFrameType.Remote);
-                }
-                Array.Copy(data, offset, result, 3, count);
-            }
-            else
-            {
-                result = new byte[5 + count];
-                result[1] = Utils.HighByte(Utils.HighWord(options.TargetID));
-                result[2] = Utils.LowByte(Utils.HighWord(options.TargetID));
-                result[3] = Utils.HighByte(Utils.LowWord(options.TargetID));
-                result[4] = Utils.LowByte(Utils.LowWord(options.TargetID));
-                if (options.FrameType == CanbusFrameType.Data)
-                {
-                    result[0] = Utils.LowByte(count | (int)CanbusIDMode.Extension | (int)CanbusFrameType.Data);
-                }
-                else
-                {
-                    result[0] = Utils.LowByte(count | (int)CanbusIDMode.Extension | (int)CanbusFrameType.Remote);
-                }
-                Array.Copy(data, offset, result, 5, count);
-            }
-
-            return result;
         }
 
         public byte[] Unpack(byte[] data, int offset, int count)
         {
-            if (count <= 0)
+            try
+            {
+                if (count <= 0)
+                {
+                    return null;
+                }
+
+                int length = 0;
+                int mode = (data[offset] & ((int)CanbusIDMode.Extension | (int)CanbusFrameType.Remote));
+                byte[] result = null;
+                if (mode == ((int)CanbusIDMode.Standard | (int)CanbusFrameType.Data))
+                {
+                    length = data[offset] & 0x0F;
+                    if (length != count - 3)
+                    {
+                        return null;
+                    }
+
+                    result = new byte[length];
+                    Array.Copy(data, offset, result, 0, length);
+                }
+                else if (mode == ((int)CanbusIDMode.Extension | (int)CanbusFrameType.Remote))
+                {
+                    length = data[offset] & 0x0F;
+                    if (length != count - 5)
+                    {
+                        return null;
+                    }
+                    result = new byte[length];
+                    Array.Copy(data, offset, result, 0, length);
+                }
+
+                return result;
+            }
+            catch
             {
                 return null;
             }
-
-            int length = 0;
-            int mode = (data[offset] & ((int)CanbusIDMode.Extension | (int)CanbusFrameType.Remote));
-            byte[] result = null;
-            if (mode == ((int)CanbusIDMode.Standard | (int)CanbusFrameType.Data))
-            {
-                length = data[offset] & 0x0F;
-                if (length != count - 3)
-                {
-                    return null;
-                }
-
-                result = new byte[length];
-                Array.Copy(data, offset, result, 0, length);
-            }
-            else if (mode == ((int)CanbusIDMode.Extension | (int)CanbusFrameType.Remote))
-            {
-                length = data[offset] & 0x0F;
-                if (length != count - 5)
-                {
-                    return null;
-                }
-                result = new byte[length];
-                Array.Copy(data, offset, result, 0, length);
-            }
-
-            return result;
         }
 
-        public void Config(object opts)
+        public bool Config(object opts)
         {
             if (opts is CanbusOptions)
             {
                 options = opts as CanbusOptions;
+                return true;
             }
-            else
-            {
-                throw new ArgumentException();
-            }
+            return false;
         }
     }
 }

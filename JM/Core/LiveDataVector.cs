@@ -212,7 +212,8 @@ namespace JM.Core
                     }
                 }
 
-                currentEnabledIndex = showIndexes[0];
+                //currentEnabledIndex = showIndexes[0];
+                currentEnabledIndex = 0;
             }
         }
     }

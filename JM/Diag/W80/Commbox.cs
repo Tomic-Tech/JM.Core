@@ -61,8 +61,8 @@ namespace JM.Diag.W80
             byte[] buffer = new byte[1];
             buffer[0] = Constant.READY;
             Stream.ReadTimeout = Core.Timer.FromMilliseconds(200);
-            while (Stream.Read(buffer, 0, 1) == 1)
-                ;
+            while (Stream.BytesToRead != 0)
+                Stream.Read(buffer, 0, 1);
             if (buffer[0] == Constant.READY || buffer[0] == Constant.ERROR)
                 return true;
             return false;
@@ -399,7 +399,7 @@ namespace JM.Diag.W80
         public bool SetCommBaud(double baud)
         {
             byte[] baudTime = new byte[2];
-            double instructNum = ((1000000.0 / (box.BoxTimeUnit)) * 1000000) / baud;
+            double instructNum = 1000000000000.0 / (box.BoxTimeUnit * baud);
             if (box.IsDB20)
                 instructNum /= 20;
             instructNum += 0.5;
@@ -442,11 +442,11 @@ namespace JM.Diag.W80
                 if (type == Constant.SETVPWRECS)
                     microTime = (microTime * 2) / 3;
                 type = (byte)(type + (Constant.SETBYTETIME & 0xF0));
-                microTime = (ulong)(microTime / (box.BoxTimeUnit / 1000000.0));
+                microTime = (ulong)((microTime * 1000000.0) / box.BoxTimeUnit);
             }
             else
             {
-                microTime = (ulong)((microTime / box.TimeBaseDB) / (box.BoxTimeUnit / 1000000.0));
+                microTime = (ulong)((microTime * 1000000.0) / (box.TimeBaseDB * box.BoxTimeUnit));
             }
 
             timeBuff[0] = (byte)(microTime / 256);
@@ -518,7 +518,7 @@ namespace JM.Diag.W80
             return false;
         }
 
-        public void Open()
+        public bool Open()
         {
             lastError = Constant.DISCONNECT_COMM;
             string[] ports = System.IO.Ports.SerialPort.GetPortNames();
@@ -539,27 +539,29 @@ namespace JM.Diag.W80
                     if (InitBox() && CheckBox())
                     {
                         Stream.Clear();
-                        return;
+                        return true;
                     }
                     Stream.SerialPort.Close();
                 }
-                catch (Exception)
+                catch
                 {
                     continue;
                 }
             }
-            throw new System.IO.IOException(Core.SysDB.GetText("Open Commbox Fail!"));
+            return false;
         }
 
-        public void Close()
+        public bool Close()
         {
             try
             {
                 Reset();
                 Stream.SerialPort.Close();
+                return true;
             }
-            catch (Exception)
+            catch
             {
+                return false;
             }
         }
 
@@ -679,9 +681,10 @@ namespace JM.Diag.W80
             set { connector = value; }
         }
 
-        public void SetConnector(ConnectorType cnn)
+        public bool SetConnector(ConnectorType cnn)
         {
             Connector = cnn;
+            return true;
         }
 
         public IProtocol CreateProtocol(ProtocolType type)

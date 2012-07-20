@@ -432,7 +432,7 @@ namespace JM.Diag.V1
             {
                 if (box is W80.Commbox<SerialPortStream>)
                 {
-                    return W80.Constant.LINKBLOCK;
+                    return W80.Constant.SETLINKTIME;
                 }
                 return 0;
             }

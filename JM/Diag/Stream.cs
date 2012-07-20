@@ -15,7 +15,7 @@ namespace JM.Diag
             set;
         }
 
-        public abstract void Clear();
+        public abstract bool Clear();
 
         public abstract int Read(byte[] buffer, int offset, int count);
 
