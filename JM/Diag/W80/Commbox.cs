@@ -534,8 +534,8 @@ namespace JM.Diag.W80
                     Stream.SerialPort.Handshake = System.IO.Ports.Handshake.None;
                     Stream.SerialPort.DataBits = 8;
                     Stream.SerialPort.PortName = portName;
-                    Stream.SerialPort.DtrEnable = true;
                     Stream.SerialPort.Open();
+                    Stream.Reset();
                     if (InitBox() && CheckBox())
                     {
                         Stream.Clear();
@@ -543,7 +543,7 @@ namespace JM.Diag.W80
                     }
                     Stream.SerialPort.Close();
                 }
-                catch
+                catch (Exception ex)
                 {
                     continue;
                 }
@@ -555,8 +555,12 @@ namespace JM.Diag.W80
         {
             try
             {
-                Reset();
-                Stream.SerialPort.Close();
+                if (Stream.SerialPort.IsOpen)
+                {
+                    Reset();
+                    Stream.SerialPort.DtrEnable = false;
+                    Stream.SerialPort.Close();
+                }
                 return true;
             }
             catch

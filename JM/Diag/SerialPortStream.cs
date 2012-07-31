@@ -2,6 +2,8 @@
 using System.IO;
 using System.IO.Ports;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace JM.Diag
 {
@@ -19,6 +21,33 @@ namespace JM.Diag
         public SerialPort SerialPort
         {
             get { return serialPort; }
+        }
+
+#if OS_ANDROID
+        [DllImport("JMCore", SetLastError = true)]
+        static private extern int reset_serial();
+
+        [DllImport("libc")]
+        static extern IntPtr strerror(int errnum);
+#endif
+
+        public override bool Reset()
+        {
+#if OS_ANDROID
+            if (reset_serial() == -1)
+            {
+                int errnum = Marshal.GetLastWin32Error();
+                string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
+                throw new IOException(error_message);
+                return false;
+            }
+            return true;
+#else
+            SerialPort.DtrEnable = false;
+            Thread.Sleep(1000);
+            SerialPort.DtrEnable = true;
+            Thread.Sleep(1000);
+#endif
         }
 
         public override bool Clear()
