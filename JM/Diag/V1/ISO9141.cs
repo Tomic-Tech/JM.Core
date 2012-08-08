@@ -41,7 +41,7 @@ namespace JM.Diag.V1
 
         public int SendFrames(byte[] data, int offset, int count, IPack pack)
         {
-            return SendOneFrame(data, offset, count, pack);
+            return func.SendOneFrame(data, offset, count, pack, true);
         }
 
         public byte[] ReadOneFrame(IPack pack)
@@ -73,7 +73,10 @@ namespace JM.Diag.V1
             }
 
             if (i < 5)
+            {
+                FinishExecute(true);
                 return null;
+            }
 
             List<byte> result = new List<byte>();
             int j = 3;
@@ -92,6 +95,7 @@ namespace JM.Diag.V1
             }
 
             result.AddRange(pack.Unpack(buff, k, j - k)); // Add last frame or it's a single frame
+            FinishExecute(true);
 
             return result.ToArray();
         }
@@ -183,10 +187,10 @@ namespace JM.Diag.V1
                 if (!Box.DelBatch(Box.BuffID))
                     return false;
 
-                if (tempBuff[2] != 0)
-                {
-                    return false;
-                }
+                //if (tempBuff[2] != 0)
+                //{
+                //    return false;
+                //}
 
                 if (!Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(5)) ||
                     !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(15)) ||

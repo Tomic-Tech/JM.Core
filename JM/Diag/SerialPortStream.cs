@@ -18,6 +18,10 @@ namespace JM.Diag
             this.readTimeout = new Core.Timer(-1);
         }
 
+        static SerialPortStream()
+        {
+        }
+
         public SerialPort SerialPort
         {
             get { return serialPort; }
@@ -25,7 +29,7 @@ namespace JM.Diag
 
 #if OS_ANDROID
         [DllImport("JMCore", SetLastError = true)]
-        static private extern int reset_serial();
+        static private extern int serial_command([MarshalAs(UnmanagedType.LPStr)]string name);
 
         [DllImport("libc")]
         static extern IntPtr strerror(int errnum);
@@ -34,13 +38,22 @@ namespace JM.Diag
         public override bool Reset()
         {
 #if OS_ANDROID
-            if (reset_serial() == -1)
+            if (serial_command("pulldown") == -1)
             {
                 int errnum = Marshal.GetLastWin32Error();
                 string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
                 throw new IOException(error_message);
                 return false;
             }
+            System.Threading.Thread.Sleep(1000);
+            if (serial_command("pullup") == -1)
+            {
+                int errnum = Marshal.GetLastWin32Error();
+                string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
+                throw new IOException(error_message);
+                return false;
+            }
+            System.Threading.Thread.Sleep(1000);
             return true;
 #else
             SerialPort.DtrEnable = false;
