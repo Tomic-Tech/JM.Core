@@ -6,7 +6,7 @@ namespace JM.Core
 {
     public class LiveDataVector : List<LiveData>
     {
-        private bool disposed = false;
+        //private bool disposed = false;
         private List<int> showIndexes;
         private Dictionary<int, int> showPositions;
         private List<int> enabledIndexes;

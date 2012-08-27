@@ -60,6 +60,7 @@ namespace JM.Diag
             Thread.Sleep(1000);
             SerialPort.DtrEnable = true;
             Thread.Sleep(1000);
+            return true;
 #endif
         }
 
