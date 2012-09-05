@@ -1,10 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace JM.Core
 {
-    public class LiveDataVector : List<LiveData>
+    public class LiveDataVector : List<LiveData>//, INotifyPropertyChanged
     {
         //private bool disposed = false;
         private List<int> showIndexes;
@@ -13,9 +15,9 @@ namespace JM.Core
         private int currentEnabledIndex;
         private object mutex;
 
-        public delegate void ValueChange(int index, string value);
+        //public delegate void ValueChange(int index, string value);
 
-        public ValueChange OnValueChange;
+        //public ValueChange OnValueChange;
 
         //[DllImport("JMCore", EntryPoint = "live_data_vector_new", CallingConvention = CallingConvention.Cdecl)]
         //private static extern IntPtr New();
@@ -42,13 +44,13 @@ namespace JM.Core
         public new void Add(LiveData ld)
         {
             base.Add(ld);
-            ld.PropertyChanged += (sender, e) =>
-            {
-                if (OnValueChange != null)
-                {
-                    OnValueChange(ShowedPosition(ld.Index), ld.Value);
-                }
-            };
+            //ld.PropertyChanged += (sender, e) =>
+            //{
+            //    if (OnValueChange != null)
+            //    {
+            //        OnValueChange(ShowedPosition(ld.Index), ld.Value);
+            //    }
+            //};
 
             ld.Index = Count - 1;
         }
@@ -214,6 +216,20 @@ namespace JM.Core
 
                 //currentEnabledIndex = showIndexes[0];
                 currentEnabledIndex = 0;
+            }
+        }
+
+        public ObservableCollection<LiveData> Items
+        {
+            get
+            {
+                DeployShowedIndex();
+                ObservableCollection<LiveData> ret = new ObservableCollection<LiveData>();
+                foreach(int i in showIndexes)
+                {
+                    ret.Add(this[i]);
+                }
+                return ret;
             }
         }
     }

@@ -9,39 +9,39 @@ namespace JM.Core
         IntPtr p;
         bool disposed = false;
 
-        [DllImport("JMCore", EntryPoint = "database_new")]
+        [DllImport("JMCore", EntryPoint = "database_new", CallingConvention=CallingConvention.Cdecl)]
         private static extern IntPtr New([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]string filePath);
 
-        [DllImport("JMCore", EntryPoint = "database_dispose")]
+        [DllImport("JMCore", EntryPoint = "database_dispose", CallingConvention = CallingConvention.Cdecl)]
         private static extern void Dispose(IntPtr p);
 
-        [DllImport("JMCore", EntryPoint = "database_set_tc_catalog")]
+        [DllImport("JMCore", EntryPoint = "database_set_tc_catalog", CallingConvention = CallingConvention.Cdecl)]
         private static extern void SetTCCatalog(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("JMCore", EntryPoint = "database_set_ld_catalog")]
+        [DllImport("JMCore", EntryPoint = "database_set_ld_catalog", CallingConvention = CallingConvention.Cdecl)]
         private static extern void SetLDCatalog(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("JMCore", EntryPoint = "database_set_cmd_catalog")]
+        [DllImport("JMCore", EntryPoint = "database_set_cmd_catalog", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool SetCMDCatalog(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("JMCore", EntryPoint = "database_get_text")]
+        [DllImport("JMCore", EntryPoint = "database_get_text", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool GetText(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string name, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
 
-        [DllImport("JMCore", EntryPoint = "database_get_trouble_code")]
+        [DllImport("JMCore", EntryPoint = "database_get_trouble_code", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool GetTroubleCode(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string code, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
 
         //[DllImport("JMCore", EntryPoint = "database_get_live_data")]
         //private static extern bool GetLiveData(IntPtr p, IntPtr vec);
-        [DllImport("JMCore", EntryPoint = "database_live_data_prepare")]
+        [DllImport("JMCore", EntryPoint = "database_live_data_prepare", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool LiveDataPrepare(IntPtr p);
 
-        [DllImport("JMCore", EntryPoint = "database_live_data_next")]
+        [DllImport("JMCore", EntryPoint = "database_live_data_next", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool LiveDataNext(IntPtr p, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder shortName, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder content, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder unit, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder defaultValue, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder value, out Int32 cmdID);
 
-        [DllImport("JMCore", EntryPoint = "database_get_command")]
+        [DllImport("JMCore", EntryPoint = "database_get_command", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool GetCommand(IntPtr p, [MarshalAs(UnmanagedType.LPStr)]string name, byte[] buffer, out UInt32 count);
 
-        [DllImport("JMCore", EntryPoint = "database_get_command_by_id")]
+        [DllImport("JMCore", EntryPoint = "database_get_command_by_id", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool GetCommand(IntPtr p, Int32 id, byte[] buffer, out UInt32 count);
 
         public VehicleDB(string filePath)
