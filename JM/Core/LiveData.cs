@@ -17,7 +17,13 @@ namespace JM.Core
         private int index;
         private string description;
 
-        public LiveData(string shortName, string content, string unit, string defaultValue, int cmdID, string description, bool enabled)
+        public LiveData(string shortName, 
+            string content, 
+            string unit, 
+            string defaultValue, 
+            int cmdID, 
+            string description, 
+            bool enabled)
         {
             this.shortName = shortName;
             this.content = content;
