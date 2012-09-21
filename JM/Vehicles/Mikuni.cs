@@ -467,48 +467,7 @@ namespace JM.Vehicles
 				throw new IOException (Database.GetText ("Read ECU Version Fail", "System"));
 			}
 
-			string hex = Encoding.ASCII.GetString (result);
-			StringBuilder ret = new StringBuilder ();
-			ret.Append ("ECU");
-
-//            for (int i = 0; i < hex.Length; i += 2)
-//            {
-//                string e = hex.Substring(i, 2);
-//                byte h = Convert.ToByte(e, 16);
-//                char c = Convert.ToChar(h);
-//                if (Char.IsLetterOrDigit(c))
-//                   ret.Append(c);
-//            }
-			for (int i = 0; i < 6; i += 2) {
-				string e = hex.Substring (i, 2);
-				byte h = Convert.ToByte (e, 16);
-				char c = Convert.ToChar (h);
-				if (Char.IsLetterOrDigit (c))
-					ret.Append (c);
-			}
-			ret.Append ("-");
-
-			for (int i = 6; i < 14; i += 2) {
-				string e = hex.Substring (i, 2);
-				byte h = Convert.ToByte (e, 16);
-				char c = Convert.ToChar (h);
-				if (Char.IsLetterOrDigit (c))
-					ret.Append (c);
-			}
-
-			ret.Append ("\nV");
-
-			for (int i = 16; i < 28; i += 2)
-			{
-				string e = hex.Substring(i, 2);
-				byte h = Convert.ToByte (e, 16);
-				char c = Convert.ToChar (h);
-				if (Char.IsLetterOrDigit(c))
-					ret.Append (c);
-			}
-
-            return ret.ToString();
-            //return hex.ToString();
+			return Encoding.ASCII.GetString (result);
         }
 
         public void TPSIdleSetting()
