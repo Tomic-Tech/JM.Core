@@ -28,7 +28,7 @@ namespace JM.Core
         public void Init(string rootPath)
         {
             RegisterInit(rootPath);
-            SysDBInit(rootPath);
+            Database.Init(rootPath);
         }
 
         void IDisposable.Dispose()
@@ -44,7 +44,7 @@ namespace JM.Core
                 if (isDisposing)
                 {
                     RegisterDispose();
-                    SysDBDispose();
+                    Database.Dispose();
                     disposed = true;
                 }
             }
@@ -54,12 +54,6 @@ namespace JM.Core
         {
             Dispose(true);
         }
-
-        [DllImport("JMCore", EntryPoint = "sys_db_init", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SysDBInit([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]string path);
-
-        [DllImport("JMCore", EntryPoint = "sys_db_dispose", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SysDBDispose();
 
         [DllImport("JMCore", EntryPoint = "register_init", CallingConvention = CallingConvention.Cdecl)]
         private static extern void RegisterInit([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]string path);

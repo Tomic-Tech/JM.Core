@@ -15,115 +15,43 @@ namespace JM.Core
         private bool showed;
         private int cmdID;
         private int index;
+        private string description;
 
-        //[DllImport("JMCore", EntryPoint = "live_data_get_short_name", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern bool GetShortName(IntPtr p, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_short_name", CallingConvention = CallingConvention.Cdecl)]
-        //[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-        //private static extern string GetShortName(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_get_content", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern bool GetContent(IntPtr p, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_content", CallingConvention = CallingConvention.Cdecl)]
-        //[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-        //private static extern string GetContent(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_get_unit", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern bool GetUnit(IntPtr p, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_unit", CallingConvention = CallingConvention.Cdecl)]
-        //[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-        //private static extern string GetUnit(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_get_default_value", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern bool GetDefaultValue(IntPtr p, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_default_value", CallingConvention = CallingConvention.Cdecl)]
-        //[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-        //private static extern string GetDefaultValue(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_get_value", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern bool GetValue(IntPtr p, [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder text);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_value", CallingConvention = CallingConvention.Cdecl)]
-        //[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-        //private static extern string GetValue(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_set_value", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern void SetValue(IntPtr p, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]string value);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_cmd_id", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern int GetCmdID(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_enabled", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern int GetEnabled(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_set_enabled", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern void SetEnabled(IntPtr p, int enabled);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_showed", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern bool GetShowed(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_set_showed", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern void SetShowed(IntPtr p, bool enabled);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_index", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern int GetIndex(IntPtr p);
-
-        //[DllImport("JMCore", EntryPoint = "live_data_set_index", CallingConvention = CallingConvention.Cdecl)]
-        //private static extern void SetIndex(IntPtr p, int enabled);
-
-        public LiveData(string shortName, string content, string unit, string defaultValue, string value, int cmdID, bool enabled)
+        public LiveData(string shortName, string content, string unit, string defaultValue, int cmdID, string description, bool enabled)
         {
             this.shortName = shortName;
             this.content = content;
             this.unit = unit;
             this.defaultValue = defaultValue;
             this.cmdID = cmdID;
+            this.description = description;
             this.enabled = enabled;
             this.showed = true;
         }
 
         public string ShortName
         {
-            get
-            {
-                return shortName;
-            }
+            get { return shortName; }
         }
 
         public string Content
         {
-            get
-            {
-                return content;
-            }
+            get { return content; }
         }
 
         public string Unit
         {
-            get
-            {
-                return unit;
-            }
+            get { return unit; }
         }
 
         public string DefaultValue
         {
-            get
-            {
-                return defaultValue;
-            }
+            get { return defaultValue; }
         }
 
         public string Value
         {
-            get
-            {
-                return this.value;
-            }
+            get { return this.value; }
             set
             {
                 this.value = value;
@@ -131,20 +59,19 @@ namespace JM.Core
             }
         }
 
+        public string Description
+        {
+            get { return description; }
+        }
+
         public int CmdID
         {
-            get
-            {
-                return cmdID;
-            }
+            get { return cmdID; }
         }
 
         public bool Enabled
         {
-            get
-            {
-                return enabled;
-            }
+            get { return enabled; }
             set
             {
                 enabled = value;
@@ -154,10 +81,7 @@ namespace JM.Core
 
         public bool Showed
         {
-            get
-            {
-                return showed;
-            }
+            get { return showed; }
             set
             {
                 showed = value;
@@ -167,14 +91,8 @@ namespace JM.Core
 
         public int Index
         {
-            get
-            {
-                return index;
-            }
-            set
-            {
-                index = value;
-            }
+            get { return index; }
+            set { index = value; }
         }
 
     }

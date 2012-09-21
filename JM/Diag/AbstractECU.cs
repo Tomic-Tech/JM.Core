@@ -11,15 +11,13 @@ namespace JM.Diag
         private Dictionary<string, DataCalcDelegate> dataStreamCalc;
         private Dictionary<string, DataCalcDelegate> troubleCodeCalc;
         private Dictionary<string, ActiveTest> activeTests;
-        private Core.VehicleDB db;
         private ICommbox commbox;
         private IProtocol protocol;
         private IPack pack;
         protected bool stopReadDataStream;
 
-        public AbstractECU(Core.VehicleDB db, ICommbox commbox)
+        public AbstractECU(ICommbox commbox)
         {
-            this.db = db;
             this.commbox = commbox;
             this.protocol = null;
             this.pack = new NoPack();
@@ -29,14 +27,6 @@ namespace JM.Diag
         public void StopReadDataStream()
         {
             stopReadDataStream = true;
-        }
-
-        protected Core.VehicleDB Db
-        {
-            get
-            {
-                return db;
-            }
         }
 
         protected ICommbox Commbox

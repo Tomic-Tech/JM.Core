@@ -8,17 +8,26 @@ namespace JM.Core
     {
         private string code;
         private string content;
+        private string description;
 
         public TroubleCode()
         {
             code = null;
             content = null;
+            description = null;
         }
 
         public TroubleCode(string code, string content)
+            : this()
         {
             this.code = code;
             this.content = content;
+        }
+
+        public TroubleCode(string code, string content, string description)
+            : this(code, content)
+        {
+            this.description = description;
         }
 
         public string Code
@@ -38,6 +47,16 @@ namespace JM.Core
             {
                 content = value;
                 OnPropertyChanged("Content");
+            }
+        }
+
+        public string Description
+        {
+            get { return description; }
+            set
+            {
+                description = value;
+                OnPropertyChanged("Description");
             }
         }
     }
