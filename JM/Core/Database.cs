@@ -40,7 +40,8 @@ namespace JM.Core
             [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder content,
             [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder unit,
             [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder defaultValue,
-            out Int32 cmdID,
+            [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder commandName,
+            [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder commandClass,
             [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder description);
 
 
@@ -80,12 +81,26 @@ namespace JM.Core
                 StringBuilder content = new StringBuilder(100);
                 StringBuilder unit = new StringBuilder(100);
                 StringBuilder defaultValue = new StringBuilder(100);
+                StringBuilder commandName = new StringBuilder(100);
+                StringBuilder commandClass = new StringBuilder(100);
                 StringBuilder description = new StringBuilder(100);
-                int cmdID = 0;
 
-                if (LiveDataNext(shortName, content, unit, defaultValue, out cmdID, description))
+                if (LiveDataNext(shortName, 
+                    content, 
+                    unit, 
+                    defaultValue, 
+                    commandName, 
+                    commandClass, 
+                    description))
                 {
-                    vec.Add(new LiveData(shortName.ToString(), content.ToString(), unit.ToString(), defaultValue.ToString(), cmdID, description.ToString(), true));
+                    vec.Add(new LiveData(shortName.ToString(), 
+                        content.ToString(), 
+                        unit.ToString(), 
+                        defaultValue.ToString(), 
+                        commandName.ToString(), 
+                        commandClass.ToString(), 
+                        description.ToString(), 
+                        true));
                 }
                 else
                     break;

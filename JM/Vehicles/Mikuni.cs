@@ -535,7 +535,7 @@ namespace JM.Vehicles
             {
                 foreach (var item in items)
                 {
-                    byte[] cmd = Database.GetCommand(item.CmdID);
+                    byte[] cmd = Database.GetCommand(item.CommandName, item.CommandClass);
                     byte[] recv = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
                     if (recv == null)
                     {
@@ -564,20 +564,31 @@ namespace JM.Vehicles
 
         public void StaticDataStream(Core.LiveDataVector vec)
         {
-            vec.DeployShowedIndex();
-
-            for (int i = 0; i < vec.ShowedCount; i++)
+            var items = vec.Items;
+            foreach (var item in items)
             {
-                int index = vec.ShowedIndex(i);
-                byte[] cmd = Database.GetCommand(vec[index].CmdID);
+                byte[] cmd = Database.GetCommand(item.CommandName, item.CommandClass);
                 byte[] recv = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
                 if (recv == null)
                 {
                     throw new IOException(Database.GetText("Communication Fail", "System"));
                 }
-                // calc
-                vec[index].Value = DataStreamCalc[vec[index].ShortName](recv);
+                item.Value = DataStreamCalc[item.ShortName](recv);
             }
+            //vec.DeployShowedIndex();
+
+            //for (int i = 0; i < vec.ShowedCount; i++)
+            //{
+            //    int index = vec.ShowedIndex(i);
+            //    byte[] cmd = Database.GetCommand(vec[index].CommandName, vec[index].CommandClass);
+            //    byte[] recv = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
+            //    if (recv == null)
+            //    {
+            //        throw new IOException(Database.GetText("Communication Fail", "System"));
+            //    }
+            //    // calc
+            //    vec[index].Value = DataStreamCalc[vec[index].ShortName](recv);
+            //}
         }
     }
 }

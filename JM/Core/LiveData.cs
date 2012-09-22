@@ -10,18 +10,20 @@ namespace JM.Core
         private string content;
         private string unit;
         private string defaultValue;
+        private string commandName;
+        private string commandClass;
+        private string description;
         private string value;
         private bool enabled;
         private bool showed;
-        private int cmdID;
         private int index;
-        private string description;
 
         public LiveData(string shortName, 
             string content, 
             string unit, 
             string defaultValue, 
-            int cmdID, 
+            string commandName,
+            string commandClass,
             string description, 
             bool enabled)
         {
@@ -29,7 +31,8 @@ namespace JM.Core
             this.content = content;
             this.unit = unit;
             this.defaultValue = defaultValue;
-            this.cmdID = cmdID;
+            this.commandName = commandName;
+            this.commandClass = commandClass;
             this.description = description;
             this.enabled = enabled;
             this.showed = true;
@@ -70,9 +73,14 @@ namespace JM.Core
             get { return description; }
         }
 
-        public int CmdID
+        public string CommandName
         {
-            get { return cmdID; }
+            get { return commandName; }
+        }
+
+        public string CommandClass
+        {
+            get { return commandClass; }
         }
 
         public bool Enabled

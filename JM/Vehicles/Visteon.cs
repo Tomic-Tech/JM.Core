@@ -141,7 +141,7 @@ namespace JM.Vehicles
             {
                 foreach (var item in items)
                 {
-                    byte[] cmd = Database.GetCommand(item.CmdID);
+                    byte[] cmd = Database.GetCommand(item.CommandName, item.CommandClass);
                     byte[] recv = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
                     if (recv == null)
                     {
@@ -171,7 +171,7 @@ namespace JM.Vehicles
 
             foreach (var item in items)
             {
-                byte[] cmd = Database.GetCommand(item.CmdID);
+                byte[] cmd = Database.GetCommand(item.CommandName, item.CommandClass);
                 byte[] recv = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
                 if (recv == null)
                 {
@@ -202,7 +202,7 @@ namespace JM.Vehicles
 
             foreach (var item in items)
             {
-                byte[] cmd = Database.GetCommand(item.CmdID);
+                byte[] cmd = Database.GetCommand(item.CommandName, item.CommandClass);
 				
                 byte[] recv = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
                 if (recv == null)
