@@ -13,9 +13,10 @@ namespace JM.Vehicles
         private Dictionary<int, DataCalcDelegate> failureCalc;
         private MikuniOptions options;
 
-        public Mikuni(ICommbox commbox)
+        public Mikuni(ICommbox commbox, MikuniOptions options)
             : base(commbox)
         {
+            this.options = options;
 
             FailureCmdsInit();
 
@@ -34,9 +35,6 @@ namespace JM.Vehicles
             }
 
             Pack = new MikuniPack();
-
-            options = new MikuniOptions();
-            options.Parity = MikuniParity.Even;
 
             if (!Protocol.Config(options))
             {
