@@ -13,6 +13,23 @@ namespace JM.Vehicles
         private Dictionary<int, DataCalcDelegate> failureCalc;
         private MikuniOptions options;
 
+        public struct ChineseVersion
+        {
+            private string hardware;
+            private string software;
+            public string Hardware
+            {
+                get { return hardware; }
+                set { hardware = value; }
+            }
+
+            public string Software
+            {
+                get { return software; }
+                set { software = value; }
+            }
+        }
+
         public Mikuni(ICommbox commbox, MikuniOptions options)
             : base(commbox)
         {
@@ -587,6 +604,55 @@ namespace JM.Vehicles
             //    // calc
             //    vec[index].Value = DataStreamCalc[vec[index].ShortName](recv);
             //}
+        }
+
+        public static ChineseVersion FormatECUVersionForChina(string hex)
+        {
+            ChineseVersion ret = new ChineseVersion();
+
+            StringBuilder temp = new StringBuilder();
+            temp.Append("ECU");
+
+            for (int i = 0; i < 6; i += 2)
+            {
+                string e = hex.Substring(i, 2);
+                byte h = Convert.ToByte(e, 16);
+                char c = Convert.ToChar(h);
+                if (Char.IsLetterOrDigit(c))
+                    temp.Append(c);
+            }
+            temp.Append("-");
+
+            int beginOfSoftware = 18;
+            for (int i = 6; i < 16; i += 2)
+            {
+                string e = hex.Substring(i, 2);
+                byte h = Convert.ToByte(e, 16);
+                char c = Convert.ToChar(h);
+                if (Char.IsLetterOrDigit(c))
+                {
+                    temp.Append(c);
+                }
+                else
+                {
+                    beginOfSoftware -= 2;
+                }
+            }
+
+            ret.Hardware = temp.ToString();
+            temp.Clear();
+
+            for (int i = beginOfSoftware; i < (beginOfSoftware + 12); i += 2)
+            {
+                string e = hex.Substring(i, 2);
+                byte h = Convert.ToByte(e, 16);
+                char c = Convert.ToChar(h);
+                if (Char.IsLetterOrDigit(c))
+                    temp.Append(c);
+            }
+
+            ret.Software = temp.ToString();
+            return ret;
         }
     }
 }

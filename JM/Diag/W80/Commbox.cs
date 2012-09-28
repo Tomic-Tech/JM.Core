@@ -685,12 +685,6 @@ namespace JM.Diag.W80
             set { connector = value; }
         }
 
-        public bool SetConnector(ConnectorType cnn)
-        {
-            Connector = cnn;
-            return true;
-        }
-
         public IProtocol CreateProtocol(ProtocolType type)
         {
             switch (type)

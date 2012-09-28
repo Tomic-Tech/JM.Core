@@ -118,7 +118,7 @@ namespace JM.Diag.V1
                 !Box.SetCommTime(SETBYTETIME, Core.Timer.FromMilliseconds(5)) ||
                 !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(0)) ||
                 !Box.SetCommTime(SETRECBBOUT, Core.Timer.FromMilliseconds(500)) ||
-                !Box.SetCommTime(SETRECFROUT, Core.Timer.FromSeconds(2)) ||
+                !Box.SetCommTime(SETRECFROUT, Core.Timer.FromMilliseconds(500)) ||
                 !Box.SetCommTime(SETLINKTIME, Core.Timer.FromMilliseconds(500)))
             {
                 return false;

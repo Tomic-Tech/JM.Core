@@ -11,8 +11,8 @@ namespace JM.Diag
 
         bool Close();
 
-        bool SetConnector(ConnectorType cnn);
-
+        ConnectorType Connector { get; set; }
+        
         IProtocol CreateProtocol(ProtocolType type);
     }
 }

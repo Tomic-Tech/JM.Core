@@ -26,7 +26,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.PWC;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.PWC;
+                }
             }
         }
 
@@ -38,7 +41,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RZFC;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RZFC;
+                }
             }
         }
 
@@ -50,7 +56,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.CK;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.CK;
+                }
             }
         }
 
@@ -62,7 +71,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.REFC;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.REFC;
+                }
             }
         }
 
@@ -74,7 +86,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SET_NULL;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SET_NULL;
+                }
             }
         }
 
@@ -86,7 +101,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK_NO;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK_NO;
+                }
             }
         }
 
@@ -98,7 +116,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK0;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK0;
+                }
             }
         }
 
@@ -110,7 +131,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK1;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK1;
+                }
             }
         }
 
@@ -122,7 +146,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK2;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK2;
+                }
             }
         }
 
@@ -134,7 +161,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK3;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK3;
+                }
             }
         }
 
@@ -146,7 +176,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK4;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK4;
+                }
             }
         }
 
@@ -158,7 +191,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK5;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK5;
+                }
             }
         }
 
@@ -170,7 +206,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK6;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK6;
+                }
             }
         }
 
@@ -182,7 +221,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SK7;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SK7;
+                }
             }
         }
 
@@ -194,7 +236,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK_NO;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK_NO;
+                }
             }
         }
 
@@ -206,7 +251,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK0;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK0;
+                }
             }
         }
 
@@ -218,7 +266,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK1;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK1;
+                }
             }
         }
 
@@ -230,7 +281,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK2;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK2;
+                }
             }
         }
 
@@ -242,7 +296,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK3;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK3;
+                }
             }
         }
 
@@ -254,7 +311,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK4;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK4;
+                }
             }
         }
 
@@ -266,7 +326,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK5;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK5;
+                }
             }
         }
 
@@ -278,7 +341,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK6;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK6;
+                }
             }
         }
 
@@ -290,7 +356,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RK7;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RK7;
+                }
             }
         }
 
@@ -302,7 +371,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.RS_232;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.RS_232;
+                }
             }
         }
 
@@ -314,7 +386,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.BIT9_MARK;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.BIT9_MARK;
+                }
             }
         }
 
@@ -326,7 +401,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.BIT9_EVEN;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.BIT9_EVEN;
+                }
             }
         }
 
@@ -338,7 +416,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.BIT9_ODD;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.BIT9_ODD;
+                }
             }
         }
 
@@ -350,7 +431,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.BIT9_SPACE;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.BIT9_SPACE;
+                }
             }
         }
 
@@ -362,7 +446,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SEL_SL;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SEL_SL;
+                }
             }
         }
 
@@ -374,7 +461,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.UN_DB20;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.UN_DB20;
+                }
             }
         }
 
@@ -386,7 +476,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SETBYTETIME;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SETBYTETIME;
+                }
             }
         }
 
@@ -398,7 +491,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SETWAITTIME;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SETWAITTIME;
+                }
             }
         }
 
@@ -410,7 +506,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SETRECBBOUT;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SETRECBBOUT;
+                }
             }
         }
 
@@ -422,7 +521,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SETRECFROUT;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SETRECFROUT;
+                }
             }
         }
 
@@ -434,7 +536,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SETLINKTIME;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SETLINKTIME;
+                }
             }
         }
 
@@ -446,7 +551,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.COMS;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SETLINKTIME;
+                }
             }
         }
 
@@ -458,7 +566,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.REC_FR;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.REC_FR;
+                }
             }
         }
 
@@ -470,7 +581,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.REC_LEN_1;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.REC_LEN_1;
+                }
             }
         }
 
@@ -482,7 +596,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SET55_BAUD;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SET55_BAUD;
+                }
             }
         }
 
@@ -494,7 +611,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.SET_DB20;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.SET_DB20;
+                }
             }
         }
 
@@ -506,7 +626,10 @@ namespace JM.Diag.V1
                 {
                     return W80.Constant.INVERTBYTE;
                 }
-                return 0;
+                else
+                {
+                    return C168.Constant.INVERTBYTE;
+                }
             }
         }
 

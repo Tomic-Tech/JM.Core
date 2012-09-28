@@ -452,5 +452,24 @@
         public const byte RF_ERR = 0xC8;
         public const byte RUN_ERR = 0xC4;               //COMMBOX运行启动检测错误
         public const byte SEND_CMD = 0x01;
+
+        public const byte SK0 = 0;
+        public const byte SK1 = 1;
+        public const byte SK2 = 2;
+        public const byte SK3 = 3;
+        public const byte SK4 = 4;
+        public const byte SK5 = 5;
+        public const byte SK6 = 6;
+        public const byte SK7 = 7;
+        public const byte SK_NO = 0xFF;
+        public const byte RK0 = 0;
+        public const byte RK1 = 1;
+        public const byte RK2 = 2;
+        public const byte RK3 = 3;
+        public const byte RK4 = 4;
+        public const byte RK5 = 5;
+        public const byte RK6 = 6;
+        public const byte RK7 = 7;
+        public const byte RK_NO = 0xFF;
     }
 }

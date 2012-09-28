@@ -26,6 +26,10 @@ namespace JM.Diag.V1
             {
                 receive = W80.Constant.RECEIVE;
             }
+            else
+            {
+                receive = C168.Constant.RECEIVE;
+            }
 
             if (!commbox.NewBatch(commbox.BuffID))
             {
@@ -86,6 +90,10 @@ namespace JM.Diag.V1
             if (commbox.GetType() == typeof(Diag.W80.Commbox<SerialPortStream>))
             {
                 linkBlock = W80.Constant.LINKBLOCK;
+            }
+            else
+            {
+                linkBlock = C168.Constant.LINKBLOCK;
             }
             if (!commbox.NewBatch(linkBlock))
             {

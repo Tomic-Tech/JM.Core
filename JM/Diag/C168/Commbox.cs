@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace JM.Diag.C168
 {
-    internal class Commbox<T> : JM.Diag.Commbox<T>, ICommbox where T : SerialPortStream
+    internal class Commbox<T> : JM.Diag.Commbox<T>, ICommbox, V1.ICommbox where T : SerialPortStream
     {
         private CommboxInfo commboxInfo; //CommBox 有关信息数据
         private CmdBuffInfo cmdBuffInfo; //维护COMMBOX数据缓冲区
@@ -13,12 +13,14 @@ namespace JM.Diag.C168
         private byte lastError; //提供错误查询
         private bool isDB20;
         private bool isDoNow;
+        private byte buffID;
         byte[] password;
         private int position;
         private Core.Timer reqByteToByte;
         private Core.Timer reqWaitTime;
         private Core.Timer resByteToByte;
         private Core.Timer resWaitTime;
+        private ConnectorType connector;
 
         public Commbox(T stream)
             : base(stream)
@@ -89,9 +91,15 @@ namespace JM.Diag.C168
             return false;
         }
 
-        public uint GetBoxVer()
+        public byte BuffID
         {
-            return (uint)((commboxInfo.Version[0] << 8) | (commboxInfo.Version[1]));
+            get { return buffID; }
+            set { buffID = value; }
+        }
+
+        public uint BoxVer
+        {
+            get { return (uint)((commboxInfo.Version[0] << 8) | (commboxInfo.Version[1])); }
         }
 
         private bool CommboxCommand(byte commandWord, byte[] buff, int offset, int length)
@@ -227,7 +235,7 @@ namespace JM.Diag.C168
                 if (commandWord == Constant.SEND_DATA && length <= Constant.SEND_LEN)
                 {
                     bool ret;
-                    if (GetBoxVer() > 0x400)
+                    if (BoxVer > 0x400)
                     {
                         //增加发送长命令
                         ret = CommboxEcuNew(commandWord, buff, offset, length);
@@ -262,7 +270,7 @@ namespace JM.Diag.C168
         private bool DoSet(byte commandWord, byte[] buff, int offset, int length)
         {
             int times = Constant.REPLAYTIMES;
-            while (times > 0)
+            while ((times--) > 0)
             {
                 if (!CommboxDo(commandWord, buff, offset, length))
                     continue;
@@ -304,12 +312,7 @@ namespace JM.Diag.C168
                 Stream.Clear();
                 return 0;
             }
-            if (ReadData(
-                receiveBuffer,
-                offset,
-                cmdInfo[1],
-                Core.Timer.FromMilliseconds(150)
-            ) != cmdInfo[1] ||
+            if (ReadData(receiveBuffer, offset, cmdInfo[1], Core.Timer.FromMilliseconds(150)) != cmdInfo[1] ||
                 ReadData(cmdInfo, 0, 1, Core.Timer.FromMilliseconds(150)) != 1)
                 return 0;
             checksum += cmdInfo[1];
@@ -326,7 +329,7 @@ namespace JM.Diag.C168
         public int ReadData(byte[] receiveBuffer, int offset, int length, Core.Timer totalTime)
         {
             Stream.ReadTimeout = totalTime;
-            return Stream.Read(receiveBuffer, 0, length);
+            return Stream.Read(receiveBuffer, offset, length);
         }
 
         private bool CheckBox()
@@ -347,7 +350,7 @@ namespace JM.Diag.C168
                 lastError = Constant.SENDDATA_ERROR;
                 return false;
             }
-            len = password.Length - 1;
+            len = password.Length;
             i = 0;
             checksum = (byte)(cmdTemp[4] + cmdTemp[4]);
             while (i < len)
@@ -355,6 +358,7 @@ namespace JM.Diag.C168
                 checksum += (byte)(password[i] ^ cmdTemp[i % 5]);
                 i++;
             }
+
             System.Threading.Thread.Sleep(20);
             if (GetCmdData(Constant.GETINFO, cmdTemp, 0) == 0)
                 return false;
@@ -514,7 +518,7 @@ namespace JM.Diag.C168
                         Stream.SerialPort.BaudRate = 19200;
                         break;
                     case Constant.UP_57600BPS:
-                        Stream.SerialPort.BaudRate = 38400;
+                        Stream.SerialPort.BaudRate = 57600;
                         break;
                     case Constant.UP_115200BPS:
                         Stream.SerialPort.BaudRate = 115200;
@@ -614,7 +618,7 @@ namespace JM.Diag.C168
                 if (length <= Constant.CMD_DATALEN || (commandWord == Constant.SEND_DATA && length < Constant.SEND_LEN))
                 {
                     //是否合法命令?
-                    if (commandWord == Constant.SEND_DATA && GetBoxVer() > 0x400)
+                    if (commandWord == Constant.SEND_DATA && BoxVer > 0x400)
                     {
                         //增加发送长命令
                         cmdTemp[cmdTemp[1] + 2] = Constant.SEND_CMD;
@@ -957,18 +961,19 @@ namespace JM.Diag.C168
         {
             byte[] timeBuff = new byte[2];
             GetLinkTime(type, time);
-            double microTime = time.Microseconds;
+            ulong microTime = (ulong)time.Microseconds;
 
             if (type == Constant.SETVPWSTART || type == Constant.SETVPWRECS)
             {
                 if (Constant.SETVPWRECS == type)
                     microTime = (microTime * 2) / 3;
                 type = (byte)(type + (Constant.SETBYTETIME & 0xF0));
-                microTime = (microTime / (commboxInfo.CommboxTimeUnit / 1000000.0));
+                microTime = (ulong)((microTime * 1000000.0) / commboxInfo.CommboxTimeUnit);
             }
             else
             {
-                microTime = (microTime / commboxInfo.TimeBaseDB) / (commboxInfo.CommboxTimeUnit / 1000000.0);
+                microTime = (ulong)((microTime * 1000000.0) / (commboxInfo.TimeBaseDB * commboxInfo.CommboxTimeUnit));
+               // microTime = (microTime / commboxInfo.TimeBaseDB) / (commboxInfo.CommboxTimeUnit / 1000000.0);
             }
 
             if (microTime > 65535)
@@ -985,11 +990,12 @@ namespace JM.Diag.C168
                 {
                     return SendCmdToBox(type, timeBuff, 1, 1);
                 }
+                else
+                {
+                    return SendCmdToBox(type, timeBuff, 0, 2);
+                }
             }
-            else
-            {
-                return SendCmdToBox(type, timeBuff, 0, 2);
-            }
+            
             lastError = Constant.UNDEFINE_CMD;
             return false;
         }
@@ -1003,6 +1009,10 @@ namespace JM.Diag.C168
                 if (isDoNow)
                 {
                     return CommboxDo(type, null, 0, 0);
+                }
+                else
+                {
+                    return AddToBuff(type, null, 0, 0);
                 }
             }
             lastError = Constant.UNDEFINE_CMD;
@@ -1214,10 +1224,14 @@ namespace JM.Diag.C168
             }
         }
 
-        public bool RunBatch(byte[] buffID, bool repeat)
+        public bool RunBatch(byte[] buffID, int length, bool repeat)
         {
-            int length = buffID.Length;
-            for (int i = 0; i < buffID.Length; i++)
+            if (length > buffID.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            for (int i = 0; i < length; i++)
             {
                 if (cmdBuffInfo.CmdBuffAdd[buffID[i]] == Constant.NULLADD)
                 {
@@ -1259,14 +1273,30 @@ namespace JM.Diag.C168
             return false;
         }
 
-        public bool SetConnector(ConnectorType cnn)
+        public int ReadBytes(byte[] buffer, int offset, int length)
         {
-            return false;
+            return ReadData(buffer, offset, length, resWaitTime);
         }
 
+        public ConnectorType Connector
+        {
+            get { return connector; }
+            set { connector = value; }
+        }
+        
         public IProtocol CreateProtocol(ProtocolType type)
         {
-            return null;
+            switch (type)
+            {
+                case ProtocolType.MIKUNI:
+                    return new V1.Mikuni(this);
+                case ProtocolType.ISO14230:
+                    return new V1.KWP2000(this);
+                case ProtocolType.ISO9141_2:
+                    return new V1.ISO9141(this);
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

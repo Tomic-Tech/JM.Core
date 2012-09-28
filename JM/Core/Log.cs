@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Diagnostics;
 namespace JM.Core
 {
     public static class Log
@@ -25,7 +25,10 @@ namespace JM.Core
         {
 #if OS_ANDROID
             Android.Util.Log.Debug("JMScanner", tag + ": " + text);
+#else
+            Trace.WriteLine(tag + ": " + text, "JMScanner");
 #endif
+
         }
     }
 }
