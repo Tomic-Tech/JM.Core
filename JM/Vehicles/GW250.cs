@@ -8,7 +8,7 @@ using System.Threading;
 using JM.Core;
 using JM.Diag;
 
-namespace JM.Core.JM.Vehicles
+namespace JM.Vehicles
 {
     public class GW250 : AbstractECU
     {
