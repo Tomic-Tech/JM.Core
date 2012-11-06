@@ -274,7 +274,7 @@ namespace JM.Diag.C168
             {
                 if (!CommboxDo(commandWord, buff, offset, length))
                     continue;
-                else if (CheckResult(Core.Timer.FromMicroseconds(50)))
+                else if (CheckResult(Core.Timer.FromMilliseconds(50)))
                     return true;
                 StopNow(true);
             }
@@ -683,15 +683,30 @@ namespace JM.Diag.C168
 
             while (times != 0)
             {
-                if (!CheckIdle() || Stream.Write(cmdTemp, 0, cmdTemp[1] + 3) != cmdTemp[1] + 3)
-                    continue;
-                else if (SendOk(Core.Timer.FromMilliseconds(20 * (cmdTemp[1] + 10))))
-                    break;
-                if (!StopNow(true))
+                if (CheckIdle() && Stream.Write(cmdTemp, 0, cmdTemp[1] + 3) == (cmdTemp[1] + 3))
                 {
-                    cmdBuffInfo.CmdBuffID = Constant.NULLADD;
-                    return false;
+                    if (SendOk(Core.Timer.FromMilliseconds(20 * (cmdTemp[1] + 10))))
+                        break;
+                    if (!StopNow(true))
+                    {
+                        cmdBuffInfo.CmdBuffID = Constant.NULLADD;
+                        return false;
+                    }
                 }
+                times--;
+                //if (!CheckIdle() || Stream.Write(cmdTemp, 0, cmdTemp[1] + 3) != cmdTemp[1] + 3)
+                //{
+                //    times--;
+                //    continue;
+                //}
+                //else if (SendOk(Core.Timer.FromMilliseconds(20 * (cmdTemp[1] + 10))))
+                //    break;
+                //if (!StopNow(true))
+                //{
+                //    cmdBuffInfo.CmdBuffID = Constant.NULLADD;
+                //    return false;
+                //}
+                //times--;
             }
             if (times == 0)
             {
