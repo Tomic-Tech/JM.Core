@@ -38,7 +38,24 @@ namespace JM.Diag
         public override bool Reset()
         {
 #if OS_ANDROID
-            if (serial_command("pulldown") == -1)
+            //if (serial_command("pulldown") == -1)
+            //{
+            //    int errnum = Marshal.GetLastWin32Error();
+            //    string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
+            //    throw new IOException(error_message);
+            //    return false;
+            //}
+            //System.Threading.Thread.Sleep(1000);
+            //if (serial_command("pullup") == -1)
+            //{
+            //    int errnum = Marshal.GetLastWin32Error();
+            //    string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
+            //    throw new IOException(error_message);
+            //    return false;
+            //}
+            //System.Threading.Thread.Sleep(1000);
+            //return true;
+            if (serial_command("pullup") == -1)
             {
                 int errnum = Marshal.GetLastWin32Error();
                 string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
@@ -46,7 +63,7 @@ namespace JM.Diag
                 return false;
             }
             System.Threading.Thread.Sleep(1000);
-            if (serial_command("pullup") == -1)
+            if (serial_command("pulldown") == -1)
             {
                 int errnum = Marshal.GetLastWin32Error();
                 string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
