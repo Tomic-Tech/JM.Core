@@ -40,6 +40,8 @@ namespace JM.Vehicles
             ActiveTestInit();
 
             ProtocolInit();
+
+            ActiveOn = ActiveState.Stop;
         }
 
         private void ProtocolInit()
@@ -72,53 +74,69 @@ namespace JM.Vehicles
         {
             DataStreamCalc = new Dictionary<string, DataCalcDelegate>();
 
+            // recv is the ReadDataByLocalIdentifier positive Response
+            // Copy from protocol document
+            // Data Byte    Parameter Name                                  Cvt     Hex Value   Mnemonic
+            // #1d          readDataByLocalIdentifier Response Service Id   M       #61h        RDBLIPR
+            // #2d          recordLocalIdentifier                           M       #XXh        RLI
+            // #3d          recordValue#1                                   M       #XXh        RV
+            // ...          ...                                             M       ...         ...
+            // #nd          recordValue#n                                   M       #XXh        RV
+            // Because in array we are starts by 0 index, so recv[0] is #1d, recv[1] is #2d, 
+            //   recv[2] is the #3d, recv[3] is the #4d, and so on.
+
+                // Name Size    Conversion (hex/bin)    Conversion (physical)   Resol.
             DataStreamCalc["AMP"] = (recv) =>
             {
+                // AMP  2   0...9F6H    0...2550    1
                 return string.Format("{0}", Convert.ToUInt32(recv[2] * 256 + recv[3]));
             };
 
             DataStreamCalc["CRASH"] = (recv) =>
             {
+                // CRASH    2   0...3FFH    0...4.9951  5/1024
                 return string.Format("{0:F4}", Convert.ToDouble(recv[4] * 256 + recv[5]) * 5 / 1024);
             };
 
             DataStreamCalc["CTR_ERR_DYN_NR"] = (recv) =>
             {
+                // CTR_ERR_DYN_NR   1   0...FFH 0...255 1
                 return string.Format("{0}", Convert.ToUInt32(recv[6]));
             };
 
             DataStreamCalc["CUR_IGC_DIAG_cyl1"] = (recv) =>
             {
+                // CUR_IGC_DIAG_cyl1    2   0...3FFH    0...4.9951  5/1024
                 return string.Format("{0:F4}", Convert.ToDouble(recv[7] * 256 + recv[8]) * 5 / 1024);
             };
 
             DataStreamCalc["DIST_ACT_MIL"] = (recv) =>
             {
+                // DIST_ACT_MIL 2   0...FFFFH   0...65535   1
                 return string.Format("{0}", Convert.ToUInt32(recv[9] * 256 + recv[10]));
             };
 
             DataStreamCalc["ENG_HOUR"] = (recv) =>
             {
-                //return string.Format("{0}", Convert.ToDouble(recv[10] * 256 + recv[11]) / 12);
+                // ENG_HOUR 2   0...FFFFH   0...5461.25 1/12
                 return string.Format("{0:F4}", Convert.ToDouble(recv[11] * 256 + recv[12]) / 12);
             };
 
             DataStreamCalc["IGA_1"] = (recv) =>
             {
-                //return string.Format("{0}", Convert.ToDouble(recv[12]) * 15 / 32  - 30);
+                // IGA_1    1   0...FFH -30...89.53 15/32
                 return string.Format("{0:F4}", Convert.ToDouble(recv[13]) * 15 / 32 - 30);
             };
 
             DataStreamCalc["IGA_CTR_IS"] = (recv) =>
             {
-                //return string.Format("{0}", Convert.ToDouble(recv[13]) * 15 / 32 - 30);
+                // IGA_CTL_IS   1   0...FFH -30...89.53 15/32
                 return string.Format("{0:F4}", Convert.ToDouble(recv[14]) * 15 / 32 - 30);
             };
 
             DataStreamCalc["INH_IV"] = (recv) =>
             {
-                //return string.Format("{0}", Convert.ToUInt32(recv[14]));
-                //return string.Format("{0}", Convert.ToUInt32(recv[15]));
+                // INH_IV   1   0...3FH 0...63  1
                 if ((recv[15] & 0x01) == 0)
                 {
                     return Database.GetText("Fuel - Cut", "System");
@@ -131,7 +149,7 @@ namespace JM.Vehicles
 
             DataStreamCalc["INJ_MODE"] = (recv) =>
             {
-                //switch (recv[15])
+                // INJ_MODE 1   0...6H  0...6   1
                 switch (recv[16])
                 {
                     case 0:
@@ -155,32 +173,38 @@ namespace JM.Vehicles
 
             DataStreamCalc["ISA_AD_T_DLY"] = (recv) =>
             {
+                // ISA_AD_T_DLY 1   0...FFH -12.8...12.7    0.1
                 return string.Format("{0:F4}", Convert.ToDouble(recv[17]) / 10 - 12.8);
             };
 
             DataStreamCalc["ISA_ANG_DUR_MEC"] = (recv) =>
             {
+                //  ISA_ANG_DUR_MEC 2   0...600H    0...720.00  15/32
                 return string.Format("{0:F4}", Convert.ToDouble(recv[18] * 256 + recv[19]) * 15 / 32);
             };
 
             DataStreamCalc["ISA_CTL_IS"] = (recv) =>
             {
+                // ISA_CTL_IS   1   0...FFH -120...119.06   15/16
                 return string.Format("{0:F4}", Convert.ToDouble(recv[20]) * 15 / 16 - 120);
             };
 
             DataStreamCalc["ISC_ISA_AD_MV"] = (recv) =>
             {
+                // ISC_ISA_AD_MV    1   0...FFH -120...119.06   15/16
                 return string.Format("{0:F4}", Convert.ToDouble(recv[21]) * 15 / 16 - 120);
             };
 
             DataStreamCalc["LAMB_SP"] = (recv) =>
             {
+                // LAMB_SP  1   0...FFH 0.5...1.4960    1/256
                 return string.Format("{0:F4}", Convert.ToDouble(recv[22]) / 256 + 0.5);
             };
 
             DataStreamCalc["LV_AFR"] = (recv) =>
             {
-                //if ((recv[23] & 0x01) != 0)
+                // LV_AFR   1   0...1H  0...1   1
+                // bit 7
 				if ((recv[23] & 0x80) != 0)
                 {
                     return Database.GetText("Thick", "System");
@@ -193,7 +217,8 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_CELP"] = (recv) =>
             {
-                //if ((recv[23] & 0x02) != 0)
+                // LV_CELP  1   0...1H  0...1   1
+                // bit 6
 				if ((recv[23] & 0x40) != 0)
                 {
                     return Database.GetText("Yes", "System");
@@ -206,7 +231,8 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_CUT_OUT"] = (recv) =>
             {
-                //if ((recv[23] & 0x04) != 0)
+                // LV_CUT_OUT  1   0...1H  0...1   1
+                // bit 5
 				if ((recv[23] & 0x20) != 0)
                 {
                     return Database.GetText("Oil - Cut", "System");
@@ -219,8 +245,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_EOL_EFP_PRIM"] = (recv) =>
             {
+                // LV_EOL_EFP_PRIM  1   0...1H  0...1   1
+                // bit 4
 				if ((recv[23] & 0x10) != 0)
-                //if ((recv[23] & 0x08) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -232,8 +259,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_EOL_EFP_PRIM_ACT"] = (recv) =>
             {
+                // LV_EOL_EFP_PRIM_ACT 1   0...1H  0...1   1
+                // bit 3
 				if ((recv[23] & 0x08) != 0)
-                //if ((recv[23] & 0x10) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -245,8 +273,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_IMMO_PROG"] = (recv) =>
             {
+                // LV_IMMO_PROG    1   0...1H  0...1   1
+                // bit 2
 				if ((recv[23] & 0x04) != 0)
-                //if ((recv[23] & 0x20) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -258,8 +287,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_IMMO_ECU_PROG"] = (recv) =>
             {
+                // LV_IMMO_ECU_PROG 1   0...1H  0...1   1
+                // bit 1
 				if ((recv[23] & 0x02) != 0)
-                //if ((recv[23] & 0x40) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -271,8 +301,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_LOCK_IMOB"] = (recv) =>
             {
+                // LV_LOCK_IMOB 1   0...1H  0...1   1
+                // bit 0
 				if ((recv[23] & 0x01) != 0)
-                //if ((recv[23] & 0x80) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -284,8 +315,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_LSCL_1"] = (recv) =>
             {
+                // LV_LSCL_1    1   0...1H  0...1   1
+                // bit 4
 				if ((recv[24] & 0x10) != 0)
-                //if ((recv[24] & 0x01) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -297,8 +329,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_LSH_UP_1"] = (recv) =>
             {
+                // LV_LSH_UP_1  1   0...1H  0...1   1
+                // bit 3
 				if ((recv[24] & 0x08) != 0)
-                //if ((recv[24] & 0x02) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -310,8 +343,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_REQ_ISC"] = (recv) =>
             {
+                // LV_REQ_ISC   1   0...1H  0...1   1
+                // bit 2
 				if ((recv[24] & 0x04) != 0)
-                //if ((recv[24] & 0x04) != 0)
                 {
                     return Database.GetText("Idle Controlling", "System");
                 }
@@ -323,8 +357,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_VIP"] = (recv) =>
             {
+                // LV_VIP   1   0...1H  0...1   1
+                // bit 1
 				if ((recv[24] & 0x02) != 0)
-                //if ((recv[24] & 0x08) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -336,8 +371,9 @@ namespace JM.Vehicles
 
             DataStreamCalc["LV_EOP"] = (recv) =>
             {
+                // LV_EOP
+                // bit 0
 				if ((recv[24] & 0x01) != 0)
-                //if ((recv[24] & 0x10) != 0)
                 {
                     return Database.GetText("Yes", "System");
                 }
@@ -349,56 +385,67 @@ namespace JM.Vehicles
 
             DataStreamCalc["MAF"] = (recv) =>
             {
+                // MAF  2   0...FFFFH   0...1023.984    1/64
                 return string.Format("{0:F4}", Convert.ToDouble(recv[25] * 256 + recv[26]) / 64);
             };
 
             DataStreamCalc["MAF_THR"] = (recv) =>
             {
+                // MAF_THR  2   0...FFFFH   0...1023.984    1/64
                 return string.Format("{0:F4}", Convert.ToDouble(recv[27] * 256 + recv[28]) / 64);
             };
 
             DataStreamCalc["MAP"] = (recv) =>
             {
+                // MAP  2   0...9F6H    0...2550    1
                 return string.Format("{0}", Convert.ToUInt32(recv[29] * 256 + recv[30]));
             };
 
             DataStreamCalc["MAP_UP"] = (recv) =>
             {
+                // MAP_UP   2   0...9F6H    0...2550    1
                 return string.Format("{0}", Convert.ToUInt32(recv[31] * 256 + recv[32]));
             };
 
             DataStreamCalc["MFF_AD_ADD_MMV_REL"] = (recv) =>
             {
+                // MFF_AD_ADD_MMV_REL   2   0...FFFFH   -128...127.9960 1/256
                 return string.Format("{0:F4}", Convert.ToDouble(recv[33] * 256 + recv[34]) / 256 - 128);
             };
 
             DataStreamCalc["MFF_AD_FAC_MMV_REL"] = (recv) =>
             {
+                // MFF_AD_FAC_MMV_REL   2   0...FFFFH   -32...31.99902  1/1024
                 return string.Format("{0:F4}", Convert.ToDouble(recv[35] * 256 + recv[36]) / 1024 - 32);
             };
 
             DataStreamCalc["MFF_AD_ADD_MMV"] = (recv) =>
             {
+                // MFF_AD_ADD_MMV   2   0...FFFFH   -128...127.9960 1/256
                 return string.Format("{0:F4}", Convert.ToDouble(recv[37] * 256 + recv[38]) / 256 - 128);
             };
 
             DataStreamCalc["MFF_AD_FAC_MMV"] = (recv) =>
             {
+                // MFF_AD_FAC_MMV   2.  0...FFFFH   -32...32.99902  1/1024
                 return string.Format("{0:F4}", Convert.ToDouble(recv[39] * 256 + recv[40]) / 1024 - 32);
             };
 
             DataStreamCalc["MFF_INJ_HOM"] = (recv) =>
             {
+                // MFF_INJ_HOM  2   0...FFFFH   0...255.9960    1/256
                 return string.Format("{0:F4}", Convert.ToDouble(recv[41] * 256 + recv[42]) / 256);
             };
 
             DataStreamCalc["MFF_WUP_COR"] = (recv) =>
             {
+                // MFF_WUP_COR  1   0...FFH 0...0.9960  1/256
                 return string.Format("{0:F4}", Convert.ToDouble(recv[43]) / 256);
             };
 
             DataStreamCalc["MOD_IGA"] = (recv) =>
             {
+                // MOD_IGA  1   0H/1H   NOT_PHASE/PHASED    1
                 if (recv[44] == 0)
                 {
                     return Database.GetText("Undetermined Phase", "System");
@@ -411,26 +458,31 @@ namespace JM.Vehicles
 
             DataStreamCalc["N"] = (recv) => 
             {
+                // N    2   0..4650H    0...18000   1
                 return string.Format("{0}", Convert.ToUInt32(recv[45] * 256 + recv[46]));
             };
 
             DataStreamCalc["N_MAX_THD"] = (recv) =>
             {
+                // N_MAX_THD    2   0...4650H   0...18000   1
                 return string.Format("{0}", Convert.ToUInt32(recv[47] * 256 + recv[48]));
             };
 
             DataStreamCalc["N_SP_ISC"] = (recv) =>
             {
+                // N_SP_ISC 2   0...FFFFH   -32768...32767  1
                 return string.Format("{0}", Convert.ToInt32(recv[49] * 256 + recv[50]) - 32768);
             };
 
             DataStreamCalc["SOI_1"] = (recv) =>
             {
+                // SOI_1    2   0...600H    -180...540.00   15/32
                 return string.Format("{0:F4}", Convert.ToDouble(recv[51] * 256 + recv[52]) * 15 / 32 - 180);
             };
 
             DataStreamCalc["STATE_EFP"] = (recv) =>
             {
+                // STATE_EFP    1   0H/1H/2H    EFP_OFF/EFP_ON/EFP_PRIME    1
                 if (recv[53] == 0)
                 {
                     return Database.GetText("Close", "System");
@@ -447,6 +499,7 @@ namespace JM.Vehicles
 
             DataStreamCalc["STATE_ENGSTATE"] = (recv) =>
             {
+                // STATE_ENGSTATE   1   0H/1H/2H/3H/4H/5H   ES/ST/IS/PL/PU/PUC  1
                 switch (recv[54])
                 {
                     case 0:
@@ -468,71 +521,85 @@ namespace JM.Vehicles
 
             DataStreamCalc["TCO"] = (recv) =>
             {
+                // TCO  1   0..FFH  -40...215   1
                 return string.Format("{0}", Convert.ToInt32(recv[55]) - 40);
             };
 
             DataStreamCalc["TCOPWM"] = (recv) =>
             {
+                // TCOPWM   1   0...FFH 0...99.6    25/64
                 return string.Format("{0:F4}", Convert.ToDouble(recv[56]) * 25 / 64);
             };
 
             DataStreamCalc["TD_1"] = (recv) =>
             {
+                // TD_1 2   0...FFFFH   0...262.140 0.004
                 return string.Format("{0:F4}", Convert.ToDouble(recv[57] * 256 + recv[58]) * 0.004);
             };
 
             DataStreamCalc["TI_HOM_1"] = (recv) =>
             {
+                // TI_HOM_1 2   0...FFFFH   0...262.140 0.004
                 return string.Format("{0:F4}", Convert.ToDouble(recv[59] * 256 + recv[60]) * 0.004);
             };
 
             DataStreamCalc["TI_LAM_COR"] = (recv) => 
             {
+                // TI_LAM_COR   2   0...FFFFH   -32...32.99902  1/1024
                 return string.Format("{0:F4}", Convert.ToDouble(recv[61] * 256 + recv[62]) / 1024 - 32);
             };
 
             DataStreamCalc["TIA"] = (recv) => 
             {
+                // TIA  1   0...FFH -40...215   1
                 return string.Format("{0}", Convert.ToInt32(recv[63]) - 40);
             };
 
             DataStreamCalc["TIA_CYL"] = (recv) => 
             {
+                // TIA_CYL  1   0...FFH -40...215   1
                 return string.Format("{0}", Convert.ToInt32(recv[64]) - 40);
             };
 
             DataStreamCalc["TPS_MTC_1"] = (recv) => 
             {
+                // TPS_MTC_1    2   0...FFFFH   0...127.9980    1/512
                 return string.Format("{0:F4}", Convert.ToDouble(recv[65] * 256 + recv[66]) / 512);
             };
 
             DataStreamCalc["V_TPS_AD_BOL_1"] = (recv) => 
             {
+                // V_TPS_AD_BOL_1   2   0...3FFH    0...4.9951  5/1024
                 return string.Format("{0:F4}", Convert.ToDouble(recv[67] * 256 + recv[68]) * 5 / 1024);
             };
 
             DataStreamCalc["VBK_MMV"] = (recv) => 
             {
+                // VBK_MMV  1   0...FFH 4...19.937  1/16
                 return string.Format("{0:F4}", Convert.ToDouble(recv[69]) / 16 + 4);
             };
 
             DataStreamCalc["VLS_UP_1"] = (recv) => 
             {
+                // VLS_UP_1 2   0...3FFH    0...4.9951  5/1024
                 return string.Format("{0:F4}", Convert.ToDouble(recv[70] * 256 + recv[71]) * 5 / 1024);
             };
 
             DataStreamCalc["VS_8"] = (recv) => 
             {
+                // VS_8 1   0...FFH 0...255 1
                 return string.Format("{0}", Convert.ToUInt32(recv[72]));
             };
 
             DataStreamCalc["V_TPS_1_BAS"] = (recv) => 
             {
+                // V_TPS_1_BAS  2   0...3FFH    0...4.9951  5/1024
                 return string.Format("{0:F4}", Convert.ToDouble(recv[73] * 256 + recv[74] * 5 / 1024));
             };
 
             DataStreamCalc["LV_SAV"] = (recv) => 
             {
+                // LV_SAV   1   0...1H  0...1   -
                 if (recv[75] == 0)
                 {
                     return Database.GetText("Yes", "System");
@@ -777,6 +844,53 @@ namespace JM.Vehicles
             Protocol.SendAndRecv(stopDiagnosticSession, 0, stopDiagnosticSession.Length, Pack);
             Protocol.SendAndRecv(stopCommunication, 0, stopCommunication.Length, Pack);
             return ret;
+        }
+
+        public void Active(Core.LiveDataVector vec, string mode)
+        {
+            byte[] cmd = Database.GetCommand("Read Data By Local Identifier1", "Synerject");
+            byte[] buff = Protocol.SendAndRecv(startDiagnosticSession, 0, startDiagnosticSession.Length, Pack);
+
+            if (buff == null || buff[0] != 0x50)
+                throw new IOException(Database.GetText("Active Test Fail", "System"));
+
+            ActiveOn = ActiveState.Idle;
+            buff = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
+            if (buff == null)
+            {
+                Protocol.SendAndRecv(stopDiagnosticSession, 0, stopDiagnosticSession.Length, Pack);
+                Protocol.SendAndRecv(stopCommunication, 0, stopCommunication.Length, Pack);
+                throw new IOException(Database.GetText("Communication Fail", "System"));
+            }
+
+            var items = vec.Items;
+            while (ActiveOn != ActiveState.Stop)
+            {
+                if (ActiveOn == ActiveState.Idle)
+                {
+                    buff = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
+                    foreach (var item in items)
+                    {
+                        item.Value = DataStreamCalc[item.ShortName](buff);
+                    }
+                    Thread.Sleep(10);
+                }
+                else if (ActiveOn == ActiveState.Positive)
+                {
+                    ActiveTests[mode](true);
+                    ActiveOn = ActiveState.Idle;
+                    Thread.Sleep(10);
+                }
+                else if (ActiveOn == ActiveState.Negative)
+                {
+                    ActiveTests[mode](false);
+                    ActiveOn = ActiveState.Idle;
+                    Thread.Sleep(10);
+                }
+            }
+
+            Protocol.SendAndRecv(stopDiagnosticSession, 0, stopDiagnosticSession.Length, Pack);
+            Protocol.SendAndRecv(stopCommunication, 0, stopCommunication.Length, Pack);
         }
 
         public string ReadECUVersion()

@@ -5,6 +5,14 @@ namespace JM.Diag
 {
     public abstract class AbstractECU
     {
+        public enum ActiveState
+        {
+            Positive,
+            Negative,
+            Idle,
+            Stop
+        }
+
         public delegate string DataCalcDelegate(byte[] recv);
         public delegate string ActiveTest(bool on);
 
@@ -15,6 +23,13 @@ namespace JM.Diag
         private IProtocol protocol;
         private IPack pack;
         protected bool stopReadDataStream;
+        private ActiveState activeOn;
+
+        public ActiveState ActiveOn
+        {
+            get { return activeOn; }
+            set { activeOn = value; }
+        }
 
         public AbstractECU(ICommbox commbox)
         {
@@ -97,7 +112,6 @@ namespace JM.Diag
                 activeTests = value;
             }
         }
-
     }
 }
 

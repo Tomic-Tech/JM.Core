@@ -525,27 +525,31 @@ namespace JM.Diag.W80
 
             foreach (string portName in ports)
             {
-                try
+                int retrytimes = 3;
+                while (retrytimes-- != 0)
                 {
-                    Stream.SerialPort.Close();
-                    Stream.SerialPort.BaudRate = 115200;
-                    Stream.SerialPort.StopBits = System.IO.Ports.StopBits.Two;
-                    Stream.SerialPort.Parity = System.IO.Ports.Parity.None;
-                    Stream.SerialPort.Handshake = System.IO.Ports.Handshake.None;
-                    Stream.SerialPort.DataBits = 8;
-                    Stream.SerialPort.PortName = portName;
-                    Stream.SerialPort.Open();
-                    Stream.Reset();
-                    if (InitBox() && CheckBox())
+                    try
                     {
-                        Stream.Clear();
-                        return true;
+                        Stream.SerialPort.Close();
+                        Stream.SerialPort.BaudRate = 115200;
+                        Stream.SerialPort.StopBits = System.IO.Ports.StopBits.Two;
+                        Stream.SerialPort.Parity = System.IO.Ports.Parity.None;
+                        Stream.SerialPort.Handshake = System.IO.Ports.Handshake.None;
+                        Stream.SerialPort.DataBits = 8;
+                        Stream.SerialPort.PortName = portName;
+                        Stream.SerialPort.Open();
+                        Stream.Reset();
+                        if (InitBox() && CheckBox())
+                        {
+                            Stream.Clear();
+                            return true;
+                        }
+                        Stream.SerialPort.Close();
                     }
-                    Stream.SerialPort.Close();
-                }
-                catch (Exception ex)
-                {
-                    continue;
+                    catch
+                    {
+                        continue;
+                    }
                 }
             }
             return false;
