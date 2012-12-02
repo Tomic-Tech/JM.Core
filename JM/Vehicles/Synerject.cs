@@ -26,6 +26,7 @@ namespace JM.Vehicles
         private readonly byte[] stopDiagnosticSession;
         private readonly byte[] stopCommunication;
         private KWPOptions options;
+        private LiveDataVector ldVec;
 
         public Synerject(ICommbox commbox)
             : base(commbox)
@@ -125,7 +126,20 @@ namespace JM.Vehicles
             DataStreamCalc["IGA_1"] = (recv) =>
             {
                 // IGA_1    1   0...FFH -30...89.53 15/32
-                return string.Format("{0:F4}", Convert.ToDouble(recv[13]) * 15 / 32 - 30);
+                double v = Convert.ToDouble(recv[13]) * 15 / 32 - 30;
+                string value = string.Format("{0:F4}", v);
+                var minMax = ldVec["IGA_1"].MinMax;
+                double min = Convert.ToDouble(minMax["Min"]);
+                double max = Convert.ToDouble(minMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["IGA_1"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["IGA_1"].OutOfRange = false;
+                }
+                return value;
             };
 
             DataStreamCalc["IGA_CTR_IS"] = (recv) =>
@@ -137,7 +151,7 @@ namespace JM.Vehicles
             DataStreamCalc["INH_IV"] = (recv) =>
             {
                 // INH_IV   1   0...3FH 0...63  1
-                if ((recv[15] & 0x01) == 0)
+                if ((recv[15] & 0x01) != 0)
                 {
                     return Database.GetText("Fuel - Cut", "System");
                 }
@@ -153,19 +167,19 @@ namespace JM.Vehicles
                 switch (recv[16])
                 {
                     case 0:
-                        return Database.GetText("Ban", "System");
+                        return Database.GetText("Ban", "Synerject");
                     case 1:
-                        return Database.GetText("Static", "System");
+                        return Database.GetText("Static", "Synerject");
                     case 2:
-                        return Database.GetText("Early Fuel Injection", "System");
+                        return Database.GetText("Early Fuel Injection", "Synerject");
                     case 3:
-                        return Database.GetText("Early Phase Jet", "System");
+                        return Database.GetText("Early Phase Jet", "Synerject");
                     case 4:
-                        return Database.GetText("2 Stoke", "System");
+                        return Database.GetText("2 Stoke", "Synerject");
                     case 5:
-                        return Database.GetText("4 Stoke", "System");
+                        return Database.GetText("4 Stoke", "Synerject");
                     case 6:
-                        return Database.GetText("4 Stoke Undetermined Phase", "System");
+                        return Database.GetText("4 Stoke Undetermined Phase", "Synerject");
                     default:
                         return "";
                 }
@@ -459,7 +473,18 @@ namespace JM.Vehicles
             DataStreamCalc["N"] = (recv) => 
             {
                 // N    2   0..4650H    0...18000   1
-                return string.Format("{0}", Convert.ToUInt32(recv[45] * 256 + recv[46]));
+                UInt32 v = Convert.ToUInt32(recv[45] * 256 + recv[46]);
+                UInt32 min = Convert.ToUInt32(ldVec["N"].MinMax["Min"]);
+                UInt32 max = Convert.ToUInt32(ldVec["N"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["N"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["N"].OutOfRange = false;
+                }
+                return string.Format("{0}", v);
             };
 
             DataStreamCalc["N_MAX_THD"] = (recv) =>
@@ -522,7 +547,18 @@ namespace JM.Vehicles
             DataStreamCalc["TCO"] = (recv) =>
             {
                 // TCO  1   0..FFH  -40...215   1
-                return string.Format("{0}", Convert.ToInt32(recv[55]) - 40);
+                Int32 v = Convert.ToInt32(recv[55]) - 40;
+                Int32 min = Convert.ToInt32(ldVec["TCO"].MinMax["Min"]);
+                Int32 max = Convert.ToInt32(ldVec["TCO"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["TCO"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["TCO"].OutOfRange = false;
+                }
+                return string.Format("{0}", v);
             };
 
             DataStreamCalc["TCOPWM"] = (recv) =>
@@ -546,13 +582,35 @@ namespace JM.Vehicles
             DataStreamCalc["TI_LAM_COR"] = (recv) => 
             {
                 // TI_LAM_COR   2   0...FFFFH   -32...32.99902  1/1024
-                return string.Format("{0:F4}", Convert.ToDouble(recv[61] * 256 + recv[62]) / 1024 - 32);
+                double v = Convert.ToDouble(recv[61] * 256 + recv[62]) / 1024 - 32;
+                double min = Convert.ToDouble(ldVec["TI_LAM_COR"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["TI_LAM_COR"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["TI_LAM_COR"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["TI_LAM_COR"].OutOfRange = false;
+                }
+                return string.Format("{0:F4}", v);
             };
 
             DataStreamCalc["TIA"] = (recv) => 
             {
                 // TIA  1   0...FFH -40...215   1
-                return string.Format("{0}", Convert.ToInt32(recv[63]) - 40);
+                Int32 v = Convert.ToInt32(recv[63]) - 40;
+                Int32 min = Convert.ToInt32(ldVec["TIA"].MinMax["Min"]);
+                Int32 max = Convert.ToInt32(ldVec["TIA"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["TIA"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["TIA"].OutOfRange = false;
+                }
+                return string.Format("{0}", v);
             };
 
             DataStreamCalc["TIA_CYL"] = (recv) => 
@@ -564,7 +622,18 @@ namespace JM.Vehicles
             DataStreamCalc["TPS_MTC_1"] = (recv) => 
             {
                 // TPS_MTC_1    2   0...FFFFH   0...127.9980    1/512
-                return string.Format("{0:F4}", Convert.ToDouble(recv[65] * 256 + recv[66]) / 512);
+                double v = Convert.ToDouble(recv[65] * 256 + recv[66]) / 512;
+                double min = Convert.ToDouble(ldVec["TPS_MTC_1"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["TPS_MTC_1"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["TPS_MTC_1"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["TPS_MTC_1"].OutOfRange = false;
+                }
+                return string.Format("{0:F4}", v);
             };
 
             DataStreamCalc["V_TPS_AD_BOL_1"] = (recv) => 
@@ -576,13 +645,35 @@ namespace JM.Vehicles
             DataStreamCalc["VBK_MMV"] = (recv) => 
             {
                 // VBK_MMV  1   0...FFH 4...19.937  1/16
-                return string.Format("{0:F4}", Convert.ToDouble(recv[69]) / 16 + 4);
+                double v = Convert.ToDouble(recv[69]) / 16 + 4;
+                double min = Convert.ToDouble(ldVec["VBK_MMV"].MinMax["Min"]) + 10;
+                double max = Convert.ToDouble(ldVec["VBK_MMV"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["VBK_MMV"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["VBK_MMV"].OutOfRange = false;
+                }
+                return string.Format("{0:F4}", v);
             };
 
             DataStreamCalc["VLS_UP_1"] = (recv) => 
             {
                 // VLS_UP_1 2   0...3FFH    0...4.9951  5/1024
-                return string.Format("{0:F4}", Convert.ToDouble(recv[70] * 256 + recv[71]) * 5 / 1024);
+                double v = Convert.ToDouble(recv[70] * 256 + recv[71]) * 5 / 1024;
+                double min = Convert.ToDouble(ldVec["VLS_UP_1"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["VLS_UP_1"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["VLS_UP_1"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["VLS_UP_1"].OutOfRange = false;
+                }
+                return string.Format("{0:F4}", v);
             };
 
             DataStreamCalc["VS_8"] = (recv) => 
@@ -679,6 +770,8 @@ namespace JM.Vehicles
         public List<TroubleCode> ReadTroubleCode(bool isHistory)
         {
             byte[] cmd = Database.GetCommand("Read DTC By Status", "Synerject");
+            //byte[] cmd = new byte[] { 0x18, 0x00, 0x00, 0x00 };
+            //byte[] cmd = new byte[] { 0x18, 0x00, 0x00, 0x01 };
             byte[] result = Protocol.SendAndRecv(startDiagnosticSession, 0, startDiagnosticSession.Length, Pack);
             if (result == null || result[0] != 0x50)
             {
@@ -747,6 +840,7 @@ namespace JM.Vehicles
 
         public void ReadDataStream(Core.LiveDataVector vec)
         {
+            ldVec = vec;
             var items = vec.Items;
             byte[] cmd = Database.GetCommand("Read Data By Local Identifier1", "Synerject");
             stopReadDataStream = false;

@@ -12,6 +12,7 @@ namespace JM.Vehicles
         private Dictionary<int, byte[]> failureCmds;
         private Dictionary<int, DataCalcDelegate> failureCalc;
         private MikuniOptions options;
+        private LiveDataVector ldVec;
 
         public struct ChineseVersion
         {
@@ -64,24 +65,79 @@ namespace JM.Vehicles
             DataStreamCalc = new Dictionary<string, DataCalcDelegate>();
             DataStreamCalc["ER"] = (recv) =>
             {
-				return string.Format("{0:F0}", (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16)) * 500) / 256);
+                double v = (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16)) * 500) / 256;
+                double min = Convert.ToDouble(ldVec["ER"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["ER"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["ER"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["ER"].OutOfRange = false;
+                }
+				return string.Format("{0:F0}", v);
                 //return string.Format("{0}", (Convert.ToUInt16(Encoding.ASCII.GetString(recv), 16) / 256) * 500);
             };
             DataStreamCalc["BV"] = (recv) =>
             {
-				return string.Format("{0:F1}", (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 512);
+                double v = (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 512;
+                double min = Convert.ToDouble(ldVec["BV"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["BV"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["BV"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["BV"].OutOfRange = false;
+                }
+				return string.Format("{0:F1}", v);
             };
             DataStreamCalc["TPS"] = (recv) =>
             {
-				return string.Format("{0:F1}", (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 512);
+                double v = (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 512;
+                double min = Convert.ToDouble(ldVec["TPS"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["TPS"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["TPS"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["TPS"].OutOfRange = false;
+                }
+				return string.Format("{0:F1}", v);
             };
             DataStreamCalc["MAT"] = (recv) =>
             {
-				return string.Format("{0:F1}", (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 256 - 50);
+                double v = (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 256 - 50;
+                double min = Convert.ToDouble(ldVec["MAT"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["MAT"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["MAT"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["MAT"].OutOfRange = false;
+                }
+				return string.Format("{0:F1}", v);
             };
             DataStreamCalc["ET"] = (recv) =>
             {
-				return string.Format("{0:F1}", (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 256 - 50);
+                double v = (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 256 - 50;
+                double min = Convert.ToDouble(ldVec["ET"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["ET"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["ET"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["ET"].OutOfRange = false;
+                }
+				return string.Format("{0:F1}", v);
             };
             DataStreamCalc["BP"] = (recv) =>
             {
@@ -89,16 +145,49 @@ namespace JM.Vehicles
             };
             DataStreamCalc["MP"] = (recv) =>
             {
-				return string.Format("{0:F1}", (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 512);
+                double v = (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 512;
+                double min = Convert.ToDouble(ldVec["MP"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["MP"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["MP"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["MP"].OutOfRange = false;
+                }
+				return string.Format("{0:F1}", v);
             };
             DataStreamCalc["IT"] = (recv) =>
             {
-				return string.Format("{0:F1}", (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16)) * 15) / 256 - 22.5);
+                double v = (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16)) * 15) / 256 - 22.5;
+                double min = Convert.ToDouble(ldVec["IT"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["IT"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["IT"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["IT"].OutOfRange = false;
+                }
+				return string.Format("{0:F1}", v);
                 //return string.Format("{0}", (Convert.ToUInt16(Encoding.ASCII.GetString(recv), 16) / 256) * 15 - 22.5);
             };
             DataStreamCalc["IPW"] = (recv) =>
             {
-				return string.Format("{0:F0}", (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 2);
+                double v = (Convert.ToDouble(Convert.ToInt32(Encoding.ASCII.GetString(recv), 16))) / 2;
+                double min = Convert.ToDouble(ldVec["IPW"].MinMax["Min"]);
+                double max = Convert.ToDouble(ldVec["IPW"].MinMax["Max"]);
+                if (v < min || v > max)
+                {
+                    ldVec["IPW"].OutOfRange = true;
+                }
+                else
+                {
+                    ldVec["IPW"].OutOfRange = false;
+                }
+				return string.Format("{0:F0}", v);
             };
             DataStreamCalc["TS"] = (recv) =>
             {
@@ -387,7 +476,10 @@ namespace JM.Vehicles
                     if (result[0] != 0x30 || result[1] != 0x30 || result[2] != 0x30 || result[3] != 0x30)
                     {
                         string code = failureCalc[i](result);
-                        ret.Add(Database.GetTroubleCode(code, "Mikuni"));
+                        if (code != "0000")
+                        {
+                            ret.Add(Database.GetTroubleCode(code, "Mikuni"));
+                        }
                     }
                 }
                 return ret;
@@ -405,7 +497,7 @@ namespace JM.Vehicles
             }
 
             List<TroubleCode> ret = new List<TroubleCode>();
-            int pointer = Convert.ToInt32(Encoding.ASCII.GetString(result));
+            int pointer = Convert.ToInt32(Encoding.ASCII.GetString(result), 16);
 
             for (int i = 0; i < 16; i++)
             {
@@ -428,7 +520,10 @@ namespace JM.Vehicles
                 if (result[0] != 0x30 || result[1] != 0x30 || result[2] != 0x30 || result[3] != 0x30)
                 {
                     string code = Encoding.ASCII.GetString(result);
-                    ret.Add(Database.GetTroubleCode(code, "Mikuni"));
+                    if (code != "0000")
+                    {
+                        ret.Add(Database.GetTroubleCode(code, "Mikuni"));
+                    }
                 }
             }
             if (ret.Count == 0)
@@ -541,6 +636,7 @@ namespace JM.Vehicles
 
         public void ReadDataStream(Core.LiveDataVector vec)
         {
+            ldVec = vec;
             stopReadDataStream = false;
 
             var items = vec.Items;

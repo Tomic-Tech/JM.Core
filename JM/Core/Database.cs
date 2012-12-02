@@ -42,7 +42,8 @@ namespace JM.Core
             [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder defaultValue,
             [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder commandName,
             [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder commandClass,
-            [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder description);
+            [Out, MarshalAs(UnmanagedType.LPWStr)]StringBuilder description,
+            out Int32 index);
 
 
         public static string GetText(string name, string cls)
@@ -84,6 +85,7 @@ namespace JM.Core
                 StringBuilder commandName = new StringBuilder(100);
                 StringBuilder commandClass = new StringBuilder(100);
                 StringBuilder description = new StringBuilder(100);
+                int index = 0;
 
                 if (LiveDataNext(shortName, 
                     content, 
@@ -91,7 +93,8 @@ namespace JM.Core
                     defaultValue, 
                     commandName, 
                     commandClass, 
-                    description))
+                    description,
+                    out index))
                 {
                     vec.Add(new LiveData(shortName.ToString(), 
                         content.ToString(), 
@@ -100,6 +103,7 @@ namespace JM.Core
                         commandName.ToString(), 
                         commandClass.ToString(), 
                         description.ToString(), 
+                        index,
                         true));
                 }
                 else

@@ -60,7 +60,7 @@ namespace JM.Diag
                 int errnum = Marshal.GetLastWin32Error();
                 string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
                 throw new IOException(error_message);
-                return false;
+                //return false;
             }
             System.Threading.Thread.Sleep(1000);
             if (serial_command("pulldown") == -1)
@@ -68,7 +68,7 @@ namespace JM.Diag
                 int errnum = Marshal.GetLastWin32Error();
                 string error_message = Marshal.PtrToStringAnsi(strerror(errnum));
                 throw new IOException(error_message);
-                return false;
+                //return false;
             }
             System.Threading.Thread.Sleep(1000);
             return true;

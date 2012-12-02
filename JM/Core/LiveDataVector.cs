@@ -14,6 +14,7 @@ namespace JM.Core
         private List<int> enabledIndexes;
         private int currentEnabledIndex;
         private object mutex;
+        private Dictionary<string, LiveData> queryByShortName;
 
         //public delegate void ValueChange(int index, string value);
 
@@ -39,11 +40,13 @@ namespace JM.Core
             enabledIndexes = new List<int>();
             currentEnabledIndex = -1;
             mutex = new object();
+            queryByShortName = new Dictionary<string, LiveData>();
         }
 
         public new void Add(LiveData ld)
         {
             base.Add(ld);
+            queryByShortName[ld.ShortName] = ld;
             //ld.PropertyChanged += (sender, e) =>
             //{
             //    if (OnValueChange != null)
@@ -51,8 +54,6 @@ namespace JM.Core
             //        OnValueChange(ShowedPosition(ld.Index), ld.Value);
             //    }
             //};
-
-            ld.Index = Count - 1;
         }
 
         //internal void Initialize()
@@ -187,9 +188,11 @@ namespace JM.Core
         {
             lock (mutex)
             {
+                Sort();
                 enabledIndexes.Clear();
                 for (int i = 0; i < Count; i++)
                 {
+                    this[i].Position = i;
                     if (this[i].Enabled)
                     {
                         enabledIndexes.Add(i);
@@ -230,6 +233,14 @@ namespace JM.Core
                     ret.Add(this[i]);
                 }
                 return ret;
+            }
+        }
+
+        public LiveData this[string shortName]
+        {
+            get
+            {
+                return queryByShortName[shortName];
             }
         }
     }
