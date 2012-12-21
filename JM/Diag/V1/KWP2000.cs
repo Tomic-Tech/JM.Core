@@ -81,7 +81,7 @@ namespace JM.Diag.V1
                     return false;
                 }
 
-                if (!Box.DelBatch(Box.BuffID) ||
+                if (//!Box.DelBatch(Box.BuffID) ||
                     !Box.SetCommTime(SETWAITTIME, Core.Timer.FromMilliseconds(55)))
                 {
                     return false;

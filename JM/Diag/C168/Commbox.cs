@@ -62,7 +62,7 @@ namespace JM.Diag.C168
             byte[] receiveBuffer = new byte[1];
             receiveBuffer[0] = Constant.SUCCESS;
             Stream.ReadTimeout = Core.Timer.FromMilliseconds(200);
-            while (Stream.Read(receiveBuffer, 0, 1) != 0)
+            while (Stream.BytesToRead > 0 && Stream.Read(receiveBuffer, 0, 1) != 0)
                 ;
             if (receiveBuffer[0] == Constant.SUCCESS)
                 return true;
@@ -1139,8 +1139,8 @@ namespace JM.Diag.C168
         {
             byte[] timeBuff = new byte[2];
             byte delayWord = Constant.DELAYSHORT;
-            double microTime = time.Microseconds;
-            microTime = microTime / (commboxInfo.CommboxTimeUnit / 1000000.0);
+            long microTime = time.Microseconds + 1;
+            microTime = Convert.ToInt64(microTime / (commboxInfo.CommboxTimeUnit / 1000000.0));
             if (microTime == 0)
             {
                 lastError = Constant.SETTIME_ERROR;
@@ -1166,8 +1166,8 @@ namespace JM.Diag.C168
                 }
             }
 
-            timeBuff[0] = (byte)(microTime / 256);
-            timeBuff[1] = (byte)(microTime % 256);
+            timeBuff[0] = Utils.HighByte(microTime);// (byte)(microTime / 256);
+            timeBuff[1] = Utils.LowByte(microTime);// (byte)(microTime % 256);
 
             if (timeBuff[0] == 0)
             {

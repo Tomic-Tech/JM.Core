@@ -553,7 +553,7 @@ namespace JM.Diag.V1
                 }
                 else
                 {
-                    return C168.Constant.SETLINKTIME;
+                    return C168.Constant.COMS;
                 }
             }
         }

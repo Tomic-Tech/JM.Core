@@ -94,10 +94,10 @@ namespace JM.Vehicles
                 throw new Exception(Database.GetText("Communication Fail", "System"));
             }
 
-            byte[] keepLink = Database.GetCommand("Keep Link", "GW250");
+            //byte[] keepLink = Database.GetCommand("Keep Link", "GW250");
 
-            Protocol.SetKeepLink(keepLink, 0, keepLink.Length, Pack);
-            Protocol.KeepLink(true);
+            //Protocol.SetKeepLink(keepLink, 0, keepLink.Length, Pack);
+            //Protocol.KeepLink(true);
         }
 
         public List<TroubleCode> ReadTroubleCode(bool isHistory)
