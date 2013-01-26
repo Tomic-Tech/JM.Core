@@ -452,7 +452,7 @@ namespace JM.Vehicles
             });
         }
 
-        public List<TroubleCode> ReadCurrentTroubleCode()
+        public List<TroubleCode> ReadCurrentTroubleCode(string sys)
         {
             byte[] cmd = Database.GetCommand("Synthetic Failure", "Mikuni");
             byte[] result = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
@@ -478,7 +478,7 @@ namespace JM.Vehicles
                         string code = failureCalc[i](result);
                         if (code != "0000")
                         {
-                            ret.Add(Database.GetTroubleCode(code, "Mikuni"));
+                            ret.Add(Database.GetTroubleCode(code, sys));
                         }
                     }
                 }
@@ -487,7 +487,7 @@ namespace JM.Vehicles
             throw new IOException(Database.GetText("None Trouble Code", "System"));
         }
 
-        public List<TroubleCode> ReadHistoryTroubleCode()
+        public List<TroubleCode> ReadHistoryTroubleCode(string sys)
         {
             byte[] cmd = Database.GetCommand("Failure History Pointer", "Mikuni");
             byte[] result = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
@@ -522,7 +522,7 @@ namespace JM.Vehicles
                     string code = Encoding.ASCII.GetString(result);
                     if (code != "0000")
                     {
-                        ret.Add(Database.GetTroubleCode(code, "Mikuni"));
+                        ret.Add(Database.GetTroubleCode(code, sys));
                     }
                 }
             }
@@ -675,6 +675,7 @@ namespace JM.Vehicles
 
         public void StaticDataStream(Core.LiveDataVector vec)
         {
+            ldVec = vec;
             var items = vec.Items;
             foreach (var item in items)
             {

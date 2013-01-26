@@ -840,6 +840,7 @@ namespace JM.Vehicles
 
         public void ReadDataStream(Core.LiveDataVector vec)
         {
+            byte[] calcBuff = new byte[128];
             ldVec = vec;
             var items = vec.Items;
             byte[] cmd = Database.GetCommand("Read Data By Local Identifier1", "Synerject");
@@ -856,6 +857,7 @@ namespace JM.Vehicles
                 Protocol.SendAndRecv(stopCommunication, 0, stopCommunication.Length, Pack);
                 throw new IOException(Database.GetText("Communication Fail", "System"));
             }
+            Array.Copy(recv, calcBuff, recv.Length);
             Task task = Task.Factory.StartNew(() =>
             {
                 while (!stopReadDataStream)
@@ -865,7 +867,7 @@ namespace JM.Vehicles
                     byte[] temp = Protocol.SendAndRecv(cmd, 0, cmd.Length, Pack);
                     if (temp != null)
                     {
-                        Array.Copy(temp, recv, recv.Length >= temp.Length ? recv.Length : temp.Length);
+                        Array.Copy(temp, calcBuff, temp.Length);
                     }
                 }
             });
@@ -873,7 +875,7 @@ namespace JM.Vehicles
             {
                 foreach (var item in items)
                 {
-                    item.Value = DataStreamCalc[item.ShortName](recv);
+                    item.Value = DataStreamCalc[item.ShortName](calcBuff);
                     Thread.Sleep(10);
                     Thread.Yield();
                     if (stopReadDataStream)
@@ -906,7 +908,7 @@ namespace JM.Vehicles
 
         public void StaticDataStream(Core.LiveDataVector vec)
         {
-            vec.DeployShowedIndex();
+            ldVec = vec;
             byte[] cmd = Database.GetCommand("Read Data By Local Identifier1", "Synerject");
             byte[] recv = Protocol.SendAndRecv(startDiagnosticSession, 0, startDiagnosticSession.Length, Pack);
 
@@ -920,11 +922,16 @@ namespace JM.Vehicles
             Protocol.SendAndRecv(stopDiagnosticSession, 0, stopDiagnosticSession.Length, Pack);
             Protocol.SendAndRecv(stopCommunication, 0, stopCommunication.Length, Pack);
 
-            for (int i = 0; i < vec.ShowedCount; i++)
+            var items = vec.Items;
+            foreach (var item in items)
             {
-                int index = vec.ShowedIndex(i);
-                vec[index].Value = DataStreamCalc[vec[index].ShortName](recv);
+                item.Value = DataStreamCalc[item.ShortName](recv);
             }
+            //for (int i = 0; i < vec.ShowedCount; i++)
+            //{
+            //    int index = vec.ShowedIndex(i);
+            //    vec[index].Value = DataStreamCalc[vec[index].ShortName](recv);
+            //}
         }
 
         public string Active(string mode, bool on)
@@ -942,6 +949,7 @@ namespace JM.Vehicles
 
         public void Active(Core.LiveDataVector vec, string mode)
         {
+            ldVec = vec;
             byte[] cmd = Database.GetCommand("Read Data By Local Identifier1", "Synerject");
             byte[] buff = Protocol.SendAndRecv(startDiagnosticSession, 0, startDiagnosticSession.Length, Pack);
 
